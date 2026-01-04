@@ -70,46 +70,27 @@ float ACS712_ReadAC(ACS712_t* sensor, unsigned int frequency) {
     float avg_adc, zero_p;
     float rms_adc, voltage_rms, amps_rms;
     
-    // Note regarding millis():
-    // Standard simple approach without relying on external TimeLib (to keep driver generic):
-    // We might just use Delay-based loop or checks.
-    // However, user HAS TimeLib and expects to use it?
-    // Actually, driver should be generic. 
-    // We can use a loop count estimation or just block for period_ms approx.
-    // But since we have no built-in millis in core mikroC, blocking for a fixed sample count is safer?
-    // Or we assume standard loop.
-    //
-    // Let's use the optimized approach we did in Arduino: sum of squares.
-    // BUT we don't have millis() easily inside the library unless we pass a function pointer or use a known timer.
-    // 
-    // TRADEOUT: To keep this specific library simple and portable, 
-    // we will stick to a fixed SAMPLE COUNT that approximates one cycle, 
-    // OR we just sample fast for a duration using Delay_us checks?
-    //
-    // Let's try the "loop for duration" using built-in Delay typically isn't variable.
-    // Wait, mikroC Delay_ms requires constant. Vdelay_ms takes variable.
+    // We assume the user has "TimeLib" installed/checked.
+    // In mikroC, if a library is checked, its functions are available globally.
+    // However, to avoid 'undeclared identifier' errors during compile if the header isn't included,
+    // we should rely on the user checking the box. 
+    // BUT, the compiler needs to know 'millis' exists.
+    // Since we are writing a SOURCE file (.c) inside a project, we can just declare the prototype extern
+    // OR just assume the user added TimeLib to the project.
     
-    // REFACTOR: We'll sample for a specific number of samples that roughly covers 20ms? 
-    // ADC_Read takes time. 
-    // Let's rely on simple blocking sampling for now.
+    // Best practice for mikroC libraries: 
+    // We will prototype millis() here just in case it's not in a header.
+    // extern unsigned long millis(); 
     
     zero_p = sensor->zero_point;
-    
-    // We can't easily loop "for 20ms" without a timer source.
-    // We will just take a large number of samples (e.g., 300) which usually exceeds 20ms on PIC sampling speeds
-    // This is "good enough" for basic RMS if we capture at least one cycle.
-    // Better yet, just take 1000 samples? No, too slow.
-    
-    // Let's assume user provides TimeLib? No, that couples it.
-    // We will use a fixed loop count. 
-    // On 8MHz PIC, 1 instruction = 0.5us. ADC_Read takes ~20us?
-    
-    // Let's try 400 samples. 
-    
-    for (count = 0; count < 400; count++) {
+    start_time = millis();
+
+    // Loop for one full cycle (e.g. 20ms for 50Hz)
+    while ((millis() - start_time) < period_ms) {
          float sample = ADC_Read(sensor->adc_channel);
          sample -= zero_p;
          accumulator += (sample * sample);
+         count++;
          // No delay, sample as fast as possible
     }
     
