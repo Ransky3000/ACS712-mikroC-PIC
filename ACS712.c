@@ -93,8 +93,13 @@ unsigned int ACS712_ReadDC(ACS712_t* sensor) {
     return (unsigned int)amps_mA;
 }
 
+// Returns mA
+// High Precision Version using micros()
+// Returns mA
+// High Precision Version using micros()
 unsigned int ACS712_ReadAC(ACS712_t* sensor, unsigned int frequency) {
-    unsigned long period_ms = 1000 / frequency;
+    // Declarations FIRST (C89 Compliance)
+    unsigned long period_us;
     unsigned long start_time;
     unsigned long accumulator = 0;
     unsigned long count = 0;
@@ -106,12 +111,22 @@ unsigned int ACS712_ReadAC(ACS712_t* sensor, unsigned int frequency) {
     unsigned long rms_raw; // ADC units
     unsigned long voltage_rms_mv;
     unsigned long amps_rms_mA;
+    
+    // Utilize the custom TimeLib's micros() for better precision
+    extern unsigned long micros(); 
 
-    // extern unsigned long millis(); 
+    // Optimization: Avoid 32-bit runtime division
+    if (frequency == 60) {
+        period_us = 16666; // 60Hz
+    } else if (frequency == 50) {
+        period_us = 20000; // 50Hz
+    } else {
+        period_us = 16666; // Default to 60Hz
+    } 
 
-    start_time = millis();
+    start_time = micros();
 
-    while ((millis() - start_time) < period_ms) {
+    while ((micros() - start_time) < period_us) {
          sample = (long)ADC_Read(sensor->adc_channel);
          sample -= zero_p;
          accumulator += (sample * sample);

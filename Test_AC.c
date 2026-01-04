@@ -24,7 +24,11 @@ void Serial_Print_mA_as_Amps(unsigned int val_mA) {
 }
 
 void main() {
-    // 1. Hardware Init
+    // Declarations at TOP of scope (C89/mikroC)
+    unsigned long previousMillis = 0;
+    unsigned int ac_mA; // Moved declaration here
+
+    // 1. Hardware Init (Scope Top)
     OSCCON = 0x70;    // 8MHz
     ANSEL = 0x01;     // AN0 Analog
     TRISA = 0x01;     // RA0 Input
@@ -38,23 +42,32 @@ void main() {
     UART1_Write_Text("ACS712 AC Test (Integer)\r\n");
 
     // 2. Initialize Sensor
-    // Init with: channel 0, Vref=5000mV, Res=1023
     ACS712_Init(&mySensor, 0, 5000, 1023);
-    
-    // Set Sensitivity: 100 mV/A (for 20A module)
     ACS712_SetSensitivity(&mySensor, 100);
 
-    // 3. Manual Zero for Test
-    mySensor.zero_point = 512; 
+    // 3. Initial Calibrate
+    UART1_Write_Text("Calibrating Zero Point...\r\n");
+    ACS712_Calibrate(&mySensor);
     UART1_Write_Text("Ready.\r\n");
+    
+    previousMillis = millis();
 
     while(1) {
         // Read RMS at 60Hz - Returns mA
-        unsigned int ac_mA = ACS712_ReadAC(&mySensor, 60);
+        ac_mA = ACS712_ReadAC(&mySensor, 60);
 
         UART1_Write_Text("AC: ");
         Serial_Print_mA_as_Amps(ac_mA);
         UART1_Write_Text(" A\r\n");
+
+        
+        // Periodic Calibration (Every 5 Seconds)
+        if (millis() - previousMillis >= 5000) {
+            previousMillis = millis();
+            UART1_Write_Text("Re-Calibrating...\r\n");
+            ACS712_Calibrate(&mySensor); // Integer Calib is fast and small
+            UART1_Write_Text("Done.\r\n");
+        }
 
         Delay_ms(500);
     }
