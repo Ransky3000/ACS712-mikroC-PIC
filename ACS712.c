@@ -62,43 +62,88 @@ float ACS712_ReadDC(ACS712_t* sensor) {
     return voltage / sensor->sensitivity;
 }
 
-float ACS712_ReadAC(ACS712_t* sensor, unsigned int frequency) {
+// Helper: Fast Integer Square Root (Babylonian/Newton method)
+unsigned long isqrt(unsigned long n) {
+    unsigned long x = n;
+    unsigned long y = (x + 1) / 2;
+    while (y < x) {
+        x = y;
+        y = (x + n / y) / 2;
+    }
+    return x;
+}
+
+// Fixed-Point AC Read (Returns mA)
+// Eliminates Float Math & Sqrt Library to save space (Demo Limit)
+unsigned int ACS712_ReadAC_Int(ACS712_t* sensor, unsigned int frequency) {
     unsigned long period_ms = 1000 / frequency;
     unsigned long start_time;
     unsigned long accumulator = 0;
     unsigned long count = 0;
-    float avg_adc, zero_p;
-    float rms_adc, voltage_rms, amps_rms;
     
-    // We assume the user has "TimeLib" installed/checked.
-    // In mikroC, if a library is checked, its functions are available globally.
-    // However, to avoid 'undeclared identifier' errors during compile if the header isn't included,
-    // we should rely on the user checking the box. 
-    // BUT, the compiler needs to know 'millis' exists.
-    // Since we are writing a SOURCE file (.c) inside a project, we can just declare the prototype extern
-    // OR just assume the user added TimeLib to the project.
+    long sample;
+    long zero_p = (long)sensor->zero_point; // Use integer zero point (e.g. 512)
     
-    // Best practice for mikroC libraries: 
-    // We will prototype millis() here just in case it's not in a header.
+    unsigned long avg_sq;
+    unsigned long rms_raw;
+    unsigned long voltage_rms_mv;
+    unsigned long amps_rms_mA;
+    
+    // External generic millis() prototype
     // extern unsigned long millis(); 
-    
-    zero_p = sensor->zero_point;
+
     start_time = millis();
 
-    // Loop for one full cycle (e.g. 20ms for 50Hz)
     while ((millis() - start_time) < period_ms) {
-         float sample = ADC_Read(sensor->adc_channel);
-         sample -= zero_p;
+         sample = (long)ADC_Read(sensor->adc_channel);
+         sample -= zero_p; // Center at 0
+         
+         // Accumulate squares (long * long = long)
+         // Max ADC diff is ~512. 512^2 = 262,144.
+         // Accumulator (unsigned long 32-bit) can hold ~4 billion. 
+         // We can safe sum ~16,000 samples. 20ms is fine.
          accumulator += (sample * sample);
          count++;
-         // No delay, sample as fast as possible
     }
     
-    avg_adc = (float)accumulator / count;
-    rms_adc = sqrt(avg_adc);
+    if (count == 0) return 0;
     
-    voltage_rms = rms_adc * (sensor->voltage_reference / sensor->adc_resolution);
-    amps_rms = voltage_rms / sensor->sensitivity;
+    avg_sq = accumulator / count;
+    rms_raw = isqrt(avg_sq); // Result is in ADC units (0-1023)
     
-    return amps_rms;
+    // Calculate Volts (mV) = (RMS_Raw * V_Ref_mV) / ADC_Res
+    // V_Ref = 5000mV
+    // Use 32-bit math: rms * 5000 / 1023
+    voltage_rms_mv = (rms_raw * 5000) / 1023;
+    
+    // Calculate Amps (mA) = Voltage_RMS_mV / Sensitivity_mV_per_A
+    // Sensitivity is float in struct (0.100), but we need integer mV/A.
+    // 0.100 V/A = 100 mV/A. 
+    // We will compute sensitivity_mV = sensitivity * 1000
+    // amps_mA = voltage_rms_mv / (sensitivity * 1000) -> logic:
+    // amps_mA = (voltage_rms_mv * 1000) / (sensitivity_V * 1000) ?? No.
+    // Amps = Volts / Sens. 
+    // mA = mV / (V/A / 1000)? No.
+    // mA = mV / (mV/mA).
+    // Sensitivity is V/A. e.g. 0.1 V/A = 100 mV/A.
+    // Current (A) = Volts / 0.1
+    // Current (mA) = Volts / 0.1 * 1000 = Volts * 10000.
+    // Let's stick to mV.
+    // Current (A) = Volts_RMS / Sensitivity_V_A
+    // Current (mA) = (Volts_RMS * 1000) / Sensitivity_V_A
+    // Current (mA) = Voltage_RMS_mV / Sensitivity_V_A
+    // e.g. 100mV measured / 0.1 V/A = 1A = 1000mA.
+    // 100 / 0.1 = 1000. Correct.
+    
+    // Avoid float divide. multiply numerator by 10 or 100?
+    // amps_mA = voltage_rms_mv / sensitivity; (if sensitivity was int mV/A)
+    // struct has float sensitivity (e.g. 0.100).
+    // Let's do: (voltage_rms_mv * 1000) / (sensitivity * 1000)
+    
+    amps_rms_mA = (unsigned long)(voltage_rms_mv) / (unsigned long)(sensor->sensitivity * 1000.0);
+    
+    // Correction factor to match mA scale (x1000)
+    amps_rms_mA = amps_rms_mA * 1000; 
+    
+    return (unsigned int)amps_rms_mA;
 }

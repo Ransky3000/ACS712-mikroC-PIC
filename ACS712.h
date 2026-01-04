@@ -27,6 +27,7 @@ void ACS712_SetZeroPoint(ACS712_t* sensor, float zero);
 
 void ACS712_Calibrate(ACS712_t* sensor);
 float ACS712_ReadDC(ACS712_t* sensor);
-float ACS712_ReadAC(ACS712_t* sensor, unsigned int frequency);
+// Returns mA (Integer) to avoid float math
+unsigned int ACS712_ReadAC_Int(ACS712_t* sensor, unsigned int frequency);
 
 #endif
