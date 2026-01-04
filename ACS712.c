@@ -54,14 +54,21 @@ unsigned int ACS712_ReadDC(ACS712_t* sensor) {
     long amps_mA;
     long zero = (long)sensor->zero_point;
     
+    // Moved declarations up
+    long diff_x100;
+    long avg;
+    long diff;
+    long mv;
+    
     for (i = 0; i < 100; i++) {
         accumulator += ADC_Read(sensor->adc_channel);
     }
+    
     // avg = accumulator/100.
     // raw diff = avg - zero. 
     // Let's keep precision. Diff * 100 = accumulator - (zero * 100)
     
-    long diff_x100 = (long)accumulator - (zero * 100);
+    diff_x100 = (long)accumulator - (zero * 100);
     
     // ADC counts * (Vref_mV / Res) = Voltage_mV
     // Voltage_mV * 1000 = Voltage_uV
@@ -72,11 +79,11 @@ unsigned int ACS712_ReadDC(ACS712_t* sensor) {
     // Let's simplify.
     // mV = ( (accumulator/100 - zero) * Vref ) / Res
     
-    long avg = accumulator / 100;
-    long diff = avg - zero; 
+    avg = accumulator / 100;
+    diff = avg - zero; 
     
     // mV = (diff * Vref_mv) / Res
-    long mv = (diff * (long)sensor->voltage_reference_mv) / (long)sensor->adc_resolution;
+    mv = (diff * (long)sensor->voltage_reference_mv) / (long)sensor->adc_resolution;
     
     // mA = (mV * 1000) / Sens_mV_A
     amps_mA = (mv * 1000) / (long)sensor->sensitivity_mV_A;
