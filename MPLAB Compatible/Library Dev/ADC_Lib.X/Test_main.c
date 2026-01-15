@@ -19,7 +19,9 @@
 #pragma config IESO = OFF       // Internal External Switchover disabled
 
 #include <xc.h>
+#include <stdio.h> // Success: Required for sprintf
 #include "ADC_Lib.h"
+#include "UART_Lib.h"
 
 #define _XTAL_FREQ 8000000 // Required for __delay_ms
 
@@ -34,18 +36,24 @@ void main() {
     TRISAbits.TRISA0 = 1; // RA0 is Input
 
     // 2. Init Library
+    UART_Init();
     ADC_Init();
+    
+    UART_Write_Text("ADC Test Started...\r\n");
 
     // 3. Main Loop
     while(1) {
         unsigned int val;
+        char buffer[20]; // Buffer to hold text
         
         // Read Analog Value from Channel 0 (AN0)
-        val = ADC_Read(0);
+        val = ADC_Read(0)/4;
         
-        // Logic: You can set a breakpoint here to check 'val'
-        // or add UART code to print it.
+        // Format: "ADC: 512"
+        sprintf(buffer, "ADC: %u\r\n", val);
         
-        __delay_ms(100);
+        UART_Write_Text(buffer);
+        
+        __delay_ms(500);
     }
 }

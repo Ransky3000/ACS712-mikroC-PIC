@@ -11,17 +11,32 @@
 # All addresses and the length are given in unqualified hexadecimal
 # in delta units.  Any other numeric values are decimal.
 %PSECTS
-$C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
+$dist/default/production\ADC_Lib.X.production.o
+cinit CODE 0 7EF 7EF 11 2 1
+idloc IDLOC 5 2000 2000 4 2 1
+text1 CODE 0 55F 55F 21 2 1
+text2 CODE 0 53E 53E 21 2 1
+text3 CODE 0 73B 73B B4 2 1
+text4 CODE 0 6A3 6A3 98 2 1
+text5 CODE 0 50F 50F 1 2 1
+text6 CODE 0 5A2 5A2 38 2 1
+text7 CODE 0 616 616 42 2 1
+text8 CODE 0 5DA 5DA 3C 2 1
+text9 CODE 0 520 520 C 2 1
+text10 CODE 0 52C 52C 12 2 1
+text11 CODE 0 580 580 22 2 1
+text12 CODE 0 510 510 8 2 1
+maintext CODE 0 658 658 4B 2 1
+cstackCOMMON COMMON 1 70 70 E 1 1
+cstackBANK0 BANK0 1 20 20 3A 1 1
+bssBANK0 BANK0 1 5A 5A 5 1 1
+bssBANK1 BANK1 1 A0 A0 20 1 1
+strings STRING 0 2 2 30 2 1
+clrtext CODE 0 518 518 8 2 1
+config CONFIG 4 2007 2007 2 2 1
+$C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
 idloc IDLOC 5 2000 2000 4 2 1
 end_init CODE 0 0 0 2 2 1
-config CONFIG 4 2007 2007 2 2 1
-$dist/default/production\ADC_Lib.X.production.o
-cinit CODE 0 7FD 7FD 3 2 1
-idloc IDLOC 5 2000 2000 4 2 1
-text1 CODE 0 7DB 7DB 22 2 1
-text2 CODE 0 7B5 7B5 8 2 1
-maintext CODE 0 7BD 7BD 1E 2 1
-cstackCOMMON COMMON 1 70 70 7 1 1
 config CONFIG 4 2007 2007 2 2 1
 # %UNUSED Section
 # This section enumerates the unused ranges of each CLASS. Each entry
@@ -29,29 +44,28 @@ config CONFIG 4 2007 2007 2 2 1
 #    <class name> <range> <delta>
 # Addresses given in the range are in hexadecimal and units of delta.
 %UNUSED
-RAM 20-6F 1
-RAM A0-EF 1
+RAM 5F-6F 1
+RAM C0-EF 1
 RAM 110-16F 1
 RAM 190-1EF 1
-BANK0 20-6F 1
-BANK1 A0-EF 1
+BANK0 5F-6F 1
+BANK1 C0-EF 1
 BANK2 110-16F 1
 BANK3 190-1EF 1
-CONST 2-7B4 2
+CONST 32-50E 2
 CONST 800-FFF 2
-ENTRY 2-7B4 2
+ENTRY 32-50E 2
 ENTRY 800-FFF 2
-CODE 2-7B4 2
+CODE 32-50E 2
 CODE 800-FFF 2
 SFR0 0-1F 1
 SFR1 80-9F 1
 SFR2 100-10F 1
 SFR3 180-18F 1
-COMMON 77-7D 1
 EEDATA 2100-21FF 2
-STRCODE 2-7B4 2
+STRCODE 32-50E 2
 STRCODE 800-FFF 2
-STRING 2-7B4 2
+STRING 32-50E 2
 STRING 800-FFF 2
 # %LINETAB Section
 # This section enumerates the file/line to address mappings.
@@ -67,33 +81,188 @@ STRING 800-FFF 2
 # All other numeric values are in decimal.
 %LINETAB
 $dist/default/production\ADC_Lib.X.production.o
-7FD cinit CODE >448:C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_1.s
-7FD cinit CODE >451:C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_1.s
-7FD cinit CODE >457:C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_1.s
-7FD cinit CODE >459:C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_1.s
-7FE cinit CODE >460:C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_1.s
-7B5 text2 CODE >9:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7B5 text2 CODE >14:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7B9 text2 CODE >21:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7BC text2 CODE >22:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7DB text1 CODE >24:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7DC text1 CODE >28:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7E0 text1 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7E3 text1 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7E6 text1 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7E8 text1 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7EB text1 CODE >34:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7EF text1 CODE >37:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7F2 text1 CODE >40:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7F6 text1 CODE >44:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7FC text1 CODE >45:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
-7BD maintext CODE >26:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
-7BD maintext CODE >28:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
-7C1 maintext CODE >32:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
-7C3 maintext CODE >34:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
-7C4 maintext CODE >37:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
-7C7 maintext CODE >44:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
-7CB maintext CODE >49:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+7EF cinit CODE >653:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7EF cinit CODE >656:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7EF cinit CODE >694:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F0 cinit CODE >695:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F1 cinit CODE >696:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F2 cinit CODE >697:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F3 cinit CODE >698:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F4 cinit CODE >699:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F5 cinit CODE >700:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F6 cinit CODE >703:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F7 cinit CODE >704:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F8 cinit CODE >705:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7F9 cinit CODE >706:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7FA cinit CODE >707:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7FD cinit CODE >713:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7FD cinit CODE >715:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+7FE cinit CODE >716:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+510 text12 CODE >9:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+510 text12 CODE >14:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+514 text12 CODE >21:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+517 text12 CODE >22:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+580 text11 CODE >24:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+581 text11 CODE >28:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+585 text11 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+588 text11 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+58B text11 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+58D text11 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+590 text11 CODE >34:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+594 text11 CODE >37:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+597 text11 CODE >40:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+59B text11 CODE >44:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+5A1 text11 CODE >45:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\ADC_Lib.c
+52C text10 CODE >4:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+52C text10 CODE >10:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+52F text10 CODE >11:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+531 text10 CODE >15:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+532 text10 CODE >16:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+533 text10 CODE >19:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+534 text10 CODE >20:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+537 text10 CODE >23:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+53A text10 CODE >24:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+53D text10 CODE >25:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+520 text9 CODE >27:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+521 text9 CODE >29:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+527 text9 CODE >30:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+52B text9 CODE >31:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+5DA text8 CODE >44:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+5DA text8 CODE >46:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+5DD text8 CODE >47:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+5E2 text8 CODE >47:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+5F5 text8 CODE >48:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+5F7 text8 CODE >48:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+600 text8 CODE >48:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+611 text8 CODE >48:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+615 text8 CODE >49:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\UART_Lib.c
+616 text7 CODE >5:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+616 text7 CODE >13:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+618 text7 CODE >14:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+61E text7 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+620 text7 CODE >16:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+621 text7 CODE >17:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+622 text7 CODE >17:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+626 text7 CODE >17:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+628 text7 CODE >18:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+62A text7 CODE >16:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+62E text7 CODE >21:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+62F text7 CODE >21:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+633 text7 CODE >21:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+635 text7 CODE >22:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+637 text7 CODE >22:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+63B text7 CODE >22:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+63F text7 CODE >23:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+642 text7 CODE >23:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+645 text7 CODE >24:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+646 text7 CODE >26:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+647 text7 CODE >26:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+64B text7 CODE >26:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+64D text7 CODE >27:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+653 text7 CODE >29:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+657 text7 CODE >30:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+5A2 text6 CODE >5:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5A2 text6 CODE >12:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5A8 text6 CODE >13:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5AA text6 CODE >14:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5AB text6 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5AC text6 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5B0 text6 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5B2 text6 CODE >16:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5B4 text6 CODE >14:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5B8 text6 CODE >19:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5BA text6 CODE >19:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5BE text6 CODE >19:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5C2 text6 CODE >20:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5C5 text6 CODE >20:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5C8 text6 CODE >21:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5C9 text6 CODE >21:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5CD text6 CODE >21:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5CF text6 CODE >22:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5D5 text6 CODE >24:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+5D9 text6 CODE >25:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+50F text5 CODE >7:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\putch.c
+50F text5 CODE >9:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\putch.c
+6A3 text4 CODE >8:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6A3 text4 CODE >12:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6AF text4 CODE >13:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6B3 text4 CODE >14:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6B4 text4 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6B8 text4 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6D0 text4 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6E2 text4 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6F6 text4 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6FA text4 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+6FE text4 CODE >18:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+70C text4 CODE >18:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+71A text4 CODE >18:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+728 text4 CODE >20:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+72C text4 CODE >20:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+738 text4 CODE >20:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+73A text4 CODE >24:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_fputc.c
+73B text3 CODE >1177:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+73B text3 CODE >1201:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+745 text3 CODE >1201:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+749 text3 CODE >1202:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+74D text3 CODE >1204:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+751 text3 CODE >1205:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+755 text3 CODE >1291:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+759 text3 CODE >1439:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+75F text3 CODE >1439:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+763 text3 CODE >1495:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+771 text3 CODE >1497:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+776 text3 CODE >1498:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+777 text3 CODE >1523:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+777 text3 CODE >1525:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+779 text3 CODE >1527:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+78D text3 CODE >1528:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7A0 text3 CODE >1532:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7AC text3 CODE >1534:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7C2 text3 CODE >1533:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7C9 text3 CODE >1589:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7CF text3 CODE >1589:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7D2 text3 CODE >1806:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7D9 text3 CODE >1811:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+7EE text3 CODE >1814:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+53E text2 CODE >1817:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+53E text2 CODE >1822:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+542 text2 CODE >1826:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+543 text2 CODE >1830:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+550 text2 CODE >1826:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+556 text2 CODE >1826:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+55A text2 CODE >1835:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+55E text2 CODE >1840:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\doprnt.c
+55F text1 CODE >9:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+55F text1 CODE >15:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+563 text1 CODE >16:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+567 text1 CODE >17:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+569 text1 CODE >18:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+56B text1 CODE >19:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+576 text1 CODE >20:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+57F text1 CODE >23:C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\nf_sprintf.c
+658 maintext CODE >28:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+658 maintext CODE >30:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+65C maintext CODE >34:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+65E maintext CODE >36:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+65F maintext CODE >39:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+662 maintext CODE >40:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+665 maintext CODE >42:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+66C maintext CODE >50:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+676 maintext CODE >50:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+679 maintext CODE >50:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+680 maintext CODE >53:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+68B maintext CODE >55:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+692 maintext CODE >57:C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\ADC_Lib.X\Test_main.c
+518 clrtext CODE >681:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+518 clrtext CODE >682:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+519 clrtext CODE >683:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+519 clrtext CODE >684:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+51A clrtext CODE >685:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+51B clrtext CODE >686:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+51C clrtext CODE >687:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+51D clrtext CODE >688:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+51E clrtext CODE >689:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
+51F clrtext CODE >690:C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_1.s
 # %SYMTAB Section
 # An enumeration of all symbols in the program.
 # The beginning of the section is indicated by %SYMTAB.
@@ -107,46 +276,71 @@ $dist/default/production\ADC_Lib.X.production.o
 # is the name of the object file in which the symbol was defined.
 %SYMTAB
 ___latbits 1 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+___lwmod@counter 74 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 __Hspace_0 800 0 ABS 0 - -
-__Hspace_1 77 0 ABS 0 - -
+__Hspace_1 C0 0 ABS 0 - -
 __Hspace_2 0 0 ABS 0 - -
 __Hspace_3 0 0 ABS 0 - -
 __Hspace_4 4010 0 ABS 0 - -
 __Heeprom_data 0 0 EEDATA 3 eeprom_data -
 __L__absolute__ 0 0 ABS 0 __absolute__ -
 __Hstrings 0 0 ABS 0 strings -
-___sp 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-_main F7A 0 CODE 0 maintext dist/default/production\ADC_Lib.X.production.o
+?_vfprintf 2C 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+_BRGH 4C2 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+_CREN C4 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+_SPEN C7 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+_SYNC 4C4 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+_TRMT 4C1 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+_TXEN 4C5 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+___sp 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+_dbuf A0 0 BANK1 1 bssBANK1 dist/default/production\ADC_Lib.X.production.o
+_main CB0 0 CODE 0 maintext dist/default/production\ADC_Lib.X.production.o
+_prec 5C 0 BANK0 1 bssBANK0 dist/default/production\ADC_Lib.X.production.o
 btemp 7E 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
-___stack_hi 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-___stack_lo 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-start 0 0 CODE 0 init C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
+___stack_hi 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+___stack_lo 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+start 0 0 CODE 0 init C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
 __Hpowerup 0 0 CODE 0 powerup -
-intlevel0 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-intlevel1 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-intlevel2 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-intlevel3 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-intlevel4 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-intlevel5 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
+__end_of_vfpfcnvrt FDE 0 CODE 0 text3 dist/default/production\ADC_Lib.X.production.o
+intlevel0 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+intlevel1 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+intlevel2 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+intlevel3 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+intlevel4 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+intlevel5 0 0 ENTRY 0 functab C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
 wtemp0 7E 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
 __Hfunctab 0 0 ENTRY 0 functab -
+_UART_Write A40 0 CODE 0 text9 dist/default/production\ADC_Lib.X.production.o
 __Hclrtext 0 0 ABS 0 clrtext -
+_vfpfcnvrt E76 0 CODE 0 text3 dist/default/production\ADC_Lib.X.production.o
 _ADCON0 1F 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
 _ADCON1 9F 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
 _ADRESH 1E 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
 _ADRESL 9E 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+main@val 58 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
 __Lmaintext 0 0 ABS 0 maintext -
-_ADC_Init F6A 0 CODE 0 text2 dist/default/production\ADC_Lib.X.production.o
-_ADC_Read FB6 0 CODE 0 text1 dist/default/production\ADC_Lib.X.production.o
-__end_of_ADC_Init F7A 0 CODE 0 text2 dist/default/production\ADC_Lib.X.production.o
-__end_of_ADC_Read FFA 0 CODE 0 text1 dist/default/production\ADC_Lib.X.production.o
-___stackhi 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-___stacklo 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
+_ADC_Init A20 0 CODE 0 text12 dist/default/production\ADC_Lib.X.production.o
+_ADC_Read B00 0 CODE 0 text11 dist/default/production\ADC_Lib.X.production.o
+___lwmod@divisor 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+__end_of___lwdiv CB0 0 CODE 0 text7 dist/default/production\ADC_Lib.X.production.o
+__end_of___lwmod BB4 0 CODE 0 text6 dist/default/production\ADC_Lib.X.production.o
+__end_of_ADC_Init A30 0 CODE 0 text12 dist/default/production\ADC_Lib.X.production.o
+__end_of_ADC_Read B44 0 CODE 0 text11 dist/default/production\ADC_Lib.X.production.o
+___stackhi 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+___stacklo 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+__end_of_UART_Write A58 0 CODE 0 text9 dist/default/production\ADC_Lib.X.production.o
+___lwdiv@quotient 74 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+___lwmod@dividend 72 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 ADC_Read@channel 73 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
-start_initialization FFA 0 CODE 0 cinit dist/default/production\ADC_Lib.X.production.o
+start_initialization FDE 0 CODE 0 cinit dist/default/production\ADC_Lib.X.production.o
 _OSCCON 8F 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
 _TRISAbits 85 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
-___int_sp 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
+_TRISBbits 86 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+clear_ram0 A30 0 CODE 0 clrtext dist/default/production\ADC_Lib.X.production.o
+__pcstackBANK0 20 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+__end_of_UART_Write_Text C2C 0 CODE 0 text8 dist/default/production\ADC_Lib.X.production.o
+fputc@fp 72 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+___int_sp 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
 __Hbank0 0 0 ABS 0 bank0 -
 __Hbank1 0 0 ABS 0 bank1 -
 __Hbank2 0 0 ABS 0 bank2 -
@@ -154,14 +348,17 @@ __Hbank3 0 0 ABS 0 bank3 -
 __Hcinit 1000 0 CODE 0 cinit -
 __Hidloc 4008 0 IDLOC 5 idloc -
 __Hstack 0 0 STACK 2 stack -
+__stringbase 22 0 STRING 0 strings dist/default/production\ADC_Lib.X.production.o
+___lwdiv@counter 76 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 __Hmaintext 0 0 ABS 0 maintext -
+__end_of_sprintf B00 0 CODE 0 text1 dist/default/production\ADC_Lib.X.production.o
 __Hcommon 0 0 ABS 0 common -
 __Hconfig 4012 0 CONFIG 4 config -
 __Lbank0 0 0 ABS 0 bank0 -
 __Lbank1 0 0 ABS 0 bank1 -
 __Lbank2 0 0 ABS 0 bank2 -
 __Lbank3 0 0 ABS 0 bank3 -
-__Lcinit FFA 0 CODE 0 cinit -
+__Lcinit FDE 0 CODE 0 cinit -
 __Lidloc 0 0 IDLOC 5 idloc -
 __Lstack 0 0 STACK 2 stack -
 __Habs1 0 0 ABS 0 abs1 -
@@ -184,48 +381,109 @@ __Lsfr2 0 0 ABS 0 sfr2 -
 __Lsfr3 0 0 ABS 0 sfr3 -
 __Lsivt 0 0 CODE 0 sivt -
 __Ltext 0 0 ABS 0 text -
+__LcstackBANK0 0 0 ABS 0 cstackBANK0 -
 __HcstackCOMMON 0 0 ABS 0 cstackCOMMON -
+_UART_Write_Text BB4 0 CODE 0 text8 dist/default/production\ADC_Lib.X.production.o
 __S0 800 0 ABS 0 - -
-__S1 77 0 ABS 0 - -
+__S1 C0 0 ABS 0 - -
 __S3 0 0 ABS 0 - -
 ?_ADC_Read 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+sprintf@fmt 31 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
 __Lintentry 0 0 CODE 0 intentry -
-reset_vec 0 0 CODE 0 reset_vec C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-__pmaintext F7A 0 CODE 0 maintext dist/default/production\ADC_Lib.X.production.o
+UART_Write_Text@i 76 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+__stringtab 4 0 STRING 0 strings dist/default/production\ADC_Lib.X.production.o
+reset_vec 0 0 CODE 0 reset_vec C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+__LbssBANK0 0 0 ABS 0 bssBANK0 -
+__LbssBANK1 0 0 ABS 0 bssBANK1 -
+vfpfcnvrt@fmt 22 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+__ptext10 A58 0 CODE 0 text10 dist/default/production\ADC_Lib.X.production.o
+__ptext11 B00 0 CODE 0 text11 dist/default/production\ADC_Lib.X.production.o
+__ptext12 A20 0 CODE 0 text12 dist/default/production\ADC_Lib.X.production.o
+___lwdiv C2C 0 CODE 0 text7 dist/default/production\ADC_Lib.X.production.o
+___lwmod B44 0 CODE 0 text6 dist/default/production\ADC_Lib.X.production.o
+__pmaintext CB0 0 CODE 0 maintext dist/default/production\ADC_Lib.X.production.o
+UART_Write_Text@text 71 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 __Lcommon 0 0 ABS 0 common -
 __Lconfig 0 0 CONFIG 4 config -
+___lwdiv@divisor 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 _ADCON0bits 1F 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+__end_of__stringtab 24 0 STRING 0 strings dist/default/production\ADC_Lib.X.production.o
+main@buffer 44 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
 __Lspace_0 0 0 ABS 0 - -
 __Lspace_1 0 0 ABS 0 - -
 __Lspace_2 0 0 ABS 0 - -
 __Lspace_3 0 0 ABS 0 - -
 __Lspace_4 0 0 ABS 0 - -
+__HcstackBANK0 0 0 ABS 0 cstackBANK0 -
 __Lend_init 0 0 CODE 0 end_init -
+vfpfcnvrt@convarg 26 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
 __LcstackCOMMON 0 0 ABS 0 cstackCOMMON -
 end_of_initialization FFA 0 CODE 0 cinit dist/default/production\ADC_Lib.X.production.o
 __Hintentry 0 0 CODE 0 intentry -
+fputc@c 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 __Lstrings 0 0 ABS 0 strings -
+___lwdiv@dividend 72 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+?___lwdiv 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+?___lwmod 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+vfprintf@fmt 2E 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
 __Hreset_vec 0 0 CODE 0 reset_vec -
-__ptext1 FB6 0 CODE 0 text1 dist/default/production\ADC_Lib.X.production.o
-__ptext2 F6A 0 CODE 0 text2 dist/default/production\ADC_Lib.X.production.o
+__HbssBANK0 0 0 ABS 0 bssBANK0 -
+__HbssBANK1 0 0 ABS 0 bssBANK1 -
+__end_of_UART_Init A7C 0 CODE 0 text10 dist/default/production\ADC_Lib.X.production.o
+vfpfcnvrt@ap 23 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+vfpfcnvrt@cp 2A 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+vfpfcnvrt@fp 20 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+__ptext1 ABE 0 CODE 0 text1 dist/default/production\ADC_Lib.X.production.o
+__ptext2 A7C 0 CODE 0 text2 dist/default/production\ADC_Lib.X.production.o
+__ptext3 E76 0 CODE 0 text3 dist/default/production\ADC_Lib.X.production.o
+__ptext4 D46 0 CODE 0 text4 dist/default/production\ADC_Lib.X.production.o
+__ptext5 A1E 0 CODE 0 text5 dist/default/production\ADC_Lib.X.production.o
+__ptext6 B44 0 CODE 0 text6 dist/default/production\ADC_Lib.X.production.o
+__ptext7 C2C 0 CODE 0 text7 dist/default/production\ADC_Lib.X.production.o
+__ptext8 BB4 0 CODE 0 text8 dist/default/production\ADC_Lib.X.production.o
+__ptext9 A40 0 CODE 0 text9 dist/default/production\ADC_Lib.X.production.o
+vfprintf@ap 2F 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+vfprintf@fp 2C 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+vfprintf@cfmt 7D 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
+_sprintf ABE 0 CODE 0 text1 dist/default/production\ADC_Lib.X.production.o
+_vfprintf A7C 0 CODE 0 text2 dist/default/production\ADC_Lib.X.production.o
 __Lpowerup 0 0 CODE 0 powerup -
+UART_Write@data 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 __Leeprom_data 0 0 EEDATA 3 eeprom_data -
+sprintf@ap 35 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
 __H__absolute__ 0 0 ABS 0 __absolute__ -
 __Lreset_vec 0 0 CODE 0 reset_vec -
-___heap_hi 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-___heap_lo 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
+_UART_Init A58 0 CODE 0 text10 dist/default/production\ADC_Lib.X.production.o
+__end_of_vfprintf ABE 0 CODE 0 text2 dist/default/production\ADC_Lib.X.production.o
+___heap_hi 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+___heap_lo 0 0 ABS 0 - C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
 __end_of__initialization FFA 0 CODE 0 cinit dist/default/production\ADC_Lib.X.production.o
 __Lfunctab 0 0 ENTRY 0 functab -
 __Lclrtext 0 0 ABS 0 clrtext -
 __pcstackCOMMON 70 0 COMMON 1 cstackCOMMON dist/default/production\ADC_Lib.X.production.o
 __Hend_init 4 0 CODE 0 end_init -
-__end_of_main FB6 0 CODE 0 maintext dist/default/production\ADC_Lib.X.production.o
+vfpfcnvrt@c 2B 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+sprintf@f 36 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+sprintf@s 30 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+__end_of_main D46 0 CODE 0 maintext dist/default/production\ADC_Lib.X.production.o
 _ANSEL 9B 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+__end_of_fputc E76 0 CODE 0 text4 dist/default/production\ADC_Lib.X.production.o
+?_sprintf 30 0 BANK0 1 cstackBANK0 dist/default/production\ADC_Lib.X.production.o
+_SPBRG 99 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+_TXREG 19 0 ABS 0 - dist/default/production\ADC_Lib.X.production.o
+__end_of_putch A20 0 CODE 0 text5 dist/default/production\ADC_Lib.X.production.o
 __Hram 0 0 ABS 0 ram -
 __Lram 0 0 ABS 0 ram -
-__initialization FFA 0 CODE 0 cinit dist/default/production\ADC_Lib.X.production.o
-___int_stack_hi 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
-___int_stack_lo 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driver_tmp_12.o
+_flags 5E 0 BANK0 1 bssBANK0 dist/default/production\ADC_Lib.X.production.o
+_fputc D46 0 CODE 0 text4 dist/default/production\ADC_Lib.X.production.o
+_putch A1E 0 CODE 0 text5 dist/default/production\ADC_Lib.X.production.o
+_width 5A 0 BANK0 1 bssBANK0 dist/default/production\ADC_Lib.X.production.o
+__initialization FDE 0 CODE 0 cinit dist/default/production\ADC_Lib.X.production.o
+__pbssBANK0 5A 0 BANK0 1 bssBANK0 dist/default/production\ADC_Lib.X.production.o
+__pbssBANK1 A0 0 BANK1 1 bssBANK1 dist/default/production\ADC_Lib.X.production.o
+__pstrings 4 0 STRING 0 strings dist/default/production\ADC_Lib.X.production.o
+___int_stack_hi 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
+___int_stack_lo 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAseus.\driver_tmp_17.o
 # %SPLITSTAB Section
 # This section enumerates all the psect splits performed by the assembler.
 # The beginning of the section is indicated by %SPLITSTAB.
@@ -251,12 +509,26 @@ ___int_stack_lo 0 0 STACK 2 stack C:\Users\USER\AppData\Local\Temp\xcAsaoc.\driv
 # and size are in units of delta. The file address is in units of bytes.
 # All other numeric quantities are in decimal.
 %SEGMENTS
-cinit 0 7FD FFA 3 2
-text1 0 7DB FB6 22 2
-text2 0 7B5 F6A 8 2
-maintext 0 7BD F7A 1E 2
-cstackCOMMON 1 70 70 7 1
+cinit 0 7EF FDE 11 2
+text1 0 55F ABE 21 2
+text2 0 53E A7C 21 2
+text3 0 73B E76 B4 2
+text4 0 6A3 D46 98 2
+text5 0 50F A1E 1 2
+text6 0 5A2 B44 38 2
+text7 0 616 C2C 42 2
+text8 0 5DA BB4 3C 2
+text9 0 520 A40 C 2
+text10 0 52C A58 12 2
+text11 0 580 B00 22 2
+text12 0 510 A20 8 2
+maintext 0 658 CB0 4B 2
+cstackCOMMON 1 70 70 E 1
+cstackBANK0 1 20 20 3F 1
 reset_vec 0 0 0 2 2
+bssBANK1 1 A0 A0 20 1
+strings 0 2 4 30 2
+clrtext 0 518 A30 8 2
 # %NOTES Section
 # This section contains data of all the note-psects.  The beginning of the section
 # is indicated by %NOTES. The first line indicates the name and decimal

@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>ADC_Lib.h</itemPath>
+      <itemPath>UART_Lib.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -46,6 +47,7 @@
       <compileType>
         <linkerTool>
           <linkerLibItems>
+            <linkerLibFileItem>../../Library/UART_Lib.X/dist/default/production/UART_Lib.X.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
