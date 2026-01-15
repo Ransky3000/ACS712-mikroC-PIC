@@ -11,9 +11,9 @@
 [v ___eecpymem __eecpymem `(v  1 e 1 0 ]
 "39
 [v ___memcpyee __memcpyee `(v  1 e 1 0 ]
-"26 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library\Test_Lib.X\Test_main.c
+"26 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\UART_Lib.X\Test_main.c
 [v _main main `(v  1 e 1 0 ]
-"4 UART_Lib.c
+"4 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\UART_Lib.X\UART_Lib.c
 [v _UART_Init UART_Init `(v  1 e 1 0 ]
 "27
 [v _UART_Write UART_Write `(v  1 e 1 0 ]
@@ -27,7 +27,7 @@
 [v _TXREG TXREG `VEuc  1 e 1 @25 ]
 "908
 [v _RCREG RCREG `VEuc  1 e 1 @26 ]
-[s S226 . 1 `uc 1 TRISB0 1 0 :1:0 
+[s S62 . 1 `uc 1 TRISB0 1 0 :1:0 
 `uc 1 TRISB1 1 0 :1:1 
 `uc 1 TRISB2 1 0 :1:2 
 `uc 1 TRISB3 1 0 :1:3 
@@ -37,8 +37,8 @@
 `uc 1 TRISB7 1 0 :1:7 
 ]
 "1167
-[u S235 . 1 `S226 1 . 1 0 ]
-[v _TRISBbits TRISBbits `VES235  1 e 1 @134 ]
+[u S71 . 1 `S62 1 . 1 0 ]
+[v _TRISBbits TRISBbits `VES71  1 e 1 @134 ]
 "1336
 [v _OSCCON OSCCON `VEuc  1 e 1 @143 ]
 "1729
@@ -59,14 +59,14 @@
 [v _TRMT TRMT `VEb  1 e 0 @1217 ]
 "2682
 [v _TXEN TXEN `VEb  1 e 0 @1221 ]
-"26 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library\Test_Lib.X\Test_main.c
+"26 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\UART_Lib.X\Test_main.c
 [v _main main `(v  1 e 1 0 ]
 {
 "41
 [v main@c c `uc  1 a 1 7 ]
 "48
 } 0
-"44 UART_Lib.c
+"44 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\UART_Lib.X\UART_Lib.c
 [v _UART_Write_Text UART_Write_Text `(v  1 e 1 0 ]
 {
 "45

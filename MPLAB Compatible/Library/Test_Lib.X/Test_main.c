@@ -4,7 +4,7 @@
   Oscillator: 8.00 MHz
 */
 
-// --- CONFIGURATION BITS (XC8) ---
+// --- CONFIGURATION BITS ---
 #pragma config FOSC = INTOSCIO  // Internal oscillator, port I/O
 #pragma config WDTE = OFF       // Watchdog Timer disabled
 #pragma config PWRTE = ON       // Power-up Timer enabled
@@ -19,37 +19,30 @@
 #pragma config IESO = OFF       // Internal External Switchover disabled
 
 #include <xc.h>
-#include "Timer_lib.h"
+#include "UART_Lib.h"
 
-// Example: Blinking LED without Delay_ms() (Non-blocking!)
-// XC8 Bit Addressing: LATBbits.LATB0 or PORTBbits.RB0
-#define LED_PIN      RB0
-#define LED_TRIS     TRISB0
-
-unsigned long previousMillis = 0;
-const long interval = 300; // Blink every 1000ms (1 second)
+#define _XTAL_FREQ 8000000 // Required for __delay_ms
 
 void main() {
     // 1. Hardware Setup
     OSCCON = 0x70;  // 8MHz Internal Osc
-    ANSEL = 0x00;   // Digital I/O (ANSEL=0)
+    ANSEL = 0x00;   // All Digital
 
-    LED_TRIS = 0;    // Output
-    LED_PIN = 0;
-
-    // 2. Initialize our new Library
-    Time_Init(8);
+    // 2. Init Library
+    UART_Init();
 
     // 3. Main Loop
     while(1) {
-        unsigned long currentMillis = millis();
-
-        // check if 1000ms has passed
-        if (currentMillis - previousMillis >= interval) {
-            previousMillis = currentMillis; // save the last time you blinked
-
-            // Toggle LED
-            LED_PIN = !LED_PIN; 
+        UART_Write_Text("Hello from MPLAB XC8!\r\n");
+        __delay_ms(1000);
+        
+        // Optional: Echo back if data received
+        if (UART_Data_Ready()) {
+            char c = UART_Read();
+            UART_Write_Text("Echo: ");
+            UART_Write(c);
+            UART_Write('\r');
+            UART_Write('\n');
         }
     }
 }

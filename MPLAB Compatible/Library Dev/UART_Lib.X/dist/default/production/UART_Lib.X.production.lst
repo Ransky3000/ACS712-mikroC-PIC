@@ -1,7 +1,7 @@
 
 
 Microchip MPLAB XC8 Assembler V3.00 build 20241204225717 
-                                                                                               Fri Jan 16 00:50:40 2026
+                                                                                               Fri Jan 16 00:35:53 2026
 
 Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1 
      1                           	processor	16F88
@@ -11,11 +11,11 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
      5                           	psect	cinit,global,class=CODE,space=0,merge=1,delta=2
      6                           	psect	cstackCOMMON,global,class=COMMON,space=1,delta=1,noexec
      7                           	psect	maintext,global,class=CODE,space=0,split=1,delta=2
-     8                           	psect	text1,local,class=CODE,space=0,merge=1,delta=2,group=1
-     9                           	psect	text2,local,class=CODE,space=0,merge=1,delta=2,group=1
-    10                           	psect	text3,local,class=CODE,space=0,merge=1,delta=2,group=1
-    11                           	psect	text4,local,class=CODE,space=0,merge=1,delta=2,group=1
-    12                           	psect	text5,local,class=CODE,space=0,merge=1,delta=2,group=1
+     8                           	psect	text1,local,class=CODE,space=0,merge=1,delta=2
+     9                           	psect	text2,local,class=CODE,space=0,merge=1,delta=2
+    10                           	psect	text3,local,class=CODE,space=0,merge=1,delta=2
+    11                           	psect	text4,local,class=CODE,space=0,merge=1,delta=2
+    12                           	psect	text5,local,class=CODE,space=0,merge=1,delta=2
     13                           	psect	idloc,global,abs,ovrld,class=IDLOC,space=5,delta=2,noexec
     14                           	psect	config,global,abs,ovrld,class=CONFIG,space=4,delta=2,noexec
     15                           	dabs	1,0x7E,2
@@ -559,7 +559,7 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    545     07C1                     u51:
    546     07C1  2FA8               	goto	l663
    547     07C2                     u50:
-   548     07C2                     l153:
+   548     07C2                     l71:
    549     07C2  0008               	return
    550     07C3                     __end_of_UART_Write_Text:
    551                           
@@ -604,7 +604,7 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    590                           ;UART_Write@data stored from wreg
    591     0787  00F0               	movwf	UART_Write@data
    592     0788                     l615:
-   593     0788                     l135:	
+   593     0788                     l53:	
    594                           ;UART_Lib.c: 29:     while(!TRMT);
    595                           
    596     0788  1683               	bsf	3,5	;RP0=1, select bank1
@@ -613,7 +613,7 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    599     078B  2F8D               	goto	u11
    600     078C  2F8E               	goto	u10
    601     078D                     u11:
-   602     078D  2F88               	goto	l135
+   602     078D  2F88               	goto	l53
    603     078E                     u10:
    604     078E                     l617:
    605                           
@@ -622,7 +622,7 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    608     078F  1283               	bcf	3,5	;RP0=0, select bank0
    609     0790  1303               	bcf	3,6	;RP1=0, select bank0
    610     0791  0099               	movwf	25	;volatile
-   611     0792                     l138:
+   611     0792                     l56:
    612     0792  0008               	return
    613     0793                     __end_of_UART_Write:
    614                           
@@ -664,7 +664,7 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    650                           ;incstack = 0
    651                           ; Regs used in _UART_Read: [wreg]
    652                           
-   653     077F                     l144:	
+   653     077F                     l62:	
    654                           ;UART_Lib.c: 40:     while(!RCIF);
    655                           
    656     077F  1283               	bcf	3,5	;RP0=0, select bank0
@@ -673,13 +673,13 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    659     0782  2F84               	goto	u31
    660     0783  2F85               	goto	u30
    661     0784                     u31:
-   662     0784  2F7F               	goto	l144
+   662     0784  2F7F               	goto	l62
    663     0785                     u30:
    664     0785                     l635:
    665                           
    666                           ;UART_Lib.c: 41:     return RCREG;
    667     0785  081A               	movf	26,w	;volatile
-   668     0786                     l147:
+   668     0786                     l65:
    669     0786  0008               	return
    670     0787                     __end_of_UART_Read:
    671                           
@@ -754,7 +754,7 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    740     07A1  1283               	bcf	3,5	;RP0=0, select bank0
    741     07A2  1303               	bcf	3,6	;RP1=0, select bank0
    742     07A3  1618               	bsf	24,4	;volatile
-   743     07A4                     l132:
+   743     07A4                     l50:
    744     07A4  0008               	return
    745     07A5                     __end_of_UART_Init:
    746                           
@@ -803,7 +803,7 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
    789     077B  1303               	bcf	3,6	;RP1=0, select bank0
    790     077C  1A8C               	btfsc	12,5	;volatile
    791     077D  3001               	movlw	1
-   792     077E                     l141:
+   792     077E                     l59:
    793     077E  0008               	return
    794     077F                     __end_of_UART_Data_Ready:
    795     0001                     ___latbits      equ	1
@@ -968,14 +968,14 @@ DATA                 0      0       8      0.0%
 
 
 Microchip Technology PIC Macro Assembler V3.00 build 20241204225717 
-Symbol Table                                                                                   Fri Jan 16 00:50:40 2026
+Symbol Table                                                                                   Fri Jan 16 00:35:53 2026
 
-                      pc 0002                       u10 078E                       u11 078D  
-                     u30 0785                       u31 0784                       u50 07C2  
-                     u51 07C1                       u60 07E5                       u61 07E4  
-                     u77 07D6                       fsr 0004                      l132 07A4  
-                    l141 077E                      l135 0788                      l144 077F  
-                    l153 07C2                      l138 0792                      l147 0786  
+                      pc 0002                       l50 07A4                       l53 0788  
+                     l62 077F                       l71 07C2                       l56 0792  
+                     l65 0786                       l59 077E                       u10 078E  
+                     u11 078D                       u30 0785                       u31 0784  
+                     u50 07C2                       u51 07C1                       u60 07E5  
+                     u61 07E4                       u77 07D6                       fsr 0004  
                     l615 0788                      l633 077F                      l617 078E  
                     l619 0793                      l635 0785                      l629 0779  
                     l661 07A5                      l663 07A8                      l671 07C7  

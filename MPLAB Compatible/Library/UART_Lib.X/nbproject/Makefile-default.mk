@@ -28,14 +28,14 @@ CP=cp
 CND_CONF=default
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 IMAGE_TYPE=debug
-OUTPUT_SUFFIX=elf
-DEBUGGABLE_SUFFIX=elf
-FINAL_IMAGE=${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_SUFFIX=a
+DEBUGGABLE_SUFFIX=a
+FINAL_IMAGE=${DISTDIR}/UART_Lib.X.${OUTPUT_SUFFIX}
 else
 IMAGE_TYPE=production
-OUTPUT_SUFFIX=hex
-DEBUGGABLE_SUFFIX=elf
-FINAL_IMAGE=${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_SUFFIX=a
+DEBUGGABLE_SUFFIX=a
+FINAL_IMAGE=${DISTDIR}/UART_Lib.X.${OUTPUT_SUFFIX}
 endif
 
 ifeq ($(COMPARE_BUILD), true)
@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=Test_main.c UART_Lib.c
+SOURCEFILES_QUOTED_IF_SPACED=UART_Lib.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/Test_main.p1 ${OBJECTDIR}/UART_Lib.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/Test_main.p1.d ${OBJECTDIR}/UART_Lib.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/UART_Lib.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/UART_Lib.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/Test_main.p1 ${OBJECTDIR}/UART_Lib.p1
+OBJECTFILES=${OBJECTDIR}/UART_Lib.p1
 
 # Source Files
-SOURCEFILES=Test_main.c UART_Lib.c
+SOURCEFILES=UART_Lib.c
 
 
 
@@ -88,20 +88,12 @@ FIXDEPS=fixDeps
 ifneq ($(INFORMATION_MESSAGE), )
 	@echo $(INFORMATION_MESSAGE)
 endif
-	${MAKE}  -f nbproject/Makefile-default.mk ${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+	${MAKE}  -f nbproject/Makefile-default.mk ${DISTDIR}/UART_Lib.X.${OUTPUT_SUFFIX}
 
 MP_PROCESSOR_OPTION=16F88
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/Test_main.p1: Test_main.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/Test_main.p1.d 
-	@${RM} ${OBJECTDIR}/Test_main.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto     -o ${OBJECTDIR}/Test_main.p1 Test_main.c 
-	@-${MV} ${OBJECTDIR}/Test_main.d ${OBJECTDIR}/Test_main.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/Test_main.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
 ${OBJECTDIR}/UART_Lib.p1: UART_Lib.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/UART_Lib.p1.d 
@@ -111,14 +103,6 @@ ${OBJECTDIR}/UART_Lib.p1: UART_Lib.c  nbproject/Makefile-${CND_CONF}.mk
 	@${FIXDEPS} ${OBJECTDIR}/UART_Lib.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 else
-${OBJECTDIR}/Test_main.p1: Test_main.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/Test_main.p1.d 
-	@${RM} ${OBJECTDIR}/Test_main.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto     -o ${OBJECTDIR}/Test_main.p1 Test_main.c 
-	@-${MV} ${OBJECTDIR}/Test_main.d ${OBJECTDIR}/Test_main.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/Test_main.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
 ${OBJECTDIR}/UART_Lib.p1: UART_Lib.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/UART_Lib.p1.d 
@@ -142,17 +126,17 @@ else
 endif
 
 # ------------------------------------------------------------------------------------
-# Rules for buildStep: link
+# Rules for buildStep: archive
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
+${DISTDIR}/UART_Lib.X.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} ${DISTDIR} 
-	${MP_CC} $(MP_EXTRA_LD_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -Wl,-Map=${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.map  -D__DEBUG=1  -mdebugger=none  -DXPRJ_default=$(CND_CONF)  -Wl,--defsym=__MPLAB_BUILD=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall -mdefault-config-bits -std=c99 -gdwarf-3 -mstack=compiled:auto:auto        $(COMPARISON_BUILD) -Wl,--memorysummary,${DISTDIR}/memoryfile.xml -o ${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
-	@${RM} ${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.hex 
+	${MP_AR} $(MP_EXTRA_AR_PRE) --target $(MP_PROCESSOR_OPTION) -mdebugger=none     r  ${DISTDIR}/UART_Lib.X.a  ${OBJECTFILES_QUOTED_IF_SPACED}     
+	@${RM} ${DISTDIR}/UART_Lib.X.hex 
 	
 else
-${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
+${DISTDIR}/UART_Lib.X.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} ${DISTDIR} 
-	${MP_CC} $(MP_EXTRA_LD_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -Wl,-Map=${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.map  -DXPRJ_default=$(CND_CONF)  -Wl,--defsym=__MPLAB_BUILD=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall -mdefault-config-bits -std=c99 -gdwarf-3 -mstack=compiled:auto:auto     $(COMPARISON_BUILD) -Wl,--memorysummary,${DISTDIR}/memoryfile.xml -o ${DISTDIR}/UART_Lib.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
+	${MP_AR} $(MP_EXTRA_AR_PRE) --target $(MP_PROCESSOR_OPTION)  r  ${DISTDIR}/UART_Lib.X.a  ${OBJECTFILES_QUOTED_IF_SPACED}     
 	
 endif
 

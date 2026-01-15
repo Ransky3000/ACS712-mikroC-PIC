@@ -4,7 +4,7 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>UART_Lib</name>
-            <creation-uuid>92e75524-74f3-4ae3-a1b8-ada9846252b8</creation-uuid>
+            <creation-uuid>7756fdc8-b713-46d3-b6d1-3b4ead02f16f</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
             <cpp-extensions/>
@@ -18,7 +18,7 @@
             <confList>
                 <confElem>
                     <name>default</name>
-                    <type>2</type>
+                    <type>3</type>
                 </confElem>
             </confList>
             <formatting>

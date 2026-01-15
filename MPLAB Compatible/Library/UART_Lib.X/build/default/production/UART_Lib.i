@@ -1,4 +1,4 @@
-# 1 "Test_main.c"
+# 1 "UART_Lib.c"
 # 1 "<built-in>" 1
 # 1 "<built-in>" 3
 # 285 "<built-in>" 3
@@ -6,26 +6,12 @@
 # 1 "<built-in>" 2
 # 1 "C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\\pic\\include/language_support.h" 1 3
 # 2 "<built-in>" 2
-# 1 "Test_main.c" 2
+# 1 "UART_Lib.c" 2
+
+# 1 "./UART_Lib.h" 1
 
 
 
-
-
-
-
-#pragma config FOSC = INTOSCIO
-#pragma config WDTE = OFF
-#pragma config PWRTE = ON
-#pragma config MCLRE = ON
-#pragma config BOREN = OFF
-#pragma config LVP = OFF
-#pragma config CPD = OFF
-#pragma config WRT = OFF
-#pragma config CCPMX = RB0
-#pragma config CP = OFF
-#pragma config FCMEN = OFF
-#pragma config IESO = OFF
 
 # 1 "C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\\pic\\include/xc.h" 1 3
 # 18 "C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\\pic\\include/xc.h" 3
@@ -1729,13 +1715,7 @@ extern __bank0 unsigned char __resetbits;
 extern __bank0 __bit __powerdown;
 extern __bank0 __bit __timeout;
 # 29 "C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\\pic\\include/xc.h" 2 3
-# 22 "Test_main.c" 2
-# 1 "./UART_Lib.h" 1
-
-
-
-
-
+# 6 "./UART_Lib.h" 2
 
 
 
@@ -1752,30 +1732,51 @@ char UART_Read();
 
 
 void UART_Write_Text(char *text);
-# 23 "Test_main.c" 2
+# 3 "UART_Lib.c" 2
+
+void UART_Init() {
 
 
 
-void main() {
-
-    OSCCON = 0x70;
-    ANSEL = 0x00;
 
 
-    UART_Init();
+    BRGH = 1;
+    SPBRG = 51;
 
 
-    while(1) {
-        UART_Write_Text("Hello from MPLAB XC8!\r\n");
-        _delay((unsigned long)((1000)*(8000000/4000.0)));
+
+    TRISBbits.TRISB2 = 1;
+    TRISBbits.TRISB5 = 0;
 
 
-        if (UART_Data_Ready()) {
-            char c = UART_Read();
-            UART_Write_Text("Echo: ");
-            UART_Write(c);
-            UART_Write('\r');
-            UART_Write('\n');
-        }
+    SYNC = 0;
+    SPEN = 1;
+
+
+    TXEN = 1;
+    CREN = 1;
+}
+
+void UART_Write(char data) {
+
+    while(!TRMT);
+    TXREG = data;
+}
+
+unsigned char UART_Data_Ready() {
+
+    return RCIF;
+}
+
+char UART_Read() {
+
+    while(!RCIF);
+    return RCREG;
+}
+
+void UART_Write_Text(char *text) {
+    int i;
+    for(i = 0; text[i] != '\0'; i++) {
+        UART_Write(text[i]);
     }
 }
