@@ -19,6 +19,8 @@
 #pragma config IESO = OFF       // Internal External Switchover disabled
 
 #include <xc.h>
+#include <stdio.h> // Success: Required for sprintf
+#include "ADC_Lib.h"
 #include "UART_Lib.h"
 
 #define _XTAL_FREQ 8000000 // Required for __delay_ms
@@ -26,23 +28,32 @@
 void main() {
     // 1. Hardware Setup
     OSCCON = 0x70;  // 8MHz Internal Osc
-    ANSEL = 0x00;   // All Digital
+    
+    // ANSEL: Configure AN0 (RA0) as Analog Input
+    // Set Bit 0 to 1. All others Digital (0).
+    ANSEL = 0b00000001; 
+    
+    TRISAbits.TRISA0 = 1; // RA0 is Input
 
     // 2. Init Library
     UART_Init();
+    ADC_Init();
+    
+    UART_Write_Text("ADC Test Started...\r\n");
 
     // 3. Main Loop
     while(1) {
-        UART_Write_Text("Hello from MPLAB XC8!\r\n");
-        __delay_ms(1000);
+        unsigned int val;
+        char buffer[20]; // Buffer to hold text
         
-        // Optional: Echo back if data received
-        if (UART_Data_Ready()) {
-            char c = UART_Read();
-            UART_Write_Text("Echo: ");
-            UART_Write(c);
-            UART_Write('\r');
-            UART_Write('\n');
-        }
+        // Read Analog Value from Channel 0 (AN0)
+        val = ADC_Read(0);
+        
+        // Format: "ADC: 512"
+        sprintf(buffer, "ADC: %u\r\n", val);
+        
+        UART_Write_Text(buffer);
+        
+        __delay_ms(500);
     }
 }

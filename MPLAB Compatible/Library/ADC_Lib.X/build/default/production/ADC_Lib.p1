@@ -1,65 +1,43 @@
 Version 4.0 HI-TECH Software Intermediate Code
-[p mainexit ]
-"1336 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h
-[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 1336: extern volatile unsigned char OSCCON __attribute__((address(0x08F)));
-[v _OSCCON `Vuc ~T0 @X0 0 e@143 ]
-"1736
-[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 1736: extern volatile unsigned char ANSEL __attribute__((address(0x09B)));
-[v _ANSEL `Vuc ~T0 @X0 0 e@155 ]
-"1094
-[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 1094:     struct {
-[s S48 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
-[n S48 . TRISA0 TRISA1 TRISA2 TRISA3 TRISA4 TRISA5 TRISA6 TRISA7 ]
-"1093
-[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 1093: typedef union {
-[u S47 `S48 1 ]
-[n S47 . . ]
-"1105
-[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 1105: extern volatile TRISAbits_t TRISAbits __attribute__((address(0x085)));
-[v _TRISAbits `VS47 ~T0 @X0 0 e@133 ]
-"9 ./UART_Lib.h
-[; ;./UART_Lib.h: 9: void UART_Init();
-[v _UART_Init `(v ~T0 @X0 0 e? ]
-"9 ./ADC_Lib.h
-[; ;./ADC_Lib.h: 9: void ADC_Init();
-[v _ADC_Init `(v ~T0 @X0 0 e? ]
-"21 ./UART_Lib.h
-[; ;./UART_Lib.h: 21: void UART_Write_Text(char *text);
-[v _UART_Write_Text `(v ~T0 @X0 0 ef1`*uc ]
-"14 ./ADC_Lib.h
-[; ;./ADC_Lib.h: 14: unsigned int ADC_Read(unsigned char channel);
-[v _ADC_Read `(ui ~T0 @X0 0 ef1`uc ]
-"121 C:\Program Files\Microchip\xc8\v3.00\pic\include\c99/stdio.h
-[; ;C:\Program Files\Microchip\xc8\v3.00\pic\include\c99/stdio.h: 121: int sprintf(char *restrict, const char *restrict, ...);
-[v _sprintf `(i ~T0 @X0 0 e1v`*uc`*Cuc ]
+"1934 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 1934: extern volatile unsigned char ADCON1 __attribute__((address(0x09F)));
+[v _ADCON1 `Vuc ~T0 @X0 0 e@159 ]
+"928
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 928:     struct {
+[s S40 :1 `uc 1 :1 `uc 1 :1 `uc 1 :3 `uc 1 :2 `uc 1 ]
+[n S40 . ADON . GO_nDONE CHS ADCS ]
+"935
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 935:     struct {
+[s S41 :2 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S41 . . GO CHS0 CHS1 CHS2 ADCS0 ADCS1 ]
+"944
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 944:     struct {
+[s S42 :2 `uc 1 :1 `uc 1 ]
+[n S42 . . nDONE ]
+"948
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 948:     struct {
+[s S43 :2 `uc 1 :1 `uc 1 ]
+[n S43 . . GO_DONE ]
+"927
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 927: typedef union {
+[u S39 `S40 1 `S41 1 `S42 1 `S43 1 ]
+[n S39 . . . . . ]
+"953
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 953: extern volatile ADCON0bits_t ADCON0bits __attribute__((address(0x01F)));
+[v _ADCON0bits `VS39 ~T0 @X0 0 e@31 ]
+"922
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 922: extern volatile unsigned char ADCON0 __attribute__((address(0x01F)));
+[v _ADCON0 `Vuc ~T0 @X0 0 e@31 ]
 [v F164 `(v ~T0 @X0 1 tf1`ul ]
 "12 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include/builtins.h
 [v __delay `JF164 ~T0 @X0 0 e ]
 [p i __delay ]
-"8 Test_main.c
-[p x FOSC  =  INTOSCIO   ]
-"9
-[p x WDTE  =  OFF        ]
-"10
-[p x PWRTE  =  ON        ]
-"11
-[p x MCLRE  =  ON        ]
-"12
-[p x BOREN  =  OFF       ]
-"13
-[p x LVP  =  OFF         ]
-"14
-[p x CPD  =  OFF         ]
-"15
-[p x WRT  =  OFF         ]
-"16
-[p x CCPMX  =  RB0       ]
-"17
-[p x CP  =  OFF          ]
-"18
-[p x FCMEN  =  OFF       ]
-"19
-[p x IESO  =  OFF        ]
+"915 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 915: extern volatile unsigned char ADRESH __attribute__((address(0x01E)));
+[v _ADRESH `Vuc ~T0 @X0 0 e@30 ]
+"1927
+[; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 1927: extern volatile unsigned char ADRESL __attribute__((address(0x09E)));
+[v _ADRESL `Vuc ~T0 @X0 0 e@158 ]
 "55 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h
 [; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 55: __asm("INDF equ 00h");
 [; <" INDF equ 00h ;# ">
@@ -219,63 +197,53 @@ Version 4.0 HI-TECH Software Intermediate Code
 "2121
 [; ;C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h: 2121: __asm("EECON2 equ 018Dh");
 [; <" EECON2 equ 018Dh ;# ">
-[v $root$_main `(v ~T0 @X0 0 e ]
-"28 Test_main.c
-[; ;Test_main.c: 28: void main() {
-[v _main `(v ~T0 @X0 1 ef ]
+"9 ADC_Lib.c
+[; ;ADC_Lib.c: 9: void ADC_Init() {
+[v _ADC_Init `(v ~T0 @X0 1 ef ]
 {
-[e :U _main ]
+[e :U _ADC_Init ]
 [f ]
-"30
-[; ;Test_main.c: 30:     OSCCON = 0x70;
-[e = _OSCCON -> -> 112 `i `uc ]
-"34
-[; ;Test_main.c: 34:     ANSEL = 0b00000001;
-[e = _ANSEL -> -> 1 `i `uc ]
-"36
-[; ;Test_main.c: 36:     TRISAbits.TRISA0 = 1;
-[e = . . _TRISAbits 0 0 -> -> 1 `i `uc ]
-"39
-[; ;Test_main.c: 39:     UART_Init();
-[e ( _UART_Init ..  ]
-"40
-[; ;Test_main.c: 40:     ADC_Init();
-[e ( _ADC_Init ..  ]
-"42
-[; ;Test_main.c: 42:     UART_Write_Text("ADC Test Started...\r\n");
-[e ( _UART_Write_Text (1 :s 1C ]
-"45
-[; ;Test_main.c: 45:     while(1) {
-[e :U 96 ]
+"14
+[; ;ADC_Lib.c: 14:     ADCON1 = 0b11000000;
+[e = _ADCON1 -> -> 192 `i `uc ]
+"21
+[; ;ADC_Lib.c: 21:     ADCON0bits.ADON = 1;
+[e = . . _ADCON0bits 0 0 -> -> 1 `i `uc ]
+"22
+[; ;ADC_Lib.c: 22: }
+[e :UE 92 ]
+}
+"24
+[; ;ADC_Lib.c: 24: unsigned int ADC_Read(unsigned char channel) {
+[v _ADC_Read `(ui ~T0 @X0 1 ef1`uc ]
 {
-"46
-[; ;Test_main.c: 46:         unsigned int val;
-[v _val `ui ~T0 @X0 1 a ]
-"47
-[; ;Test_main.c: 47:         char buffer[20];
-[v _buffer `uc ~T0 @X0 -> 20 `i a ]
-"50
-[; ;Test_main.c: 50:         val = ADC_Read(0);
-[e = _val ( _ADC_Read (1 -> -> 0 `i `uc ]
-"53
-[; ;Test_main.c: 53:         sprintf(buffer, "ADC: %u\r\n", val);
-[e ( _sprintf (1 , (. , &U _buffer :s 2C _val ]
-"55
-[; ;Test_main.c: 55:         UART_Write_Text(buffer);
-[e ( _UART_Write_Text (1 &U _buffer ]
-"57
-[; ;Test_main.c: 57:         _delay((unsigned long)((500)*(8000000/4000.0)));
-[e ( __delay (1 -> * -> -> 500 `i `d / -> -> 8000000 `l `d .4000.0 `ul ]
-"58
-[; ;Test_main.c: 58:     }
-}
+[e :U _ADC_Read ]
+[v _channel `uc ~T0 @X0 1 r1 ]
+[f ]
+"28
+[; ;ADC_Lib.c: 28:     ADCON0 &= 0b11000111;
+[e =& _ADCON0 -> -> 199 `i `Vuc ]
+"29
+[; ;ADC_Lib.c: 29:     ADCON0 |= (channel << 3);
+[e =| _ADCON0 -> << -> _channel `i -> 3 `i `Vuc ]
+"34
+[; ;ADC_Lib.c: 34:     _delay((unsigned long)((20)*(8000000/4000000.0)));
+[e ( __delay (1 -> * -> -> 20 `i `d / -> -> 8000000 `l `d .4000000.0 `ul ]
+"37
+[; ;ADC_Lib.c: 37:     ADCON0bits.GO_nDONE = 1;
+[e = . . _ADCON0bits 0 2 -> -> 1 `i `uc ]
+"40
+[; ;ADC_Lib.c: 40:     while (ADCON0bits.GO_nDONE);
+[e $U 94  ]
 [e :U 95 ]
-[e $U 96  ]
-[e :U 97 ]
-"59
-[; ;Test_main.c: 59: }
-[e :UE 94 ]
+[e :U 94 ]
+[e $ != -> . . _ADCON0bits 0 2 `i -> 0 `i 95  ]
+[e :U 96 ]
+"44
+[; ;ADC_Lib.c: 44:     return ((unsigned int)ADRESH << 8) + ADRESL;
+[e ) + << -> _ADRESH `ui -> 8 `i -> _ADRESL `ui ]
+[e $UE 93  ]
+"45
+[; ;ADC_Lib.c: 45: }
+[e :UE 93 ]
 }
-[p f _sprintf 8389632 ]
-[a 2C 65 68 67 58 32 37 117 13 10 0 ]
-[a 1C 65 68 67 32 84 101 115 116 32 83 116 97 114 116 101 100 46 46 46 13 10 0 ]
