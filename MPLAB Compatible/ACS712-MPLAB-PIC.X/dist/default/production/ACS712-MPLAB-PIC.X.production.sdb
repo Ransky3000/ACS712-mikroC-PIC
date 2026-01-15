@@ -23,6 +23,10 @@
 [v ___awdiv __awdiv `(i  1 e 2 0 ]
 "5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\awmod.c
 [v ___awmod __awmod `(i  1 e 2 0 ]
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
 "10 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\sprcadd.c
 [v ___fladd __fladd `(d  1 e 4 0 ]
 "15 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\Umul32.c
@@ -43,6 +47,8 @@
 [v _Time_Init Time_Init `(v  1 e 1 0 ]
 "40
 [v _micros micros `(ul  1 e 4 0 ]
+"59
+[v _millis millis `(ul  1 e 4 0 ]
 "4 UART_Lib.c
 [v _UART_Init UART_Init `(v  1 e 1 0 ]
 "27
@@ -57,14 +63,14 @@
 [v _ADRESH ADRESH `VEuc  1 e 1 @30 ]
 "922
 [v _ADCON0 ADCON0 `VEuc  1 e 1 @31 ]
-[s S414 . 1 `uc 1 ADON 1 0 :1:0 
+[s S430 . 1 `uc 1 ADON 1 0 :1:0 
 `uc 1 . 1 0 :1:1 
 `uc 1 GO_nDONE 1 0 :1:2 
 `uc 1 CHS 1 0 :3:3 
 `uc 1 ADCS 1 0 :2:6 
 ]
 "953
-[s S420 . 1 `uc 1 . 1 0 :2:0 
+[s S436 . 1 `uc 1 . 1 0 :2:0 
 `uc 1 GO 1 0 :1:2 
 `uc 1 CHS0 1 0 :1:3 
 `uc 1 CHS1 1 0 :1:4 
@@ -72,14 +78,14 @@
 `uc 1 ADCS0 1 0 :1:6 
 `uc 1 ADCS1 1 0 :1:7 
 ]
-[s S428 . 1 `uc 1 . 1 0 :2:0 
+[s S444 . 1 `uc 1 . 1 0 :2:0 
 `uc 1 nDONE 1 0 :1:2 
 ]
-[s S431 . 1 `uc 1 . 1 0 :2:0 
+[s S447 . 1 `uc 1 . 1 0 :2:0 
 `uc 1 GO_DONE 1 0 :1:2 
 ]
-[u S434 . 1 `S414 1 . 1 0 `S420 1 . 1 0 `S428 1 . 1 0 `S431 1 . 1 0 ]
-[v _ADCON0bits ADCON0bits `VES434  1 e 1 @31 ]
+[u S450 . 1 `S430 1 . 1 0 `S436 1 . 1 0 `S444 1 . 1 0 `S447 1 . 1 0 ]
+[v _ADCON0bits ADCON0bits `VES450  1 e 1 @31 ]
 "1018
 [v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
 [s S95 . 1 `uc 1 TRISA0 1 0 :1:0 
@@ -94,7 +100,7 @@
 "1105
 [u S104 . 1 `S95 1 . 1 0 ]
 [v _TRISAbits TRISAbits `VES104  1 e 1 @133 ]
-[s S367 . 1 `uc 1 TRISB0 1 0 :1:0 
+[s S384 . 1 `uc 1 TRISB0 1 0 :1:0 
 `uc 1 TRISB1 1 0 :1:1 
 `uc 1 TRISB2 1 0 :1:2 
 `uc 1 TRISB3 1 0 :1:3 
@@ -104,8 +110,8 @@
 `uc 1 TRISB7 1 0 :1:7 
 ]
 "1167
-[u S376 . 1 `S367 1 . 1 0 ]
-[v _TRISBbits TRISBbits `VES376  1 e 1 @134 ]
+[u S393 . 1 `S384 1 . 1 0 ]
+[v _TRISBbits TRISBbits `VES393  1 e 1 @134 ]
 "1336
 [v _OSCCON OSCCON `VEuc  1 e 1 @143 ]
 "1729
@@ -144,11 +150,50 @@
 "64 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\Test_AC.c
 [v _main main `(v  1 e 1 0 ]
 {
+"113
+[v main@buffer buffer `[10]uc  1 a 10 50 ]
 "85
-[v main@buffer buffer `[12]uc  1 a 12 48 ]
-"84
-[v main@ma_val ma_val `ui  1 a 2 60 ]
+[v main@currentMillis currentMillis `ul  1 a 4 70 ]
+"95
+[v main@sum_ma sum_ma `ul  1 a 4 66 ]
+"96
+[v main@ma_val ma_val `ui  1 a 2 78 ]
+"112
+[v main@amps_frac amps_frac `ui  1 a 2 76 ]
 "97
+[v main@i i `i  1 a 2 74 ]
+"111
+[v main@amps_whole amps_whole `ui  1 a 2 60 ]
+"81
+[v main@previousMillis previousMillis `ul  1 a 4 62 ]
+"134
+} 0
+"59 Timer_lib.c
+[v _millis millis `(ul  1 e 4 0 ]
+{
+"61
+} 0
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+{
+"10
+[v ___lwmod@counter counter `uc  1 a 1 6 ]
+"5
+[v ___lwmod@divisor divisor `ui  1 p 2 2 ]
+[v ___lwmod@dividend dividend `ui  1 p 2 4 ]
+"25
+} 0
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\lwdiv.c
+[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
+{
+"10
+[v ___lwdiv@quotient quotient `ui  1 a 2 7 ]
+"11
+[v ___lwdiv@counter counter `uc  1 a 1 6 ]
+"5
+[v ___lwdiv@divisor divisor `ui  1 p 2 2 ]
+[v ___lwdiv@dividend dividend `ui  1 p 2 4 ]
+"30
 } 0
 "44 UART_Lib.c
 [v _UART_Write_Text UART_Write_Text `(v  1 e 1 0 ]
@@ -248,8 +293,8 @@
 [v ACS712_ReadAC@start_time start_time `ul  1 a 4 0 ]
 [s S22 . 9 `uc 1 adc_channel 1 0 `ui 1 voltage_reference_mv 2 1 `i 1 adc_resolution 2 3 `ui 1 zero_point 2 5 `ui 1 sensitivity_mV_A 2 7 ]
 "39
-[v ACS712_ReadAC@sensor sensor `*.39S22  1 p 2 34 ]
-[v ACS712_ReadAC@frequency frequency `uc  1 p 1 36 ]
+[v ACS712_ReadAC@sensor sensor `*.39S22  1 p 2 35 ]
+[v ACS712_ReadAC@frequency frequency `uc  1 p 1 37 ]
 "84
 } 0
 "40 Timer_lib.c
@@ -265,11 +310,11 @@
 [v _isqrt isqrt `(ul  1 e 4 0 ]
 {
 "8
-[v isqrt@x x `ul  1 a 4 30 ]
+[v isqrt@x x `ul  1 a 4 31 ]
 "9
-[v isqrt@y y `ul  1 a 4 26 ]
+[v isqrt@y y `ul  1 a 4 27 ]
 "7
-[v isqrt@n n `ul  1 p 4 18 ]
+[v isqrt@n n `ul  1 p 4 19 ]
 "15
 } 0
 "15 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\Umul32.c
@@ -309,24 +354,24 @@
 [v _ACS712_Calibrate ACS712_Calibrate `(v  1 e 1 0 ]
 {
 "32
-[v ACS712_Calibrate@accumulator accumulator `ul  1 a 4 24 ]
+[v ACS712_Calibrate@accumulator accumulator `ul  1 a 4 25 ]
 "31
-[v ACS712_Calibrate@i i `i  1 a 2 28 ]
+[v ACS712_Calibrate@i i `i  1 a 2 29 ]
 [s S22 . 9 `uc 1 adc_channel 1 0 `ui 1 voltage_reference_mv 2 1 `i 1 adc_resolution 2 3 `ui 1 zero_point 2 5 `ui 1 sensitivity_mV_A 2 7 ]
 "30
-[v ACS712_Calibrate@sensor sensor `*.39S22  1 p 2 18 ]
+[v ACS712_Calibrate@sensor sensor `*.39S22  1 p 2 19 ]
 "37
 } 0
 "5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\__lldiv.c
 [v ___lldiv __lldiv `(ul  1 e 4 0 ]
 {
 "10
-[v ___lldiv@quotient quotient `ul  1 a 4 13 ]
+[v ___lldiv@quotient quotient `ul  1 a 4 14 ]
 "11
-[v ___lldiv@counter counter `uc  1 a 1 17 ]
+[v ___lldiv@counter counter `uc  1 a 1 18 ]
 "5
-[v ___lldiv@divisor divisor `ul  1 p 4 4 ]
-[v ___lldiv@dividend dividend `ul  1 p 4 8 ]
+[v ___lldiv@divisor divisor `ul  1 p 4 5 ]
+[v ___lldiv@dividend dividend `ul  1 p 4 9 ]
 "30
 } 0
 "24 ADC_Lib.c

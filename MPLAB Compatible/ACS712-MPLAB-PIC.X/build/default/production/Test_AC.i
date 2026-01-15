@@ -1846,20 +1846,57 @@ void main() {
 
     UART_Write_Text("Calibrating...\r\n");
     ACS712_Calibrate(&mySensor);
-    UART_Write_Text("Ready.\r\n");
+    unsigned long previousMillis = 0;
+    const unsigned long calibrationInterval = 10000;
 
     while(1) {
+        unsigned long currentMillis = millis();
+
+
+        if (currentMillis - previousMillis >= calibrationInterval) {
+            previousMillis = currentMillis;
+            UART_Write_Text("Recalibrating...\r\n");
+            ACS712_Calibrate(&mySensor);
+            UART_Write_Text("Done.\r\n");
+        }
+
+        unsigned long sum_ma = 0;
         unsigned int ma_val;
-        char buffer[12];
+        int i;
 
 
-        ma_val = ACS712_ReadAC(&mySensor, 60);
+        for(i=0; i<20; i++) {
+            sum_ma += ACS712_ReadAC(&mySensor, 60);
+        }
+
+        ma_val = (unsigned int)(sum_ma / 20);
+
+
+        if (ma_val < 80) ma_val = 0;
+
+
+
+        unsigned int amps_whole = ma_val / 1000;
+        unsigned int amps_frac = ma_val % 1000;
+        char buffer[10];
 
         UART_Write_Text("Current: ");
-        IntToText(buffer, ma_val);
-        UART_Write_Text(buffer);
-        UART_Write_Text(" mA\r\n");
 
-        _delay((unsigned long)((500)*(8000000/4000.0)));
+
+        IntToText(buffer, amps_whole);
+        UART_Write_Text(buffer);
+
+        UART_Write('.');
+
+
+        if (amps_frac < 100) UART_Write('0');
+        if (amps_frac < 10) UART_Write('0');
+
+        IntToText(buffer, amps_frac);
+        UART_Write_Text(buffer);
+
+        UART_Write_Text(" A\r\n");
+
+        _delay((unsigned long)((100)*(8000000/4000.0)));
     }
 }
