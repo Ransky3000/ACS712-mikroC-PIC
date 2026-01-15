@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=ACS712.c Test_AC.c Test_DC.c
+SOURCEFILES_QUOTED_IF_SPACED=ACS712.c Test_AC.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ACS712.p1 ${OBJECTDIR}/Test_AC.p1 ${OBJECTDIR}/Test_DC.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/ACS712.p1.d ${OBJECTDIR}/Test_AC.p1.d ${OBJECTDIR}/Test_DC.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ACS712.p1 ${OBJECTDIR}/Test_AC.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/ACS712.p1.d ${OBJECTDIR}/Test_AC.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/ACS712.p1 ${OBJECTDIR}/Test_AC.p1 ${OBJECTDIR}/Test_DC.p1
+OBJECTFILES=${OBJECTDIR}/ACS712.p1 ${OBJECTDIR}/Test_AC.p1
 
 # Source Files
-SOURCEFILES=ACS712.c Test_AC.c Test_DC.c
+SOURCEFILES=ACS712.c Test_AC.c
 
 
 
@@ -110,14 +110,6 @@ ${OBJECTDIR}/Test_AC.p1: Test_AC.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/Test_AC.d ${OBJECTDIR}/Test_AC.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/Test_AC.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
-${OBJECTDIR}/Test_DC.p1: Test_DC.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/Test_DC.p1.d 
-	@${RM} ${OBJECTDIR}/Test_DC.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto     -o ${OBJECTDIR}/Test_DC.p1 Test_DC.c 
-	@-${MV} ${OBJECTDIR}/Test_DC.d ${OBJECTDIR}/Test_DC.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/Test_DC.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
 else
 ${OBJECTDIR}/ACS712.p1: ACS712.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}" 
@@ -134,14 +126,6 @@ ${OBJECTDIR}/Test_AC.p1: Test_AC.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto     -o ${OBJECTDIR}/Test_AC.p1 Test_AC.c 
 	@-${MV} ${OBJECTDIR}/Test_AC.d ${OBJECTDIR}/Test_AC.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/Test_AC.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/Test_DC.p1: Test_DC.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/Test_DC.p1.d 
-	@${RM} ${OBJECTDIR}/Test_DC.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto     -o ${OBJECTDIR}/Test_DC.p1 Test_DC.c 
-	@-${MV} ${OBJECTDIR}/Test_DC.d ${OBJECTDIR}/Test_DC.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/Test_DC.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 

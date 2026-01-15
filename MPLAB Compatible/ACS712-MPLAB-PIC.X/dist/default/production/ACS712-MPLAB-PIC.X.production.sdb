@@ -1,0 +1,345 @@
+[p GLOBOPT AUTOSTATIC IEEE_DBL IEEE_FLT PIC14 PICREGULAR PICMID ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 16F88 ]
+[d frameptr 0 ]
+"7 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\ACS712.c
+[v _isqrt isqrt `(ul  1 e 4 0 ]
+"17
+[v _ACS712_Init ACS712_Init `(v  1 e 1 0 ]
+"26
+[v _ACS712_SetSensitivity ACS712_SetSensitivity `(v  1 e 1 0 ]
+"30
+[v _ACS712_Calibrate ACS712_Calibrate `(v  1 e 1 0 ]
+"39
+[v _ACS712_ReadAC ACS712_ReadAC `(ui  1 e 2 0 ]
+"9 ADC_Lib.c
+[v _ADC_Init ADC_Init `(v  1 e 1 0 ]
+"24
+[v _ADC_Read ADC_Read `(ui  1 e 2 0 ]
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\__lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\awdiv.c
+[v ___awdiv __awdiv `(i  1 e 2 0 ]
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\awmod.c
+[v ___awmod __awmod `(i  1 e 2 0 ]
+"10 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\sprcadd.c
+[v ___fladd __fladd `(d  1 e 4 0 ]
+"15 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\Umul32.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+"4 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\Umul8_16.c
+[v __Umul8_16 _Umul8_16 `(ui  1 e 2 0 ]
+"6 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\pic\__eeprom.c
+[v ___eecpymem __eecpymem `(v  1 e 1 0 ]
+"39
+[v ___memcpyee __memcpyee `(v  1 e 1 0 ]
+"32 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\Test_AC.c
+[v _IntToText IntToText `(v  1 e 1 0 ]
+"64
+[v _main main `(v  1 e 1 0 ]
+"12 Timer_lib.c
+[v _ISR ISR `II(v  1 e 1 0 ]
+"27
+[v _Time_Init Time_Init `(v  1 e 1 0 ]
+"40
+[v _micros micros `(ul  1 e 4 0 ]
+"4 UART_Lib.c
+[v _UART_Init UART_Init `(v  1 e 1 0 ]
+"27
+[v _UART_Write UART_Write `(v  1 e 1 0 ]
+"44
+[v _UART_Write_Text UART_Write_Text `(v  1 e 1 0 ]
+"60 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h
+[v _TMR0 TMR0 `VEuc  1 e 1 @1 ]
+"901
+[v _TXREG TXREG `VEuc  1 e 1 @25 ]
+"915
+[v _ADRESH ADRESH `VEuc  1 e 1 @30 ]
+"922
+[v _ADCON0 ADCON0 `VEuc  1 e 1 @31 ]
+[s S414 . 1 `uc 1 ADON 1 0 :1:0 
+`uc 1 . 1 0 :1:1 
+`uc 1 GO_nDONE 1 0 :1:2 
+`uc 1 CHS 1 0 :3:3 
+`uc 1 ADCS 1 0 :2:6 
+]
+"953
+[s S420 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 GO 1 0 :1:2 
+`uc 1 CHS0 1 0 :1:3 
+`uc 1 CHS1 1 0 :1:4 
+`uc 1 CHS2 1 0 :1:5 
+`uc 1 ADCS0 1 0 :1:6 
+`uc 1 ADCS1 1 0 :1:7 
+]
+[s S428 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 nDONE 1 0 :1:2 
+]
+[s S431 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 GO_DONE 1 0 :1:2 
+]
+[u S434 . 1 `S414 1 . 1 0 `S420 1 . 1 0 `S428 1 . 1 0 `S431 1 . 1 0 ]
+[v _ADCON0bits ADCON0bits `VES434  1 e 1 @31 ]
+"1018
+[v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
+[s S95 . 1 `uc 1 TRISA0 1 0 :1:0 
+`uc 1 TRISA1 1 0 :1:1 
+`uc 1 TRISA2 1 0 :1:2 
+`uc 1 TRISA3 1 0 :1:3 
+`uc 1 TRISA4 1 0 :1:4 
+`uc 1 TRISA5 1 0 :1:5 
+`uc 1 TRISA6 1 0 :1:6 
+`uc 1 TRISA7 1 0 :1:7 
+]
+"1105
+[u S104 . 1 `S95 1 . 1 0 ]
+[v _TRISAbits TRISAbits `VES104  1 e 1 @133 ]
+[s S367 . 1 `uc 1 TRISB0 1 0 :1:0 
+`uc 1 TRISB1 1 0 :1:1 
+`uc 1 TRISB2 1 0 :1:2 
+`uc 1 TRISB3 1 0 :1:3 
+`uc 1 TRISB4 1 0 :1:4 
+`uc 1 TRISB5 1 0 :1:5 
+`uc 1 TRISB6 1 0 :1:6 
+`uc 1 TRISB7 1 0 :1:7 
+]
+"1167
+[u S376 . 1 `S367 1 . 1 0 ]
+[v _TRISBbits TRISBbits `VES376  1 e 1 @134 ]
+"1336
+[v _OSCCON OSCCON `VEuc  1 e 1 @143 ]
+"1729
+[v _SPBRG SPBRG `VEuc  1 e 1 @153 ]
+"1736
+[v _ANSEL ANSEL `VEuc  1 e 1 @155 ]
+"1927
+[v _ADRESL ADRESL `VEuc  1 e 1 @158 ]
+"1934
+[v _ADCON1 ADCON1 `VEuc  1 e 1 @159 ]
+"2184
+[v _BRGH BRGH `VEb  1 e 0 @1218 ]
+"2259
+[v _CREN CREN `VEb  1 e 0 @196 ]
+"2313
+[v _GIE GIE `VEb  1 e 0 @95 ]
+"2496
+[v _SPEN SPEN `VEb  1 e 0 @199 ]
+"2532
+[v _SYNC SYNC `VEb  1 e 0 @1220 ]
+"2562
+[v _TMR0IE TMR0IE `VEb  1 e 0 @93 ]
+"2565
+[v _TMR0IF TMR0IF `VEb  1 e 0 @90 ]
+"2649
+[v _TRMT TRMT `VEb  1 e 0 @1217 ]
+"2682
+[v _TXEN TXEN `VEb  1 e 0 @1221 ]
+[s S22 . 9 `uc 1 adc_channel 1 0 `ui 1 voltage_reference_mv 2 1 `i 1 adc_resolution 2 3 `ui 1 zero_point 2 5 `ui 1 sensitivity_mV_A 2 7 ]
+"29 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\Test_AC.c
+[v _mySensor mySensor `S22  1 e 9 0 ]
+"7 Timer_lib.c
+[v _current_freq_mhz current_freq_mhz `VEuc  1 e 1 0 ]
+"9
+[v _micros_counter micros_counter `VEul  1 e 4 0 ]
+"64 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\Test_AC.c
+[v _main main `(v  1 e 1 0 ]
+{
+"85
+[v main@buffer buffer `[12]uc  1 a 12 48 ]
+"84
+[v main@ma_val ma_val `ui  1 a 2 60 ]
+"97
+} 0
+"44 UART_Lib.c
+[v _UART_Write_Text UART_Write_Text `(v  1 e 1 0 ]
+{
+"45
+[v UART_Write_Text@i i `i  1 a 2 8 ]
+"44
+[v UART_Write_Text@text text `*.26uc  1 p 2 3 ]
+"49
+} 0
+"27
+[v _UART_Write UART_Write `(v  1 e 1 0 ]
+{
+[v UART_Write@data data `uc  1 p 1 wreg ]
+[v UART_Write@data data `uc  1 p 1 wreg ]
+[v UART_Write@data data `uc  1 p 1 2 ]
+"31
+} 0
+"4
+[v _UART_Init UART_Init `(v  1 e 1 0 ]
+{
+"25
+} 0
+"27 Timer_lib.c
+[v _Time_Init Time_Init `(v  1 e 1 0 ]
+{
+[v Time_Init@mhz mhz `uc  1 p 1 wreg ]
+[v Time_Init@mhz mhz `uc  1 p 1 wreg ]
+"29
+[v Time_Init@mhz mhz `uc  1 p 1 2 ]
+"38
+} 0
+"32 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\Test_AC.c
+[v _IntToText IntToText `(v  1 e 1 0 ]
+{
+"56
+[v IntToText@temp temp `uc  1 a 1 7 ]
+"33
+[v IntToText@i i `i  1 a 2 12 ]
+"54
+[v IntToText@end end `i  1 a 2 10 ]
+"53
+[v IntToText@start start `i  1 a 2 8 ]
+"34
+[v IntToText@sign sign `i  1 a 2 5 ]
+"32
+[v IntToText@buf buf `*.4uc  1 p 1 0 ]
+[v IntToText@n n `i  1 p 2 1 ]
+"62
+} 0
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\awmod.c
+[v ___awmod __awmod `(i  1 e 2 0 ]
+{
+"10
+[v ___awmod@sign sign `uc  1 a 1 7 ]
+[v ___awmod@counter counter `uc  1 a 1 6 ]
+"5
+[v ___awmod@divisor divisor `i  1 p 2 2 ]
+[v ___awmod@dividend dividend `i  1 p 2 4 ]
+"34
+} 0
+"9 ADC_Lib.c
+[v _ADC_Init ADC_Init `(v  1 e 1 0 ]
+{
+"22
+} 0
+"26 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\ACS712.c
+[v _ACS712_SetSensitivity ACS712_SetSensitivity `(v  1 e 1 0 ]
+{
+[s S22 . 9 `uc 1 adc_channel 1 0 `ui 1 voltage_reference_mv 2 1 `i 1 adc_resolution 2 3 `ui 1 zero_point 2 5 `ui 1 sensitivity_mV_A 2 7 ]
+[v ACS712_SetSensitivity@sensor sensor `*.39S22  1 p 2 2 ]
+[v ACS712_SetSensitivity@sens_mv_a sens_mv_a `ui  1 p 2 4 ]
+"28
+} 0
+"39
+[v _ACS712_ReadAC ACS712_ReadAC `(ui  1 e 2 0 ]
+{
+"51
+[v ACS712_ReadAC@sample sample `l  1 a 4 36 ]
+"49
+[v ACS712_ReadAC@count count `ul  1 a 4 32 ]
+"40
+[v ACS712_ReadAC@period_us period_us `ul  1 a 4 28 ]
+"48
+[v ACS712_ReadAC@accumulator accumulator `ul  1 a 4 24 ]
+"81
+[v ACS712_ReadAC@current_mA current_mA `ul  1 a 4 20 ]
+"70
+[v ACS712_ReadAC@voltage_rms_mv voltage_rms_mv `ul  1 a 4 16 ]
+"65
+[v ACS712_ReadAC@rms_adc rms_adc `ul  1 a 4 12 ]
+"64
+[v ACS712_ReadAC@avg_sq avg_sq `ul  1 a 4 8 ]
+"52
+[v ACS712_ReadAC@zero zero `l  1 a 4 4 ]
+"47
+[v ACS712_ReadAC@start_time start_time `ul  1 a 4 0 ]
+[s S22 . 9 `uc 1 adc_channel 1 0 `ui 1 voltage_reference_mv 2 1 `i 1 adc_resolution 2 3 `ui 1 zero_point 2 5 `ui 1 sensitivity_mV_A 2 7 ]
+"39
+[v ACS712_ReadAC@sensor sensor `*.39S22  1 p 2 34 ]
+[v ACS712_ReadAC@frequency frequency `uc  1 p 1 36 ]
+"84
+} 0
+"40 Timer_lib.c
+[v _micros micros `(ul  1 e 4 0 ]
+{
+"41
+[v micros@micros_now micros_now `ul  1 a 4 0 ]
+"42
+[v micros@tmr_snapshot tmr_snapshot `uc  1 a 1 4 ]
+"57
+} 0
+"7 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\ACS712.c
+[v _isqrt isqrt `(ul  1 e 4 0 ]
+{
+"8
+[v isqrt@x x `ul  1 a 4 30 ]
+"9
+[v isqrt@y y `ul  1 a 4 26 ]
+"7
+[v isqrt@n n `ul  1 p 4 18 ]
+"15
+} 0
+"15 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\Umul32.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+{
+"17
+[v ___lmul@product product `ul  1 a 4 0 ]
+"15
+[v ___lmul@multiplier multiplier `ul  1 p 4 2 ]
+[v ___lmul@multiplicand multiplicand `ul  1 p 4 6 ]
+"129
+} 0
+"17 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\ACS712.c
+[v _ACS712_Init ACS712_Init `(v  1 e 1 0 ]
+{
+[s S22 . 9 `uc 1 adc_channel 1 0 `ui 1 voltage_reference_mv 2 1 `i 1 adc_resolution 2 3 `ui 1 zero_point 2 5 `ui 1 sensitivity_mV_A 2 7 ]
+[v ACS712_Init@sensor sensor `*.39S22  1 p 2 0 ]
+[v ACS712_Init@channel channel `uc  1 p 1 2 ]
+[v ACS712_Init@v_ref_mv v_ref_mv `ui  1 p 2 3 ]
+[v ACS712_Init@adc_res adc_res `i  1 p 2 5 ]
+"24
+} 0
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\awdiv.c
+[v ___awdiv __awdiv `(i  1 e 2 0 ]
+{
+"10
+[v ___awdiv@quotient quotient `i  1 a 2 8 ]
+"11
+[v ___awdiv@sign sign `uc  1 a 1 7 ]
+[v ___awdiv@counter counter `uc  1 a 1 6 ]
+"5
+[v ___awdiv@divisor divisor `i  1 p 2 2 ]
+[v ___awdiv@dividend dividend `i  1 p 2 4 ]
+"41
+} 0
+"30 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\ACS712-MPLAB-PIC.X\ACS712.c
+[v _ACS712_Calibrate ACS712_Calibrate `(v  1 e 1 0 ]
+{
+"32
+[v ACS712_Calibrate@accumulator accumulator `ul  1 a 4 24 ]
+"31
+[v ACS712_Calibrate@i i `i  1 a 2 28 ]
+[s S22 . 9 `uc 1 adc_channel 1 0 `ui 1 voltage_reference_mv 2 1 `i 1 adc_resolution 2 3 `ui 1 zero_point 2 5 `ui 1 sensitivity_mV_A 2 7 ]
+"30
+[v ACS712_Calibrate@sensor sensor `*.39S22  1 p 2 18 ]
+"37
+} 0
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\__lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+{
+"10
+[v ___lldiv@quotient quotient `ul  1 a 4 13 ]
+"11
+[v ___lldiv@counter counter `uc  1 a 1 17 ]
+"5
+[v ___lldiv@divisor divisor `ul  1 p 4 4 ]
+[v ___lldiv@dividend dividend `ul  1 p 4 8 ]
+"30
+} 0
+"24 ADC_Lib.c
+[v _ADC_Read ADC_Read `(ui  1 e 2 0 ]
+{
+[v ADC_Read@channel channel `uc  1 p 1 wreg ]
+[v ADC_Read@channel channel `uc  1 p 1 wreg ]
+"28
+[v ADC_Read@channel channel `uc  1 p 1 5 ]
+"45
+} 0
+"12 Timer_lib.c
+[v _ISR ISR `II(v  1 e 1 0 ]
+{
+"24
+} 0
