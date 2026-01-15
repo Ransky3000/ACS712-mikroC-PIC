@@ -1,0 +1,96 @@
+[p GLOBOPT AUTOSTATIC IEEE_DBL IEEE_FLT PIC14 PICREGULAR PICMID ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 16F88 ]
+[d frameptr 0 ]
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\__lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+"10 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\sprcadd.c
+[v ___fladd __fladd `(d  1 e 4 0 ]
+"4 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\Umul8_16.c
+[v __Umul8_16 _Umul8_16 `(ui  1 e 2 0 ]
+"6 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\pic\__eeprom.c
+[v ___eecpymem __eecpymem `(v  1 e 1 0 ]
+"39
+[v ___memcpyee __memcpyee `(v  1 e 1 0 ]
+"32 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\TimeLab.X\Test_main.c
+[v _main main `(v  1 e 1 0 ]
+"12 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\TimeLab.X\TimeLib.c
+[v _ISR ISR `II(v  1 e 1 0 ]
+"27
+[v _Time_Init Time_Init `(v  1 e 1 0 ]
+"40
+[v _micros micros `(ul  1 e 4 0 ]
+"59
+[v _millis millis `(ul  1 e 4 0 ]
+"60 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC16Fxxx_DFP/1.3.42/xc8\pic\include\proc/pic16f88.h
+[v _TMR0 TMR0 `VEuc  1 e 1 @1 ]
+"1018
+[v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
+"1336
+[v _OSCCON OSCCON `VEuc  1 e 1 @143 ]
+"1736
+[v _ANSEL ANSEL `VEuc  1 e 1 @155 ]
+"2313
+[v _GIE GIE `VEb  1 e 0 @95 ]
+"2418
+[v _RB0 RB0 `VEb  1 e 0 @48 ]
+"2562
+[v _TMR0IE TMR0IE `VEb  1 e 0 @93 ]
+"2565
+[v _TMR0IF TMR0IF `VEb  1 e 0 @90 ]
+"2625
+[v _TRISB0 TRISB0 `VEb  1 e 0 @1072 ]
+"29 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\TimeLab.X\Test_main.c
+[v _previousMillis previousMillis `ul  1 e 4 0 ]
+"7 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\TimeLab.X\TimeLib.c
+[v _current_freq_mhz current_freq_mhz `VEuc  1 e 1 0 ]
+"9
+[v _micros_counter micros_counter `VEul  1 e 4 0 ]
+"32 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\TimeLab.X\Test_main.c
+[v _main main `(v  1 e 1 0 ]
+{
+"45
+[v main@currentMillis currentMillis `ul  1 a 4 26 ]
+"55
+} 0
+"59 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\TimeLab.X\TimeLib.c
+[v _millis millis `(ul  1 e 4 0 ]
+{
+"61
+} 0
+"40
+[v _micros micros `(ul  1 e 4 0 ]
+{
+"41
+[v micros@micros_now micros_now `ul  1 a 4 0 ]
+"42
+[v micros@tmr_snapshot tmr_snapshot `uc  1 a 1 4 ]
+"57
+} 0
+"5 C:\Program Files\Microchip\xc8\v3.00\pic\sources\c99\common\__lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+{
+"10
+[v ___lldiv@quotient quotient `ul  1 a 4 13 ]
+"11
+[v ___lldiv@counter counter `uc  1 a 1 17 ]
+"5
+[v ___lldiv@divisor divisor `ul  1 p 4 5 ]
+[v ___lldiv@dividend dividend `ul  1 p 4 9 ]
+"30
+} 0
+"27 C:\Users\USER\Desktop\CONCEPT PAPER\PIC16F88\ACS712-mikroC-PIC\MPLAB Compatible\Library Dev\TimeLab.X\TimeLib.c
+[v _Time_Init Time_Init `(v  1 e 1 0 ]
+{
+[v Time_Init@mhz mhz `uc  1 p 1 wreg ]
+[v Time_Init@mhz mhz `uc  1 p 1 wreg ]
+"29
+[v Time_Init@mhz mhz `uc  1 p 1 2 ]
+"38
+} 0
+"12
+[v _ISR ISR `II(v  1 e 1 0 ]
+{
+"24
+} 0
