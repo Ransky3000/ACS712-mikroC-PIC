@@ -287,7 +287,7 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e :U 101 ]
 }
 "36
-[; ;ACS712.c: 36:     sensor->zero_point = accumulator / 100;
+[; ;ACS712.c: 36:     sensor->zero_point = (unsigned int)(accumulator / 100);
 [e = . *U _sensor 3 -> / _accumulator -> -> -> 100 `i `l `ul `ui ]
 "37
 [; ;ACS712.c: 37: }

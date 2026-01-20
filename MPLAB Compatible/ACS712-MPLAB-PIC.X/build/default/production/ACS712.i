@@ -1789,7 +1789,7 @@ void ACS712_Calibrate(ACS712_t* sensor) {
     for (i = 0; i < 100; i++) {
         accumulator += ADC_Read(sensor->adc_channel);
     }
-    sensor->zero_point = accumulator / 100;
+    sensor->zero_point = (unsigned int)(accumulator / 100);
 }
 
 unsigned int ACS712_ReadAC(ACS712_t* sensor, unsigned char frequency) {

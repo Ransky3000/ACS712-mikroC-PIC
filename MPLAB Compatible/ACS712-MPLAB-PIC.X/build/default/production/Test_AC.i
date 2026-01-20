@@ -1797,9 +1797,8 @@ unsigned long millis();
 ACS712_t mySensor;
 
 
-void IntToText(char* buf, int n) {
+void IntToText(char* buf, unsigned int n) {
     int i = 0;
-    int sign = n;
 
     if (n == 0) {
         buf[0] = '0';
@@ -1807,14 +1806,12 @@ void IntToText(char* buf, int n) {
         return;
     }
 
-    if (n < 0) n = -n;
 
     while (n > 0) {
-        buf[i++] = (n % 10) + '0';
+        buf[i++] = (char)((n % 10) + '0');
         n /= 10;
     }
 
-    if (sign < 0) buf[i++] = '-';
     buf[i] = '\0';
 
 

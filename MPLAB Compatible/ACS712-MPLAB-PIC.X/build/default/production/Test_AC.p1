@@ -242,279 +242,265 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; ;Test_AC.c: 29: ACS712_t mySensor;
 [v _mySensor `S92 ~T0 @X0 1 e ]
 "32
-[; ;Test_AC.c: 32: void IntToText(char* buf, int n) {
-[v _IntToText `(v ~T0 @X0 1 ef2`*uc`i ]
+[; ;Test_AC.c: 32: void IntToText(char* buf, unsigned int n) {
+[v _IntToText `(v ~T0 @X0 1 ef2`*uc`ui ]
 {
 [e :U _IntToText ]
 [v _buf `*uc ~T0 @X0 1 r1 ]
-[v _n `i ~T0 @X0 1 r2 ]
+[v _n `ui ~T0 @X0 1 r2 ]
 [f ]
 "33
 [; ;Test_AC.c: 33:     int i = 0;
 [v _i `i ~T0 @X0 1 a ]
 [e = _i -> 0 `i ]
-"34
-[; ;Test_AC.c: 34:     int sign = n;
-[v _sign `i ~T0 @X0 1 a ]
-[e = _sign _n ]
-"36
-[; ;Test_AC.c: 36:     if (n == 0) {
-[e $ ! == _n -> 0 `i 94  ]
+"35
+[; ;Test_AC.c: 35:     if (n == 0) {
+[e $ ! == _n -> -> 0 `i `ui 94  ]
 {
-"37
-[; ;Test_AC.c: 37:         buf[0] = '0';
+"36
+[; ;Test_AC.c: 36:         buf[0] = '0';
 [e = *U + _buf * -> -> 0 `i `x -> -> # *U _buf `i `x -> -> 48 `ui `uc ]
-"38
-[; ;Test_AC.c: 38:         buf[1] = '\0';
+"37
+[; ;Test_AC.c: 37:         buf[1] = '\0';
 [e = *U + _buf * -> -> 1 `i `x -> -> # *U _buf `i `x -> -> 0 `ui `uc ]
-"39
-[; ;Test_AC.c: 39:         return;
+"38
+[; ;Test_AC.c: 38:         return;
 [e $UE 93  ]
-"40
-[; ;Test_AC.c: 40:     }
+"39
+[; ;Test_AC.c: 39:     }
 }
 [e :U 94 ]
 "42
-[; ;Test_AC.c: 42:     if (n < 0) n = -n;
-[e $ ! < _n -> 0 `i 95  ]
-[e = _n -U _n ]
-[e :U 95 ]
-"44
-[; ;Test_AC.c: 44:     while (n > 0) {
-[e $U 96  ]
-[e :U 97 ]
-{
-"45
-[; ;Test_AC.c: 45:         buf[i++] = (n % 10) + '0';
-[e = *U + _buf * -> ++ _i -> 1 `i `x -> -> # *U _buf `i `x -> + -> % _n -> 10 `i `ui -> 48 `ui `uc ]
-"46
-[; ;Test_AC.c: 46:         n /= 10;
-[e =/ _n -> 10 `i ]
-"47
-[; ;Test_AC.c: 47:     }
-}
+[; ;Test_AC.c: 42:     while (n > 0) {
+[e $U 95  ]
 [e :U 96 ]
+{
+"43
+[; ;Test_AC.c: 43:         buf[i++] = (char)((n % 10) + '0');
+[e = *U + _buf * -> ++ _i -> 1 `i `x -> -> # *U _buf `i `x -> + % _n -> -> 10 `i `ui -> 48 `ui `uc ]
 "44
-[; ;Test_AC.c: 44:     while (n > 0) {
-[e $ > _n -> 0 `i 97  ]
-[e :U 98 ]
-"49
-[; ;Test_AC.c: 49:     if (sign < 0) buf[i++] = '-';
-[e $ ! < _sign -> 0 `i 99  ]
-[e = *U + _buf * -> ++ _i -> 1 `i `x -> -> # *U _buf `i `x -> -> 45 `ui `uc ]
-[e :U 99 ]
-"50
-[; ;Test_AC.c: 50:     buf[i] = '\0';
+[; ;Test_AC.c: 44:         n /= 10;
+[e =/ _n -> -> 10 `i `ui ]
+"45
+[; ;Test_AC.c: 45:     }
+}
+[e :U 95 ]
+"42
+[; ;Test_AC.c: 42:     while (n > 0) {
+[e $ > _n -> -> 0 `i `ui 96  ]
+[e :U 97 ]
+"47
+[; ;Test_AC.c: 47:     buf[i] = '\0';
 [e = *U + _buf * -> _i `x -> -> # *U _buf `i `x -> -> 0 `ui `uc ]
-"53
-[; ;Test_AC.c: 53:     int start = 0;
+"50
+[; ;Test_AC.c: 50:     int start = 0;
 [v _start `i ~T0 @X0 1 a ]
 [e = _start -> 0 `i ]
-"54
-[; ;Test_AC.c: 54:     int end = i - 1;
+"51
+[; ;Test_AC.c: 51:     int end = i - 1;
 [v _end `i ~T0 @X0 1 a ]
 [e = _end - _i -> 1 `i ]
-"55
-[; ;Test_AC.c: 55:     while (start < end) {
-[e $U 100  ]
-[e :U 101 ]
+"52
+[; ;Test_AC.c: 52:     while (start < end) {
+[e $U 98  ]
+[e :U 99 ]
 {
-"56
-[; ;Test_AC.c: 56:         char temp = buf[start];
+"53
+[; ;Test_AC.c: 53:         char temp = buf[start];
 [v _temp `uc ~T0 @X0 1 a ]
 [e = _temp *U + _buf * -> _start `x -> -> # *U _buf `i `x ]
-"57
-[; ;Test_AC.c: 57:         buf[start] = buf[end];
+"54
+[; ;Test_AC.c: 54:         buf[start] = buf[end];
 [e = *U + _buf * -> _start `x -> -> # *U _buf `i `x *U + _buf * -> _end `x -> -> # *U _buf `i `x ]
-"58
-[; ;Test_AC.c: 58:         buf[end] = temp;
-[e = *U + _buf * -> _end `x -> -> # *U _buf `i `x _temp ]
-"59
-[; ;Test_AC.c: 59:         start++;
-[e ++ _start -> 1 `i ]
-"60
-[; ;Test_AC.c: 60:         end--;
-[e -- _end -> 1 `i ]
-"61
-[; ;Test_AC.c: 61:     }
-}
-[e :U 100 ]
 "55
-[; ;Test_AC.c: 55:     while (start < end) {
-[e $ < _start _end 101  ]
-[e :U 102 ]
-"62
-[; ;Test_AC.c: 62: }
+[; ;Test_AC.c: 55:         buf[end] = temp;
+[e = *U + _buf * -> _end `x -> -> # *U _buf `i `x _temp ]
+"56
+[; ;Test_AC.c: 56:         start++;
+[e ++ _start -> 1 `i ]
+"57
+[; ;Test_AC.c: 57:         end--;
+[e -- _end -> 1 `i ]
+"58
+[; ;Test_AC.c: 58:     }
+}
+[e :U 98 ]
+"52
+[; ;Test_AC.c: 52:     while (start < end) {
+[e $ < _start _end 99  ]
+[e :U 100 ]
+"59
+[; ;Test_AC.c: 59: }
 [e :UE 93 ]
 }
 [v $root$_main `(v ~T0 @X0 0 e ]
-"64
-[; ;Test_AC.c: 64: void main() {
+"61
+[; ;Test_AC.c: 61: void main() {
 [v _main `(v ~T0 @X0 1 ef ]
 {
 [e :U _main ]
 [f ]
-"65
-[; ;Test_AC.c: 65:     OSCCON = 0x70;
+"62
+[; ;Test_AC.c: 62:     OSCCON = 0x70;
 [e = _OSCCON -> -> 112 `i `uc ]
-"66
-[; ;Test_AC.c: 66:     ANSEL = 0b00000001;
+"63
+[; ;Test_AC.c: 63:     ANSEL = 0b00000001;
 [e = _ANSEL -> -> 1 `i `uc ]
-"67
-[; ;Test_AC.c: 67:     TRISAbits.TRISA0 = 1;
+"64
+[; ;Test_AC.c: 64:     TRISAbits.TRISA0 = 1;
 [e = . . _TRISAbits 0 0 -> -> 1 `i `uc ]
-"69
-[; ;Test_AC.c: 69:     UART_Init();
+"66
+[; ;Test_AC.c: 66:     UART_Init();
 [e ( _UART_Init ..  ]
-"70
-[; ;Test_AC.c: 70:     ADC_Init();
+"67
+[; ;Test_AC.c: 67:     ADC_Init();
 [e ( _ADC_Init ..  ]
-"71
-[; ;Test_AC.c: 71:     Time_Init(8);
+"68
+[; ;Test_AC.c: 68:     Time_Init(8);
 [e ( _Time_Init (1 -> -> 8 `i `uc ]
-"73
-[; ;Test_AC.c: 73:     UART_Write_Text("ACS712 AC Integer Test\r\n");
+"70
+[; ;Test_AC.c: 70:     UART_Write_Text("ACS712 AC Integer Test\r\n");
 [e ( _UART_Write_Text (1 :s 1C ]
-"76
-[; ;Test_AC.c: 76:     ACS712_Init(&mySensor, 0, 5000, 1023);
+"73
+[; ;Test_AC.c: 73:     ACS712_Init(&mySensor, 0, 5000, 1023);
 [e ( _ACS712_Init (4 , , , &U _mySensor -> -> 0 `i `uc -> -> 5000 `i `ui -> 1023 `i ]
-"77
-[; ;Test_AC.c: 77:     ACS712_SetSensitivity(&mySensor, 100);
+"74
+[; ;Test_AC.c: 74:     ACS712_SetSensitivity(&mySensor, 100);
 [e ( _ACS712_SetSensitivity (2 , &U _mySensor -> -> 100 `i `ui ]
-"79
-[; ;Test_AC.c: 79:     UART_Write_Text("Calibrating...\r\n");
+"76
+[; ;Test_AC.c: 76:     UART_Write_Text("Calibrating...\r\n");
 [e ( _UART_Write_Text (1 :s 2C ]
-"80
-[; ;Test_AC.c: 80:     ACS712_Calibrate(&mySensor);
+"77
+[; ;Test_AC.c: 77:     ACS712_Calibrate(&mySensor);
 [e ( _ACS712_Calibrate (1 &U _mySensor ]
-"81
-[; ;Test_AC.c: 81:     unsigned long previousMillis = 0;
+"78
+[; ;Test_AC.c: 78:     unsigned long previousMillis = 0;
 [v _previousMillis `ul ~T0 @X0 1 a ]
 [e = _previousMillis -> -> -> 0 `i `l `ul ]
-"82
-[; ;Test_AC.c: 82:     const unsigned long calibrationInterval = 10000;
-[v F967 `Cul ~T0 @X0 1 s calibrationInterval ]
-[i F967
+"79
+[; ;Test_AC.c: 79:     const unsigned long calibrationInterval = 10000;
+[v F966 `Cul ~T0 @X0 1 s calibrationInterval ]
+[i F966
 -> -> -> 10000 `i `l `ul
 ]
-"84
-[; ;Test_AC.c: 84:     while(1) {
-[e :U 105 ]
+"81
+[; ;Test_AC.c: 81:     while(1) {
+[e :U 103 ]
 {
-"85
-[; ;Test_AC.c: 85:         unsigned long currentMillis = millis();
+"82
+[; ;Test_AC.c: 82:         unsigned long currentMillis = millis();
 [v _currentMillis `ul ~T0 @X0 1 a ]
 [e = _currentMillis ( _millis ..  ]
-"88
-[; ;Test_AC.c: 88:         if (currentMillis - previousMillis >= calibrationInterval) {
-[e $ ! >= - _currentMillis _previousMillis F967 107  ]
+"85
+[; ;Test_AC.c: 85:         if (currentMillis - previousMillis >= calibrationInterval) {
+[e $ ! >= - _currentMillis _previousMillis F966 105  ]
 {
-"89
-[; ;Test_AC.c: 89:             previousMillis = currentMillis;
+"86
+[; ;Test_AC.c: 86:             previousMillis = currentMillis;
 [e = _previousMillis _currentMillis ]
-"90
-[; ;Test_AC.c: 90:             UART_Write_Text("Recalibrating...\r\n");
+"87
+[; ;Test_AC.c: 87:             UART_Write_Text("Recalibrating...\r\n");
 [e ( _UART_Write_Text (1 :s 3C ]
-"91
-[; ;Test_AC.c: 91:             ACS712_Calibrate(&mySensor);
+"88
+[; ;Test_AC.c: 88:             ACS712_Calibrate(&mySensor);
 [e ( _ACS712_Calibrate (1 &U _mySensor ]
-"92
-[; ;Test_AC.c: 92:             UART_Write_Text("Done.\r\n");
+"89
+[; ;Test_AC.c: 89:             UART_Write_Text("Done.\r\n");
 [e ( _UART_Write_Text (1 :s 4C ]
-"93
-[; ;Test_AC.c: 93:         }
+"90
+[; ;Test_AC.c: 90:         }
 }
-[e :U 107 ]
-"95
-[; ;Test_AC.c: 95:         unsigned long sum_ma = 0;
+[e :U 105 ]
+"92
+[; ;Test_AC.c: 92:         unsigned long sum_ma = 0;
 [v _sum_ma `ul ~T0 @X0 1 a ]
 [e = _sum_ma -> -> -> 0 `i `l `ul ]
-"96
-[; ;Test_AC.c: 96:         unsigned int ma_val;
+"93
+[; ;Test_AC.c: 93:         unsigned int ma_val;
 [v _ma_val `ui ~T0 @X0 1 a ]
-"97
-[; ;Test_AC.c: 97:         int i;
+"94
+[; ;Test_AC.c: 94:         int i;
 [v _i `i ~T0 @X0 1 a ]
-"100
-[; ;Test_AC.c: 100:         for(i=0; i<20; i++) {
+"97
+[; ;Test_AC.c: 97:         for(i=0; i<20; i++) {
 {
 [e = _i -> 0 `i ]
-[e $ < _i -> 20 `i 108  ]
-[e $U 109  ]
-[e :U 108 ]
+[e $ < _i -> 20 `i 106  ]
+[e $U 107  ]
+[e :U 106 ]
 {
-"101
-[; ;Test_AC.c: 101:             sum_ma += ACS712_ReadAC(&mySensor, 60);
+"98
+[; ;Test_AC.c: 98:             sum_ma += ACS712_ReadAC(&mySensor, 60);
 [e =+ _sum_ma -> ( _ACS712_ReadAC (2 , &U _mySensor -> -> 60 `i `uc `ul ]
-"102
-[; ;Test_AC.c: 102:         }
+"99
+[; ;Test_AC.c: 99:         }
 }
 [e ++ _i -> 1 `i ]
-[e $ < _i -> 20 `i 108  ]
-[e :U 109 ]
+[e $ < _i -> 20 `i 106  ]
+[e :U 107 ]
 }
-"104
-[; ;Test_AC.c: 104:         ma_val = (unsigned int)(sum_ma / 20);
+"101
+[; ;Test_AC.c: 101:         ma_val = (unsigned int)(sum_ma / 20);
 [e = _ma_val -> / _sum_ma -> -> -> 20 `i `l `ul `ui ]
-"107
-[; ;Test_AC.c: 107:         if (ma_val < 80) ma_val = 0;
-[e $ ! < _ma_val -> -> 80 `i `ui 111  ]
+"104
+[; ;Test_AC.c: 104:         if (ma_val < 80) ma_val = 0;
+[e $ ! < _ma_val -> -> 80 `i `ui 109  ]
 [e = _ma_val -> -> 0 `i `ui ]
-[e :U 111 ]
-"111
-[; ;Test_AC.c: 111:         unsigned int amps_whole = ma_val / 1000;
+[e :U 109 ]
+"108
+[; ;Test_AC.c: 108:         unsigned int amps_whole = ma_val / 1000;
 [v _amps_whole `ui ~T0 @X0 1 a ]
 [e = _amps_whole / _ma_val -> -> 1000 `i `ui ]
-"112
-[; ;Test_AC.c: 112:         unsigned int amps_frac = ma_val % 1000;
+"109
+[; ;Test_AC.c: 109:         unsigned int amps_frac = ma_val % 1000;
 [v _amps_frac `ui ~T0 @X0 1 a ]
 [e = _amps_frac % _ma_val -> -> 1000 `i `ui ]
-"113
-[; ;Test_AC.c: 113:         char buffer[10];
+"110
+[; ;Test_AC.c: 110:         char buffer[10];
 [v _buffer `uc ~T0 @X0 -> 10 `i a ]
-"115
-[; ;Test_AC.c: 115:         UART_Write_Text("Current: ");
+"112
+[; ;Test_AC.c: 112:         UART_Write_Text("Current: ");
 [e ( _UART_Write_Text (1 :s 5C ]
+"115
+[; ;Test_AC.c: 115:         IntToText(buffer, amps_whole);
+[e ( _IntToText (2 , &U _buffer _amps_whole ]
+"116
+[; ;Test_AC.c: 116:         UART_Write_Text(buffer);
+[e ( _UART_Write_Text (1 &U _buffer ]
 "118
-[; ;Test_AC.c: 118:         IntToText(buffer, amps_whole);
-[e ( _IntToText (2 , &U _buffer -> _amps_whole `i ]
-"119
-[; ;Test_AC.c: 119:         UART_Write_Text(buffer);
-[e ( _UART_Write_Text (1 &U _buffer ]
-"121
-[; ;Test_AC.c: 121:         UART_Write('.');
+[; ;Test_AC.c: 118:         UART_Write('.');
 [e ( _UART_Write (1 -> -> 46 `ui `uc ]
+"121
+[; ;Test_AC.c: 121:         if (amps_frac < 100) UART_Write('0');
+[e $ ! < _amps_frac -> -> 100 `i `ui 110  ]
+[e ( _UART_Write (1 -> -> 48 `ui `uc ]
+[e :U 110 ]
+"122
+[; ;Test_AC.c: 122:         if (amps_frac < 10) UART_Write('0');
+[e $ ! < _amps_frac -> -> 10 `i `ui 111  ]
+[e ( _UART_Write (1 -> -> 48 `ui `uc ]
+[e :U 111 ]
 "124
-[; ;Test_AC.c: 124:         if (amps_frac < 100) UART_Write('0');
-[e $ ! < _amps_frac -> -> 100 `i `ui 112  ]
-[e ( _UART_Write (1 -> -> 48 `ui `uc ]
-[e :U 112 ]
+[; ;Test_AC.c: 124:         IntToText(buffer, amps_frac);
+[e ( _IntToText (2 , &U _buffer _amps_frac ]
 "125
-[; ;Test_AC.c: 125:         if (amps_frac < 10) UART_Write('0');
-[e $ ! < _amps_frac -> -> 10 `i `ui 113  ]
-[e ( _UART_Write (1 -> -> 48 `ui `uc ]
-[e :U 113 ]
-"127
-[; ;Test_AC.c: 127:         IntToText(buffer, amps_frac);
-[e ( _IntToText (2 , &U _buffer -> _amps_frac `i ]
-"128
-[; ;Test_AC.c: 128:         UART_Write_Text(buffer);
+[; ;Test_AC.c: 125:         UART_Write_Text(buffer);
 [e ( _UART_Write_Text (1 &U _buffer ]
-"130
-[; ;Test_AC.c: 130:         UART_Write_Text(" A\r\n");
+"127
+[; ;Test_AC.c: 127:         UART_Write_Text(" A\r\n");
 [e ( _UART_Write_Text (1 :s 6C ]
-"132
-[; ;Test_AC.c: 132:         _delay((unsigned long)((100)*(8000000/4000.0)));
+"129
+[; ;Test_AC.c: 129:         _delay((unsigned long)((100)*(8000000/4000.0)));
 [e ( __delay (1 -> * -> -> 100 `i `d / -> -> 8000000 `l `d .4000.0 `ul ]
-"133
-[; ;Test_AC.c: 133:     }
+"130
+[; ;Test_AC.c: 130:     }
 }
+[e :U 102 ]
+[e $U 103  ]
 [e :U 104 ]
-[e $U 105  ]
-[e :U 106 ]
-"134
-[; ;Test_AC.c: 134: }
-[e :UE 103 ]
+"131
+[; ;Test_AC.c: 131: }
+[e :UE 101 ]
 }
 [a 5C 67 117 114 114 101 110 116 58 32 0 ]
 [a 1C 65 67 83 55 49 50 32 65 67 32 73 110 116 101 103 101 114 32 84 101 115 116 13 10 0 ]

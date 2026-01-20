@@ -28,25 +28,22 @@
 
 ACS712_t mySensor;
 
-// Custom helper to convert int to string
-void IntToText(char* buf, int n) {
+// Custom helper to convert unsigned int to string
+void IntToText(char* buf, unsigned int n) {
     int i = 0;
-    int sign = n;
     
     if (n == 0) {
         buf[0] = '0';
         buf[1] = '\0';
         return;
     }
-
-    if (n < 0) n = -n;
     
+    // Process digits
     while (n > 0) {
-        buf[i++] = (n % 10) + '0';
+        buf[i++] = (char)((n % 10) + '0');
         n /= 10;
     }
     
-    if (sign < 0) buf[i++] = '-';
     buf[i] = '\0';
     
     // Reverse string
