@@ -1863,13 +1863,13 @@ void main() {
 
 
         for(i=0; i<20; i++) {
-            sum_ma += ACS712_ReadAC(&mySensor, 60);
+            sum_ma += ACS712_ReadAC(&mySensor, 50);
         }
 
         ma_val = (unsigned int)(sum_ma / 20);
 
 
-        if (ma_val < 80) ma_val = 0;
+        if (ma_val < 15) ma_val = 0;
 
 
 

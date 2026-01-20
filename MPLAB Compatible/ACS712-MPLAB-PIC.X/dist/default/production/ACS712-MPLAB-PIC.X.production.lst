@@ -1,7 +1,7 @@
 
 
 Microchip MPLAB XC8 Assembler V3.00 build 20241204225717 
-                                                                                               Tue Jan 20 18:15:22 2026
+                                                                                               Tue Jan 20 22:15:01 2026
 
 Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1 
      1                           	processor	16F88
@@ -1274,14 +1274,14 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
   1259     0339  01EB               	clrf	main@i+1
   1260     033A                     l1885:
   1261                           
-  1262                           ;Test_AC.c: 98:             sum_ma += ACS712_ReadAC(&mySensor, 60);
+  1262                           ;Test_AC.c: 98:             sum_ma += ACS712_ReadAC(&mySensor, 50);
   1263     033A  30CC               	movlw	low _mySensor
   1264     033B  1283               	bcf	3,5	;RP0=0, select bank0
   1265     033C  1303               	bcf	3,6	;RP1=0, select bank0
   1266     033D  00C3               	movwf	ACS712_ReadAC@sensor
   1267     033E  3000               	movlw	high _mySensor
   1268     033F  00C4               	movwf	ACS712_ReadAC@sensor+1
-  1269     0340  303C               	movlw	60
+  1269     0340  3032               	movlw	50
   1270     0341  00C5               	movwf	ACS712_ReadAC@frequency
   1271     0342  118A  2023  118A   	fcall	_ACS712_ReadAC
   1272     0345  1283               	bcf	3,5	;RP0=0, select bank0
@@ -1374,10 +1374,10 @@ Microchip MPLAB XC8 C Compiler v3.00 (Free license) build 20241204225717 Og1
   1359     0391  00EE               	movwf	main@ma_val
   1360     0392                     l1893:
   1361                           
-  1362                           ;Test_AC.c: 104:         if (ma_val < 80) ma_val = 0;
+  1362                           ;Test_AC.c: 104:         if (ma_val < 15) ma_val = 0;
   1363     0392  3000               	movlw	0
   1364     0393  026F               	subwf	main@ma_val+1,w
-  1365     0394  3050               	movlw	80
+  1365     0394  300F               	movlw	15
   1366     0395  1903               	skipnz
   1367     0396  026E               	subwf	main@ma_val,w
   1368     0397  1803               	skipnc
@@ -5027,7 +5027,7 @@ STACK                0      0       0      0.0%
 
 
 Microchip Technology PIC Macro Assembler V3.00 build 20241204225717 
-Symbol Table                                                                                   Tue Jan 20 18:15:22 2026
+Symbol Table                                                                                   Tue Jan 20 22:15:01 2026
 
                               pc 0002                               l10 04BE                               l21 05C3  
                              l13 078F                               l32 0282                               l16 0EBF  

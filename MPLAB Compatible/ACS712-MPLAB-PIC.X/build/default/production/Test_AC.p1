@@ -430,8 +430,8 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e :U 106 ]
 {
 "98
-[; ;Test_AC.c: 98:             sum_ma += ACS712_ReadAC(&mySensor, 60);
-[e =+ _sum_ma -> ( _ACS712_ReadAC (2 , &U _mySensor -> -> 60 `i `uc `ul ]
+[; ;Test_AC.c: 98:             sum_ma += ACS712_ReadAC(&mySensor, 50);
+[e =+ _sum_ma -> ( _ACS712_ReadAC (2 , &U _mySensor -> -> 50 `i `uc `ul ]
 "99
 [; ;Test_AC.c: 99:         }
 }
@@ -443,8 +443,8 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; ;Test_AC.c: 101:         ma_val = (unsigned int)(sum_ma / 20);
 [e = _ma_val -> / _sum_ma -> -> -> 20 `i `l `ul `ui ]
 "104
-[; ;Test_AC.c: 104:         if (ma_val < 80) ma_val = 0;
-[e $ ! < _ma_val -> -> 80 `i `ui 109  ]
+[; ;Test_AC.c: 104:         if (ma_val < 15) ma_val = 0;
+[e $ ! < _ma_val -> -> 15 `i `ui 109  ]
 [e = _ma_val -> -> 0 `i `ui ]
 [e :U 109 ]
 "108
