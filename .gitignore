@@ -53,3 +53,12 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+Smart-outlet-Simulation/
+
+# MPLAB X
+build/
+nbproject/
+dist/
+Makefile
+
