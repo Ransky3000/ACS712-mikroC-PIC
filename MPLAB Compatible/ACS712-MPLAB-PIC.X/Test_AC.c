@@ -76,7 +76,7 @@ void main() {
     UART_Write_Text("Calibrating...\r\n");
     ACS712_Calibrate(&mySensor);
     unsigned long previousMillis = 0;
-    const unsigned long calibrationInterval = 15000; // 5 seconds
+//    const unsigned long calibrationInterval = 15000; // 5 seconds
 
     while(1) {
         unsigned long currentMillis = millis();
