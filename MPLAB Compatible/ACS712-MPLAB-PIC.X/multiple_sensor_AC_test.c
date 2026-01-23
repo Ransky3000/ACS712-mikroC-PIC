@@ -26,7 +26,6 @@
 #pragma config IESO = OFF       // Internal External Switchover bit (Internal External Switchover mode disabled)
 
 #include <xc.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 // Include our custom libraries
@@ -37,8 +36,36 @@
 
 #define _XTAL_FREQ 8000000
 
-// Buffer for string formatting
-char buffer[64];
+// Helper to print integer
+void UART_Write_Int(unsigned int num) {
+    char str[6]; // Max 65535 + null
+    int i = 0;
+    
+    // Handle 0 explicitly
+    if (num == 0) {
+        UART_Write('0');
+        return;
+    }
+    
+    // Convert to string (reversed)
+    while (num > 0) {
+        str[i++] = (num % 10) + '0';
+        num /= 10;
+    }
+    str[i] = '\0';
+    
+    // Print in correct order
+    while (i > 0) {
+        UART_Write(str[--i]);
+    }
+}
+
+// Helper to print leading zeros (e.g. 5 -> "005") for decimals
+void UART_Write_Dec3(unsigned int num) {
+    if (num < 10) UART_Write_Text("00");
+    else if (num < 100) UART_Write_Text("0");
+    UART_Write_Int(num);
+}
 
 void main(void) {
     // 1. Oscillator Setup (8MHz)
@@ -92,9 +119,8 @@ void main(void) {
         // Read Sensor 2 (AC 60Hz) - Takes ~17ms
         unsigned int current2 = ACS712_ReadAC(&sensor2, 60);
 
-        // Format Output - Manual Float conversion to save space
-        // Example: 1234 mA -> 1.234 A
-        
+        // Format Output - Optimized (No sprintf)
+        // Convert mA (int) to A (float-like view)
         // Sensor 1
         unsigned int s1_int = current1 / 1000;
         unsigned int s1_dec = current1 % 1000;
@@ -104,9 +130,15 @@ void main(void) {
         unsigned int s2_dec = current2 % 1000;
 
         // "S1: 1.234 A | S2: 5.678 A"
-        // Note: %03u ensures "005" for 5mA, etc.
-        sprintf(buffer, "S1: %u.%03u A | S2: %u.%03u A\r\n", s1_int, s1_dec, s2_int, s2_dec);
-        UART_Write_Text(buffer);
+        UART_Write_Text("S1: ");
+        UART_Write_Int(s1_int);
+        UART_Write('.');
+        UART_Write_Dec3(s1_dec);
+        UART_Write_Text(" A | S2: ");
+        UART_Write_Int(s2_int);
+        UART_Write('.');
+        UART_Write_Dec3(s2_dec);
+        UART_Write_Text(" A\r\n");
 
         __delay_ms(300); // Update every half second
     }
