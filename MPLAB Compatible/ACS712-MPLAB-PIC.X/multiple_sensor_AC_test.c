@@ -74,7 +74,18 @@ void main(void) {
     UART_Write_Text("Sensor 2 Calibrated.\r\n");
 
     // 6. Main Loop
+    unsigned long last_cal_time = 0;
+    
     while(1) {
+        // NON-BLOCKING TIMER: Check if 8 seconds have passed
+        if (millis() - last_cal_time > 8000) {
+            last_cal_time = millis();
+            // WARNING: Only calibrate if current is 0A, otherwise zero point will shift!
+            UART_Write_Text("Auto-Calibrating...\r\n");
+            ACS712_Calibrate(&sensor1);
+            ACS712_Calibrate(&sensor2);
+        }
+
         // Read Sensor 1 (AC 60Hz) - Takes ~17ms
         unsigned int current1 = ACS712_ReadAC(&sensor1, 60);
         

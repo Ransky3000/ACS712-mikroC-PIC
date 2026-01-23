@@ -26,12 +26,22 @@ void ACS712_SetSensitivity(ACS712_t* sensor, unsigned int sens_mv_a) {
 }
 
 void ACS712_Calibrate(ACS712_t* sensor) {
-    int i;
+    // UPDATED: Average over 100ms to cancel out AC sine wave
+    // 100ms covers 6 cycles of 60Hz (99.6ms) or 5 cycles of 50Hz (100ms)
+    unsigned long start = micros();
     unsigned long accumulator = 0;
-    for (i = 0; i < 100; i++) {
+    unsigned int count = 0;
+    
+    // Loop for 100,000 microseconds (100ms)
+    while (micros() - start < 100000) {
         accumulator += ADC_Read(sensor->adc_channel);
+        count++;
+        // Small delay if needed? implicit ADC delay (~20us) is enough.
     }
-    sensor->zero_point = (unsigned int)(accumulator / 100);
+    
+    if (count > 0) {
+       sensor->zero_point = (unsigned int)(accumulator / count);
+    }
 }
 
 unsigned int ACS712_ReadAC(ACS712_t* sensor, unsigned char frequency) {
