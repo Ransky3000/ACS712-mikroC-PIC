@@ -3,6 +3,9 @@
 #define ACS712_H
 
 #include <xc.h>
+#include "ADC_Lib.h"
+#include "Timer_lib.h"
+#include "UART_Lib.h"
 
 typedef struct {
     unsigned char adc_channel; // ADC Pin (0-7)

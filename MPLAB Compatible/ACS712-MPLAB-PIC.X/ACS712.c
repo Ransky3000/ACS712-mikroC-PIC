@@ -1,7 +1,5 @@
 /* File: ACS712.c */
 #include "ACS712.h"
-#include "ADC_Lib.h"
-#include "Timer_lib.h"
 
 // Integer Square Root Helper
 unsigned long isqrt(unsigned long n) {
