@@ -90,3 +90,32 @@ unsigned int ACS712_ReadAC(ACS712_t* sensor, unsigned char frequency) {
     
     return (unsigned int)current_mA;
 }
+
+void UART_Write_Int(unsigned int num) {
+    char str[6]; // Max 65535 + null
+    int i = 0;
+    
+    // Handle 0 explicitly
+    if (num == 0) {
+        UART_Write('0');
+        return;
+    }
+    
+    // Convert to string (reversed)
+    while (num > 0) {
+        str[i++] = (num % 10) + '0';
+        num /= 10;
+    }
+    str[i] = '\0';
+    
+    // Print in correct order
+    while (i > 0) {
+        UART_Write(str[--i]);
+    }
+}
+
+void UART_Write_Dec3(unsigned int num) {
+    if (num < 10) UART_Write_Text("00");
+    else if (num < 100) UART_Write_Text("0");
+    UART_Write_Int(num);
+}

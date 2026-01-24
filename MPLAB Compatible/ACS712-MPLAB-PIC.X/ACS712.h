@@ -27,4 +27,10 @@ void ACS712_Calibrate(ACS712_t* sensor);
 // Read AC Current (Return: milliAmps)
 unsigned int ACS712_ReadAC(ACS712_t* sensor, unsigned char frequency);
 
+// Helper to print integer
+void UART_Write_Int(unsigned int num);
+
+// Helper to print leading zeros (e.g. 5 -> "005") for decimals
+void UART_Write_Dec3(unsigned int num);
+
 #endif

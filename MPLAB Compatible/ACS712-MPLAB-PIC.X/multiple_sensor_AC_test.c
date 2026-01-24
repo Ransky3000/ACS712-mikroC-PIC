@@ -36,37 +36,6 @@
 
 #define _XTAL_FREQ 8000000
 
-// Helper to print integer
-void UART_Write_Int(unsigned int num) {
-    char str[6]; // Max 65535 + null
-    int i = 0;
-    
-    // Handle 0 explicitly
-    if (num == 0) {
-        UART_Write('0');
-        return;
-    }
-    
-    // Convert to string (reversed)
-    while (num > 0) {
-        str[i++] = (num % 10) + '0';
-        num /= 10;
-    }
-    str[i] = '\0';
-    
-    // Print in correct order
-    while (i > 0) {
-        UART_Write(str[--i]);
-    }
-}
-
-// Helper to print leading zeros (e.g. 5 -> "005") for decimals
-void UART_Write_Dec3(unsigned int num) {
-    if (num < 10) UART_Write_Text("00");
-    else if (num < 100) UART_Write_Text("0");
-    UART_Write_Int(num);
-}
-
 void main(void) {
     // 1. Oscillator Setup (8MHz)
     OSCCON = 0b01110000;
@@ -105,13 +74,13 @@ void main(void) {
     
     while(1) {
         // NON-BLOCKING TIMER: Check if 8 seconds have passed
-        if (millis() - last_cal_time > 8000) {
-            last_cal_time = millis();
-            // WARNING: Only calibrate if current is 0A, otherwise zero point will shift!
-            UART_Write_Text("Auto-Calibrating...\r\n");
-            ACS712_Calibrate(&sensor1);
-            ACS712_Calibrate(&sensor2);
-        }
+//        if (millis() - last_cal_time > 8000) {
+//            last_cal_time = millis();
+//            // WARNING: Only calibrate if current is 0A, otherwise zero point will shift!
+//            UART_Write_Text("Auto-Calibrating...\r\n");
+//            ACS712_Calibrate(&sensor1);
+//            ACS712_Calibrate(&sensor2);
+//        }
 
         // Read Sensor 1 (AC 60Hz) - Takes ~17ms
         unsigned int current1 = ACS712_ReadAC(&sensor1, 60);
