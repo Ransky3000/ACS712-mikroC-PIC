@@ -26,12 +26,18 @@ void main() {
     Soft_UART_Init(&PORTB, 6, 7, 9600, 0); 
     
     while(1) {
-        Soft_UART_Write('H');
-        Soft_UART_Write('i');
-        Soft_UART_Write('\r');
-        Soft_UART_Write('\n');
+//        Soft_UART_Write('H');
+//        Soft_UART_Write('i');
+//        Soft_UART_Write('\r');
+//        Soft_UART_Write('\n');
         
-        __delay_ms(300);
+        Soft_UART_print("Sensor: ");
+        Soft_UART_print("255");
+        Soft_UART_print("  |  ");
+        Soft_UART_print("Cal: ");
+        Soft_UART_println("0.56");
+        
+        __delay_ms(500);
         
 
     }

@@ -52,13 +52,30 @@ void Soft_UART_Init(volatile unsigned char *port, unsigned char rx_pin, unsigned
 
 void Soft_UART_Write(char udata) {
     unsigned char next_head = (tx_head + 1) % TX_BUFFER_SIZE;
-    if (next_head != tx_tail) {
-        tx_buffer[tx_head] = udata;
-        tx_head = next_head;
+    
+    // Wait if Buffer is Full
+    while (next_head == tx_tail) {
+        // Wait for ISR to send a byte and free a slot
+    }
+    
+    tx_buffer[tx_head] = udata;
+    tx_head = next_head;
+}
+
+// Write Text: Sends a string
+void Soft_UART_print(char *text) {
+    int i;
+    for(i = 0; text[i] != '\0'; i++) {
+        Soft_UART_Write(text[i]);
     }
 }
 
-// Read function removed for memory optimization
+// Println: Sends text followed by Newline
+void Soft_UART_println(char *text) {
+    Soft_UART_print(text);
+    Soft_UART_Write('\r');
+    Soft_UART_Write('\n');
+}
 
 void Soft_UART_Break() {
     tx_head = tx_tail = 0;

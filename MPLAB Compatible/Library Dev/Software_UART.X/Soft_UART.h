@@ -19,6 +19,12 @@ void Soft_UART_Init(volatile unsigned char *port, unsigned char rx_pin, unsigned
 // Write: Adds char to TX buffer
 void Soft_UART_Write(char data);
 
+// Write Text: Sends a string
+void Soft_UART_print(char *text);
+
+// Println: Sends text followed by Newline
+void Soft_UART_println(char *text);
+
 // (Internal ISR handles transmission)
 
 #endif
