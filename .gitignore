@@ -54,7 +54,9 @@ dkms.conf
 # debug information files
 *.dwo
 
-Simulation/
+Project Backups/
+*.pdsprj
+*.workspace
 
 # MPLAB X
 build/
