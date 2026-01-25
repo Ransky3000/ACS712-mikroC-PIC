@@ -33,12 +33,6 @@ void main() {
         
         __delay_ms(300);
         
-        // Check Echo
-        char err;
-        char c = Soft_UART_Read(&err);
-        if (err == 0) {
-            Soft_UART_Write('E'); // Echo marker
-            Soft_UART_Write(c);
-        }
+
     }
 }
