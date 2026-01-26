@@ -1,78 +1,49 @@
-/* Microchip Technology Inc. and its subsidiaries.  You may use this software 
- * and any derivatives exclusively with Microchip products. 
- * 
- * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS".  NO WARRANTIES, WHETHER 
- * EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
- * WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A 
- * PARTICULAR PURPOSE, OR ITS INTERACTION WITH MICROCHIP PRODUCTS, COMBINATION 
- * WITH ANY OTHER PRODUCTS, OR USE IN ANY APPLICATION. 
- *
- * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
- * INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
- * WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
- * BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.  TO THE 
- * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS 
- * IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF 
- * ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
- *
- * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE 
- * TERMS. 
- */
-
 /* 
- * File:   
- * Author: 
- * Comments:
- * Revision history: 
+ * File:   HC12-RF_Protocol.h
+ * Author: Antigravity
+ * 
+ * Description: Master-Slave Polling Protocol for HC-12 Master-Slave Communication
+ * Packet Size: 8 Bytes Fixed
+ * Frame: [START] [TARGET] [SENDER] [CMD] [DATA_H] [DATA_L] [CRC] [END]
  */
 
-// This is a guard condition so that contents of this file are not included
-// more than once.  
-#ifndef XC_HEADER_TEMPLATE_H
-#define	XC_HEADER_TEMPLATE_H
+#ifndef HC12_RF_PROTOCOL_H
+#define HC12_RF_PROTOCOL_H
 
-#include <xc.h> // include processor files - each processor file is guarded.  
+#include <xc.h>
 
-// TODO Insert appropriate #include <>
+// --- Configuration ---
+#define PACKET_SIZE 8
+#define SOF_BYTE    0xAA  // Start of Frame
+#define EOF_BYTE    0xBB  // End of Frame
 
-// TODO Insert C++ class definitions if appropriate
+// --- Command Codes ---
+#define CMD_PING         0x01 // Check if alive
+#define CMD_RELAY_ON     0x02 // Turn specific socket ON
+#define CMD_RELAY_OFF    0x03 // Turn specific socket OFF
+#define CMD_READ_CURRENT 0x04 // Request Current Reading
+#define CMD_REPORT_DATA  0x05 // Response with Data (Data=mA)
+#define CMD_ACK          0x06 // Acknowledge action
 
-// TODO Insert declarations
+// --- Device IDs ---
+#define ID_MASTER   0x00
+// Slaves 1..N defined in main config
 
-// Comment a function and leverage automatic documentation with slash star star
-/**
-    <p><b>Function prototype:</b></p>
-  
-    <p><b>Summary:</b></p>
+// --- Data Structure ---
+typedef struct {
+    unsigned char target_id;
+    unsigned char sender_id;
+    unsigned char command;
+    unsigned int  data;       // 16-bit Data (e.g., Current in mA)
+} RF_Packet_t;
 
-    <p><b>Description:</b></p>
+// --- Public Functions ---
 
-    <p><b>Precondition:</b></p>
+// build_packet: Creates a byte array from struct
+void RF_Build_Packet(unsigned char *buffer, RF_Packet_t *pkt);
 
-    <p><b>Parameters:</b></p>
+// parse_packet: Validates and extracts struct from byte array
+// Returns: 1 if valid (CRC OK), 0 if invalid
+unsigned char RF_Parse_Packet(unsigned char *buffer, RF_Packet_t *pkt);
 
-    <p><b>Returns:</b></p>
-
-    <p><b>Example:</b></p>
-    <code>
- 
-    </code>
-
-    <p><b>Remarks:</b></p>
- */
-// TODO Insert declarations or function prototypes (right here) to leverage 
-// live documentation
-
-#ifdef	__cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-    // TODO If C++ is being used, regular C code needs function names to have C 
-    // linkage so the functions can be used by the c code. 
-
-#ifdef	__cplusplus
-}
-#endif /* __cplusplus */
-
-#endif	/* XC_HEADER_TEMPLATE_H */
-
+#endif
