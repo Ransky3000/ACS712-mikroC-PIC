@@ -5,10 +5,10 @@ void UART_Init() {
     // PIC16F88 UART Configuration for 9600 Baud @ 8MHz Fosc
     
     // 1. Set Baud Rate
-    // SPBRG = ((Fosc / Baud) / 16) - 1   (if BRGH=1)
-    // SPBRG = ((8000000 / 9600) / 16) - 1 = 51.08 -> 51
-    BRGH = 1;      // High Speed Baud Rate
-    SPBRG = 51;
+    // SPBRG = ((Fosc / Baud) / 64) - 1   (if BRGH=0)
+    // SPBRG = ((8000000 / 9600) / 64) - 1 = 12.02 -> 12
+    BRGH = 0;      // Low Speed Baud Rate
+    SPBRG = 12;
 
     // 2. Configure TX/RX Pins
     // RB5 is TX (Output), RB2 is RX (Input)

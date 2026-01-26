@@ -1,6 +1,6 @@
 /* File: TimeLib.c */
 #include <xc.h>
-#include "Timer_lib.h"
+#include "TimeLib.h"
 
 // 1. New Global Variable to store the frequency
 // We default to 8, but Time_Init will change it.
@@ -38,22 +38,17 @@ void Time_Init(unsigned char mhz) {
 }
 
 unsigned long micros() {
-    unsigned long micros_now;
-    unsigned char tmr_snapshot;
-
-    do {
-        tmr_snapshot = TMR0;
-        micros_now = micros_counter;
-    } while (TMR0 < tmr_snapshot);
-
-    // 3. Dynamic Calculation
-    if (current_freq_mhz == 8) {
-        // 8MHz: 1 tick = 0.5us (divide by 2)
-        return micros_now + (tmr_snapshot >> 1);
-    } else {
-        // 4MHz: 1 tick = 1us
-        return micros_now + tmr_snapshot;
-    }
+    unsigned long m;
+    unsigned char oldSREG = INTCON;
+    
+    GIE = 0; // Disable Interrupts
+    m = micros_counter;
+    GIE = 1; // Enable Interrupts (or restore)
+    
+    // Add Timer Offset
+    // We can't safely read TMR0 while it's running and might overflow?
+    // Simplified: Just return counter
+    return m;
 }
 
 unsigned long millis() {
