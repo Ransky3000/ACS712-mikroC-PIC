@@ -14,7 +14,8 @@
 // Note: 'port' should be the address of the PORT register (e.g., &PORTB)
 void Soft_UART_Init(volatile unsigned char *port, unsigned char rx_pin, unsigned char tx_pin, unsigned long baud_rate, unsigned char inverted);
 
-
+// ISR Handler (Call from Main ISR)
+void Soft_UART_ISR(void);
 
 // Write: Adds char to TX buffer
 void Soft_UART_Write(char data);
