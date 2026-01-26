@@ -51,7 +51,7 @@ unsigned char RF_Parse_Packet(unsigned char *buffer, RF_Packet_t *pkt) {
     pkt->target_id = buffer[1];
     pkt->sender_id = buffer[2];
     pkt->command   = buffer[3];
-    pkt->data      = (buffer[4] << 8) | buffer[5];
+    pkt->data      = (unsigned int)((buffer[4] << 8) | buffer[5]);
     
     return 1; // Valid Packet
 }

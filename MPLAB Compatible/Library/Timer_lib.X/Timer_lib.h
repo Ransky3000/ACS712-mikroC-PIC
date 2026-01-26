@@ -9,6 +9,9 @@
 // Changed unsigned short -> unsigned char for XC8 (8-bit)
 void Time_Init(unsigned char mhz);
 
+// ISR Handler (Call from Main ISR)
+void Timer_ISR(void);
+
 unsigned long micros();
 unsigned long millis();
 

@@ -1,6 +1,6 @@
 /* File: TimeLib.h */
-#ifndef TIMER_LIB_H
-#define TIMER_LIB_H
+#ifndef TIMELIB_H
+#define TIMELIB_H
 
 #include <xc.h>
 
@@ -8,6 +8,9 @@
 // Now accepts the frequency (4 or 8) as an argument
 // Changed unsigned short -> unsigned char for XC8 (8-bit)
 void Time_Init(unsigned char mhz);
+
+// ISR Handler (Call from Main ISR)
+void Timer_ISR(void);
 
 unsigned long micros();
 unsigned long millis();

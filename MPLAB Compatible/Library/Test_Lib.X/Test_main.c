@@ -19,7 +19,7 @@
 #pragma config IESO = OFF       // Internal External Switchover disabled
 
 #include <xc.h>
-#include "TimeLib.h"
+#include "Timer_lib.h"
 
 // Example: Blinking LED without Delay_ms() (Non-blocking!)
 // XC8 Bit Addressing: LATBbits.LATB0 or PORTBbits.RB0

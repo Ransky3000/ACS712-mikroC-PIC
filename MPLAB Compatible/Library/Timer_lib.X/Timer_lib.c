@@ -9,7 +9,7 @@ volatile unsigned char current_freq_mhz = 8;
 volatile unsigned long micros_counter = 0;
 
 // Interrupt Service Routine (XC8 Syntax)
-void __interrupt() ISR(void) {
+void Timer_ISR(void) {
     if (TMR0IF) { // Direct Bit Access
         TMR0IF = 0;
 
