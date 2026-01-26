@@ -1,6 +1,6 @@
 /* File: TimeLib.c */
 #include <xc.h>
-#include "TimeLib.h"
+#include "Timer_lib.h"
 
 // 1. New Global Variable to store the frequency
 // We default to 8, but Time_Init will change it.
