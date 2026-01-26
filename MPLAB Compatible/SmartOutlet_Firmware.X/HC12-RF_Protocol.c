@@ -6,7 +6,6 @@
  */
 
 #include "HC12-RF_Protocol.h"
-#include "UART_Lib.h" // Requires UART Library for transmission
 
 // Helper: Calculate simple Checksum (XOR of payload)
 unsigned char RF_Calculate_Checksum(unsigned char *buf) {

@@ -11,6 +11,7 @@
 #define HC12_RF_PROTOCOL_H
 
 #include <xc.h>
+#include "UART_Lib.h" // Requires UART Library for transmission
 
 // --- Configuration ---
 #define PACKET_SIZE 8
