@@ -83,7 +83,7 @@ void Soft_UART_Break() {
 }
 
 // --- INTERRUPT SERVICE ROUTINE ---
-void __interrupt() ISR(void) {
+void Soft_UART_ISR(void) {
     
     // 1. Timer2 (Baud Rate Generator - Auto Reload!)
     if (TMR2IF) {
