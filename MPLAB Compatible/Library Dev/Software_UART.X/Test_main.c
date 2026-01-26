@@ -17,6 +17,12 @@
 
 #define _XTAL_FREQ 8000000
 
+// --- Central Interrupt Service Routine ---
+void __interrupt() ISR(void) {
+    // Call Library ISR
+    Soft_UART_ISR();
+}
+
 void main() {
     OSCCON = 0x70; // 8MHz
     ANSEL = 0;     // Digital

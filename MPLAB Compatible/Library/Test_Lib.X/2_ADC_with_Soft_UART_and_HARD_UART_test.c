@@ -26,6 +26,9 @@
 
 #define _XTAL_FREQ 8000000
 
+
+
+
 // Helper: Integer to String
 void IntToText(char* buf, unsigned int n) {
     int i = 0;
@@ -57,7 +60,11 @@ void Soft_UART_Write_Text(char *text) {
         Soft_UART_Write(text[i]);
     }
 }
-
+// --- Central Interrupt Service Routine ---
+void __interrupt() ISR(void) {
+    // Call Library ISR
+    Soft_UART_ISR();
+}
 void main() {
     OSCCON = 0x70;    // 8MHz
     ANSEL = 0b00000011; // AN0 and AN1 Analog
