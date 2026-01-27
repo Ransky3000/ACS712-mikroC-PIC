@@ -31,20 +31,41 @@
 // Slaves 1..N defined in main config
 
 // --- Data Structure ---
-typedef struct {
-    unsigned char target_id;
-    unsigned char sender_id;
-    unsigned char command;
-    unsigned int  data;       // 16-bit Data (e.g., Current in mA)
+// --- Data Structure (Zero-Copy Union) ---
+typedef union {
+    struct {
+        unsigned char sof;       // Start of Frame (0xAA)
+        unsigned char target_id;
+        unsigned char sender_id;
+        unsigned char command;
+        unsigned char data_h;    // Data High Byte
+        unsigned char data_l;    // Data Low Byte
+        unsigned char checksum;  // XOR Sum
+        unsigned char eof;       // End of Frame (0xBB)
+    } fields;
+    unsigned char frame[PACKET_SIZE]; // Array View
 } RF_Packet_t;
 
 // --- Public Functions ---
 
-// build_packet: Creates a byte array from struct
-void RF_Build_Packet(unsigned char *buffer, RF_Packet_t *pkt);
+// RF_Init_Packet: Sets SOF/EOF and zeroes logic fields
+void RF_Init_Packet(RF_Packet_t *pkt);
 
-// parse_packet: Validates and extracts struct from byte array
-// Returns: 1 if valid (CRC OK), 0 if invalid
-unsigned char RF_Parse_Packet(unsigned char *buffer, RF_Packet_t *pkt);
+// RF_Set_Data: Macro for Zero-Overhead assignment
+#define RF_Set_Data(pkt, value) do { \
+    (pkt)->fields.data_h = ((value) >> 8) & 0xFF; \
+    (pkt)->fields.data_l = (value) & 0xFF; \
+} while(0)
+
+// RF_Get_Data: Macro for Zero-Overhead retrieval
+#define RF_Get_Data(pkt) \
+    ((unsigned int)(((pkt)->fields.data_h << 8) | (pkt)->fields.data_l))
+
+// RF_Sign_Packet: Calculates and sets the Checksum (Finalize before sending)
+void RF_Sign_Packet(RF_Packet_t *pkt);
+
+// RF_Verify_Packet: Checks SOF, EOF, and Checksum
+// Returns: 1 if valid, 0 if invalid
+unsigned char RF_Verify_Packet(RF_Packet_t *pkt);
 
 #endif

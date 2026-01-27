@@ -17,7 +17,7 @@
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit
 
 // CONFIG2
-#pragma config FCMEN = OFF      Okay
+#pragma config FCMEN = OFF     
 #pragma config IESO = OFF       
 
 #include <xc.h>
@@ -73,7 +73,7 @@ void main() {
     Soft_UART_println("Keys: 1=A_ON, 2=A_OFF, 3=B_ON, 4=B_OFF");
     
     // 5. Rx State Machine
-    unsigned char rx_buffer[PACKET_SIZE];
+    RF_Packet_t rx_pkt;
     unsigned char rx_idx = 0;
     
     while(1) {
@@ -92,16 +92,15 @@ void main() {
                 continue; 
             }
             
-            rx_buffer[rx_idx++] = byte;
+            rx_pkt.frame[rx_idx++] = byte;
             
             // Packet Full?
             if (rx_idx >= PACKET_SIZE) {
-                RF_Packet_t pkt;
-                if (RF_Parse_Packet(rx_buffer, &pkt)) {
+                if (RF_Verify_Packet(&rx_pkt)) {
                     Soft_UART_print("Cmd Recv for ID: ");
-                    Soft_UART_Write(pkt.target_id + '0'); // Hex char rough
+                    Soft_UART_Write(rx_pkt.fields.target_id + '0'); // Hex char rough
                     Soft_UART_println("");
-                    Process_Command(&pkt);
+                    Process_Command(&rx_pkt);
                 } else {
                     Soft_UART_println("Err: Bad CRC");
                 }
@@ -112,13 +111,13 @@ void main() {
 }
 
 void Process_Command(RF_Packet_t *pkt) {
-    if (pkt->target_id != DEVICE_ID) return;
+    if (pkt->fields.target_id != DEVICE_ID) return;
     
-    unsigned char socket = (unsigned char)(pkt->data & 0xFF);
+    unsigned char socket = (unsigned char)(pkt->fields.data_l & 0xFF);
     
-    switch (pkt->command) {
+    switch (pkt->fields.command) {
         case CMD_PING:
-            Send_ACK(pkt->sender_id, CMD_PING);
+            Send_ACK(pkt->fields.sender_id, CMD_PING);
             break;
             
         case CMD_RELAY_ON:
@@ -132,7 +131,7 @@ void Process_Command(RF_Packet_t *pkt) {
                 Soft_UART_println("Relay B: ON");
                 UART_Write_Text("Relay B: ON\r\n"); // Mirror to Hard UART
             }
-            Send_ACK(pkt->sender_id, CMD_RELAY_ON);
+            Send_ACK(pkt->fields.sender_id, CMD_RELAY_ON);
             break;
             
         case CMD_RELAY_OFF:
@@ -146,7 +145,7 @@ void Process_Command(RF_Packet_t *pkt) {
                 Soft_UART_println("Relay B: OFF");
                 UART_Write_Text("Relay B: OFF\r\n"); // Mirror to Hard UART
             }
-            Send_ACK(pkt->sender_id, CMD_RELAY_OFF);
+            Send_ACK(pkt->fields.sender_id, CMD_RELAY_OFF);
             break;
             
         default:
@@ -156,18 +155,19 @@ void Process_Command(RF_Packet_t *pkt) {
 
 void Send_ACK(unsigned char target, unsigned char cmd) {
     RF_Packet_t tx;
-    tx.target_id = ID_MASTER;
-    tx.sender_id = target;    
-    tx.command   = CMD_ACK;   
-    tx.data      = cmd;       
+    RF_Init_Packet(&tx);
     
-    unsigned char frame[PACKET_SIZE];
-    RF_Build_Packet(frame, &tx);
+    tx.fields.target_id = ID_MASTER;
+    tx.fields.sender_id = target;    
+    tx.fields.command   = CMD_ACK;   
+    RF_Set_Data(&tx, cmd);
     
-    Log_Packet("TX ACK", frame); 
+    RF_Sign_Packet(&tx); // Finalize
+    
+    Log_Packet("TX ACK", tx.frame); 
 
     for(int i=0; i<PACKET_SIZE; i++) {
-        UART_Write(frame[i]);
+        UART_Write(tx.frame[i]);
     }
 }
 
@@ -191,9 +191,11 @@ void Log_Packet(char* label, unsigned char* frame) {
 
 void Process_Debug_Shortcut(char key) {
     RF_Packet_t mock_pkt;
-    mock_pkt.target_id = DEVICE_ID;
-    mock_pkt.sender_id = 0x0A; 
-    mock_pkt.data = 0;
+    RF_Init_Packet(&mock_pkt);
+    
+    mock_pkt.fields.target_id = DEVICE_ID;
+    mock_pkt.fields.sender_id = 0x0A; 
+    RF_Set_Data(&mock_pkt, 0);
 
     Soft_UART_print("Debug Key: ");
     Soft_UART_Write(key);
@@ -201,20 +203,20 @@ void Process_Debug_Shortcut(char key) {
 
     switch(key) {
         case '1': 
-            mock_pkt.command = CMD_RELAY_ON;
-            mock_pkt.data = SOCKET_A;
+            mock_pkt.fields.command = CMD_RELAY_ON;
+            RF_Set_Data(&mock_pkt, SOCKET_A);
             break;
         case '2': 
-            mock_pkt.command = CMD_RELAY_OFF;
-            mock_pkt.data = SOCKET_A;
+            mock_pkt.fields.command = CMD_RELAY_OFF;
+            RF_Set_Data(&mock_pkt, SOCKET_A);
             break;
         case '3': 
-            mock_pkt.command = CMD_RELAY_ON;
-            mock_pkt.data = SOCKET_B;
+            mock_pkt.fields.command = CMD_RELAY_ON;
+            RF_Set_Data(&mock_pkt, SOCKET_B);
             break;
         case '4': 
-            mock_pkt.command = CMD_RELAY_OFF;
-            mock_pkt.data = SOCKET_B;
+            mock_pkt.fields.command = CMD_RELAY_OFF;
+            RF_Set_Data(&mock_pkt, SOCKET_B);
             break;
         default: return; 
     }

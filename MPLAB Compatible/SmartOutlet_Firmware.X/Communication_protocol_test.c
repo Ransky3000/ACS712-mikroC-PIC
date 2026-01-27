@@ -48,16 +48,18 @@ void main() {
     
     // 2. Test Packet Construction
     RF_Packet_t tx_pkt;
-    tx_pkt.target_id = 0x02; // Outlet 2
-    tx_pkt.sender_id = 0x00; // Master
-    tx_pkt.command   = CMD_RELAY_ON;
-    tx_pkt.data      = 0x0000; // No data for command
+    RF_Init_Packet(&tx_pkt);
     
-    unsigned char frame[PACKET_SIZE];
-    RF_Build_Packet(frame, &tx_pkt);
+    tx_pkt.fields.target_id = 0x02; // Outlet 2
+    tx_pkt.fields.sender_id = 0x00; // Master
+    tx_pkt.fields.command   = CMD_RELAY_ON;
+    RF_Set_Data(&tx_pkt, 0x0000);   // No data
     
-    // Verify Frame Content
-    if(frame[0] == 0xAA && frame[1] == 0x02 && frame[7] == 0xBB) {
+    // Finalize (Calc CRC)
+    RF_Sign_Packet(&tx_pkt);
+    
+    // Verify Frame Content directly (Zero Copy!)
+    if(tx_pkt.fields.sof == 0xAA && tx_pkt.fields.target_id == 0x02 && tx_pkt.fields.eof == 0xBB) {
         Soft_UART_println("[PASS] Build Structure");
     } else {
         Soft_UART_println("[FAIL] Build Structure");
@@ -65,17 +67,23 @@ void main() {
     
     // 3. Test Parsing (Simulate Received Data)
     // Case A: Valid Packet (Current Reading: 1234 mA)
-    // Data = 1234 (0x04D2)
-    // XOR Checksum: 01 ^ 02 ^ 05 ^ 04 ^ D2 = XOR Result
-    unsigned char rx_valid[] = {0xAA, 0x01, 0x02, CMD_REPORT_DATA, 0x04, 0xD2, 0x00, 0xBB};
+    RF_Packet_t rx_pkt;
     
-    // Manually calc expected CRC
-    unsigned char expected_crc = 0x01 ^ 0x02 ^ CMD_REPORT_DATA ^ 0x04 ^ 0xD2; 
-    rx_valid[6] = expected_crc; // Inject valid CRC
+    // Manually Fill Buffer to simulate reception
+    rx_pkt.frame[0] = 0xAA;
+    rx_pkt.frame[1] = 0x01; // Target
+    rx_pkt.frame[2] = 0x02; // Sender
+    rx_pkt.frame[3] = CMD_REPORT_DATA;
+    rx_pkt.frame[4] = 0x04; // 1234 >> 8
+    rx_pkt.frame[5] = 0xD2; // 1234 & 0xFF
+    // frame[6] calc below
+    rx_pkt.frame[7] = 0xBB;
     
-    RF_Packet_t result;
-    if(RF_Parse_Packet(rx_valid, &result)) {
-        if(result.data == 1234) {
+    // Inject valid CRC
+    rx_pkt.fields.checksum = 0x01 ^ 0x02 ^ CMD_REPORT_DATA ^ 0x04 ^ 0xD2; 
+    
+    if(RF_Verify_Packet(&rx_pkt)) {
+        if(RF_Get_Data(&rx_pkt) == 1234) {
             Soft_UART_println("[PASS] Parse Data Valid");
         } else {
             Soft_UART_println("[FAIL] Data Mismatch");
@@ -85,8 +93,9 @@ void main() {
     }
     
     // 4. Test Error Handling (Corrupt CRC)
-    rx_valid[6] = 0xFF; // Bad CRC
-    if(!RF_Parse_Packet(rx_valid, &result)) {
+    rx_pkt.fields.checksum = 0xFF; // Bad CRC logic
+    
+    if(!RF_Verify_Packet(&rx_pkt)) {
         Soft_UART_println("[PASS] Reject Bad CRC");
     } else {
         Soft_UART_println("[FAIL] Accepted Bad CRC!");
