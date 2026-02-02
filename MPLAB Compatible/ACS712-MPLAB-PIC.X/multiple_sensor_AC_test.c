@@ -36,6 +36,11 @@
 
 #define _XTAL_FREQ 8000000
 
+// --- Central Interrupt Service Routine ---
+void __interrupt() ISR(void) {
+    Timer_ISR(); 
+}
+
 void main(void) {
     // 1. Oscillator Setup (8MHz)
     OSCCON = 0b01110000;

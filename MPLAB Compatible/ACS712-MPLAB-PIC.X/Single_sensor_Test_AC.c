@@ -58,6 +58,11 @@ void IntToText(char* buf, unsigned int n) {
     }
 }
 
+// --- Central Interrupt Service Routine ---
+void __interrupt() ISR(void) {
+    Timer_ISR(); 
+}
+
 void main() {
     OSCCON = 0x70;    // 8MHz
     ANSEL = 0b00000001; // AN0 Analog
@@ -67,7 +72,7 @@ void main() {
     ADC_Init();
     Time_Init(8); 
     
-    UART_Write_Text("ACS712 AC Integer Test\r\n");
+    UART_Write_Text("Single ACS712 AC Integer Test\r\n");
 
     // Init: 5000mV Ref, 100mV/A sensitivity
     ACS712_Init(&mySensor, 0, 5000, 1023); 
@@ -81,13 +86,13 @@ void main() {
     while(1) {
         unsigned long currentMillis = millis();
         
-        // Periodic Calibration (Non-blocking check)
-        if (currentMillis - previousMillis >= calibrationInterval) {
-            previousMillis = currentMillis;
-            UART_Write_Text("Recalibrating...\r\n");
-            ACS712_Calibrate(&mySensor);
-            UART_Write_Text("Done.\r\n");
-        }
+//        // Periodic Calibration (Non-blocking check)
+//        if (currentMillis - previousMillis >= calibrationInterval) {
+//            previousMillis = currentMillis;
+//            UART_Write_Text("Recalibrating...\r\n");
+//            ACS712_Calibrate(&mySensor);
+//            UART_Write_Text("Done.\r\n");
+//        }
 
         unsigned long sum_ma = 0;
         unsigned int ma_val;
