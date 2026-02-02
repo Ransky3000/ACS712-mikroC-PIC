@@ -82,6 +82,8 @@ void main() {
             char byte = UART_Read();
             
             // --- DEBUG MODE: Check for Shortcuts '1'-'4' ---
+            // DISABLED FOR HARDWARE INTEGRATION (ESP32)
+            
             if (byte >= '1' && byte <= '4') {
                 Process_Debug_Shortcut(byte);
                 continue; 

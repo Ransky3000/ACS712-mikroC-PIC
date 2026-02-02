@@ -76,18 +76,18 @@ void main() {
     UART_Write_Text("Calibrating...\r\n");
     ACS712_Calibrate(&mySensor);
     unsigned long previousMillis = 0;
-//    const unsigned long calibrationInterval = 15000; // 5 seconds
+    const unsigned long calibrationInterval = 15000; // 5 seconds
 
     while(1) {
         unsigned long currentMillis = millis();
         
-//        // Periodic Calibration (Non-blocking check)
-//        if (currentMillis - previousMillis >= calibrationInterval) {
-//            previousMillis = currentMillis;
-//            UART_Write_Text("Recalibrating...\r\n");
-//            ACS712_Calibrate(&mySensor);
-//            UART_Write_Text("Done.\r\n");
-//        }
+        // Periodic Calibration (Non-blocking check)
+        if (currentMillis - previousMillis >= calibrationInterval) {
+            previousMillis = currentMillis;
+            UART_Write_Text("Recalibrating...\r\n");
+            ACS712_Calibrate(&mySensor);
+            UART_Write_Text("Done.\r\n");
+        }
 
         unsigned long sum_ma = 0;
         unsigned int ma_val;
