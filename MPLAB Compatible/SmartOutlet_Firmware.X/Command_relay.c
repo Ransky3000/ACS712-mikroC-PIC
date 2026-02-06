@@ -84,10 +84,10 @@ void main() {
             // --- DEBUG MODE: Check for Shortcuts '1'-'4' ---
             // DISABLED FOR HARDWARE INTEGRATION (ESP32)
             
-            if (byte >= '1' && byte <= '4') {
-                Process_Debug_Shortcut(byte);
-                continue; 
-            }
+            // if (byte >= '1' && byte <= '4') {
+            //     Process_Debug_Shortcut(byte);
+            //     continue; 
+            // }
             
             // Packet Sync
             if (rx_idx == 0 && byte != SOF_BYTE) {
@@ -159,8 +159,8 @@ void Send_ACK(unsigned char target, unsigned char cmd) {
     RF_Packet_t tx;
     RF_Init_Packet(&tx);
     
-    tx.fields.target_id = ID_MASTER;
-    tx.fields.sender_id = target;    
+    tx.fields.target_id = target;       // Reply to the Sender (Requester)
+    tx.fields.sender_id = DEVICE_ID;    // From ME (0xFE)
     tx.fields.command   = CMD_ACK;   
     RF_Set_Data(&tx, cmd);
     

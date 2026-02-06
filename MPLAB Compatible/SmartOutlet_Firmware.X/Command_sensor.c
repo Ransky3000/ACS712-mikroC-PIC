@@ -90,12 +90,11 @@ void main() {
             
             // --- DEBUG MODE: Check for Shortcuts '1'-'9' ---
             // DISABLED FOR HARDWARE INTEGRATION (ESP32)
-            /*
+            
             if (byte >= '1' && byte <= '9') {
                 Process_Debug_Shortcut(byte);
                 continue; 
             }
-            */
             
             // Packet Sync
             if (rx_idx == 0 && byte != SOF_BYTE) {
