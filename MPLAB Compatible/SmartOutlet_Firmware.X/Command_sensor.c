@@ -70,6 +70,9 @@ void main() {
     ACS712_Init(&sensorA, 0, 5000, 1023); 
     // Channel 1 (AN1), 5000mV Ref, 1023 Res
     ACS712_Init(&sensorB, 1, 5000, 1023); 
+
+    ACS712_SetSensitivity(&sensorA, 100); 
+    ACS712_SetSensitivity(&sensorB, 100); 
     
     Soft_UART_println("--- Sensor Test Boot ---");
     Soft_UART_println("Calibrating (Ensure 0A)...");
@@ -91,10 +94,10 @@ void main() {
             // --- DEBUG MODE: Check for Shortcuts '1'-'9' ---
             // DISABLED FOR HARDWARE INTEGRATION (ESP32)
             
-            if (byte >= '1' && byte <= '9') {
-                Process_Debug_Shortcut(byte);
-                continue; 
-            }
+            // if (byte >= '1' && byte <= '9') {
+            //     Process_Debug_Shortcut(byte);
+            //     continue; 
+            // }
             
             // Packet Sync
             if (rx_idx == 0 && byte != SOF_BYTE) {
@@ -149,11 +152,14 @@ void Perform_Read_And_Report(unsigned char sender_id) {
     Soft_UART_println(" mA");
     
     // 3. Print Text to HardUART (Mirror)
+    // DISABLED: Keep HardUART clean for Binary Protocol
+    /* 
     UART_Write_Text("S1: ");
     print_int_to_uart(valA, 0);
     UART_Write_Text(" mA | S2: ");
     print_int_to_uart(valB, 0);
     UART_Write_Text(" mA\r\n");
+    */
     
     // 4. Send Protocol Packets (Report Data)
     
@@ -169,7 +175,7 @@ void Perform_Read_And_Report(unsigned char sender_id) {
     // Send Packet A
     for(int i=0; i<PACKET_SIZE; i++) UART_Write(tx.frame[i]);
     
-    __delay_ms(10); // Small gap
+    __delay_ms(50); // Increased gap to ensure ESP32 prints first packet before second arrives
     
     // Packet B
     tx.fields.target_id = sender_id;

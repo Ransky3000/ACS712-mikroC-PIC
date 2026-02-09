@@ -40,37 +40,95 @@ void setup() {
   Serial.println("Listening for PIC Response...");
 }
 
+// --- Globals ---
+uint8_t rxBuffer[8];
+uint8_t rxIndex = 0;
+
 void loop() {
   // 1. Read from PC (Serial Monitor) -> Send to HC12
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
-    input.trim(); // Remove whitespace/newlines (crucial for copy-paste)
-    
+    input.trim();
     if (input.length() > 0) {
       Serial.print("[PC] Sending: ");
       Serial.println(input);
-      
-      // Parse Hex String to Bytes
       sendHexString(input);
     }
   }
   
-  // 2. Read from HC12 -> Print to PC
+  // 2. Read from HC12 -> Parse Packet
   if (HC12.available()) {
-    Serial.print("[RX] ");
     while (HC12.available()) {
       uint8_t byte = HC12.read();
       
-      // Print as Hex
-      if (byte < 0x10) Serial.print("0");
-      Serial.print(byte, HEX);
-      Serial.print(" ");
+      // If we see ASCII text (Debug msg), just print it directly
+      // Heuristic: If we are not inside a packet (rxIndex==0) and byte is ASCII char
+      if (rxIndex == 0 && byte != 0xAA) {
+        if (byte >= 32 && byte <= 126) Serial.write(byte); // Printable
+        else if (byte == 13 || byte == 10) Serial.write(byte); // Newline
+        continue;
+      }
       
-      // Optional: Check if it's text (ASCII range)
-      // if (byte >= 32 && byte <= 126) Serial.print((char)byte); 
+      // Packet Framing
+      if (rxIndex == 0 && byte != 0xAA) continue; // Wait for Start
+      
+      rxBuffer[rxIndex++] = byte;
+      
+      // Packet Full?
+      if (rxIndex >= 8) {
+        parsePacket(rxBuffer);
+        rxIndex = 0; // Reset
+      }
     }
-    Serial.println();
   }
+}
+
+void parsePacket(uint8_t* frame) {
+  uint8_t cmd = frame[3]; // Command
+  uint8_t sender = frame[2]; // From ID
+  uint8_t dataH = frame[4];
+  uint8_t dataL = frame[5];
+  uint16_t val16 = (dataH << 8) | dataL;
+  
+  Serial.println("\n--- RX PACKET ---");
+  
+  // Print Raw
+  Serial.print("RAW: ");
+  for(int i=0; i<8; i++) {
+    if(frame[i]<0x10) Serial.print("0");
+    Serial.print(frame[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
+  
+  // Interpret
+  Serial.print("FROM: ");
+  if (sender == 0xFE) Serial.println("PIC (Default)");
+  else if (sender == 0x01) Serial.println("Socket A");
+  else if (sender == 0x02) Serial.println("Socket B");
+  else { Serial.print("ID "); Serial.println(sender, HEX); }
+  
+  Serial.print("TYPE: ");
+  if (cmd == 0x06) {
+    Serial.println("ACKNOWLEDGE");
+    Serial.print("ACTION: ");
+    if (val16 == 0x02) Serial.println("Relay ON");
+    else if (val16 == 0x03) Serial.println("Relay OFF");
+    else Serial.println("Unknown");
+  }
+  else if (cmd == 0x05) {
+    Serial.println("DATA REPORT");
+    Serial.print("VALUE: ");
+    Serial.print(val16);
+    Serial.print(" mA (");
+    Serial.print(val16 / 1000.0, 2);
+    Serial.println(" A)");
+  }
+  else {
+    Serial.print("CMD ");
+    Serial.println(cmd, HEX);
+  }
+  Serial.println("-----------------");
 }
 
 // Helper: Converts "AA FE 00 ..." string to binary bytes
