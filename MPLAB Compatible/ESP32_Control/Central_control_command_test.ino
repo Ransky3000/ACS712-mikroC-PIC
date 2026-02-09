@@ -111,9 +111,18 @@ void parsePacket(uint8_t* frame) {
   Serial.print("TYPE: ");
   if (cmd == 0x06) {
     Serial.println("ACKNOWLEDGE");
+    
+    // Check Socket ID (DataH)
+    Serial.print("TARGET: ");
+    if (dataH == 0x01) Serial.println("Socket A");
+    else if (dataH == 0x02) Serial.println("Socket B");
+    else if (dataH == 0x00) Serial.println("System (Ping)");
+    else Serial.println("Unknown");
+
     Serial.print("ACTION: ");
-    if (val16 == 0x02) Serial.println("Relay ON");
-    else if (val16 == 0x03) Serial.println("Relay OFF");
+    if (dataL == 0x02) Serial.println("Relay ON");
+    else if (dataL == 0x03) Serial.println("Relay OFF");
+    else if (dataL == 0x01) Serial.println("Pong");
     else Serial.println("Unknown");
   }
   else if (cmd == 0x05) {

@@ -1,12 +1,13 @@
 /*
  * File:   __main__.c
- * Description: Merged Firmware - FINAL (Relays + Sensors)
+ * Description: Merged Firmware - FINAL (Relays + Sensors + Improved ACK)
  * 
  * Features:
  * 1. Relay Control (Active Low) via HC12 & Debug Keys 1-4
  * 2. Sensor Reading (ACS712) via HC12 & Debug Key 5
  * 3. Clean Protocol (No text on HardUART)
  * 4. 50ms Inter-packet delay for ESP32 stability
+ * 5. ACK Packet includes Socket ID (DataH)
  */
 
 // CONFIG1
@@ -50,7 +51,7 @@ ACS712_t sensorB;
 
 // --- Helper Prototypes ---
 void Process_Command(RF_Packet_t *pkt);
-void Send_ACK(unsigned char target, unsigned char cmd);
+void Send_ACK(unsigned char target, unsigned char cmd, unsigned char socket);
 void Process_Debug_Shortcut(char key);
 void Perform_Read_And_Report(unsigned char sender_id);
 void print_int_to_uart(unsigned int val, unsigned char is_soft);
@@ -111,10 +112,12 @@ void main() {
             // --- SIMULATION MODE ---
             // Keys 1-4 (Relays), 5 (Sensors)
             // Comment this block out for HW DEPLOY
+            /*
             if (byte >= '1' && byte <= '5') {
                 Process_Debug_Shortcut(byte);
                 continue; 
             }
+            */
             // -----------------------
             
             // Sync
@@ -143,19 +146,21 @@ void Process_Command(RF_Packet_t *pkt) {
     
     switch (pkt->fields.command) {
         case CMD_PING:
-            Send_ACK(pkt->fields.sender_id, CMD_PING);
+            Send_ACK(pkt->fields.sender_id, CMD_PING, 0);
             break;
             
         case CMD_RELAY_ON:
             if (socket == SOCKET_A)      RELAY_A_PIN = 0; // Active Low
             else if (socket == SOCKET_B) RELAY_B_PIN = 0;
-            Send_ACK(pkt->fields.sender_id, CMD_RELAY_ON);
+            // Send ACK with Socket ID
+            Send_ACK(pkt->fields.sender_id, CMD_RELAY_ON, socket);
             break;
             
         case CMD_RELAY_OFF:
             if (socket == SOCKET_A)      RELAY_A_PIN = 1; 
             else if (socket == SOCKET_B) RELAY_B_PIN = 1;
-            Send_ACK(pkt->fields.sender_id, CMD_RELAY_OFF);
+            // Send ACK with Socket ID
+            Send_ACK(pkt->fields.sender_id, CMD_RELAY_OFF, socket);
             break;
             
         case CMD_READ_CURRENT:
@@ -167,14 +172,18 @@ void Process_Command(RF_Packet_t *pkt) {
     }
 }
 
-void Send_ACK(unsigned char target, unsigned char cmd) {
+void Send_ACK(unsigned char target, unsigned char cmd, unsigned char socket) {
     RF_Packet_t tx;
     RF_Init_Packet(&tx);
     
     tx.fields.target_id = target;       
     tx.fields.sender_id = DEVICE_ID;    
     tx.fields.command   = CMD_ACK;   
-    RF_Set_Data(&tx, cmd);
+    
+    // Pack Socket (DataH) and Command (DataL)
+    unsigned int payload = (unsigned int)((socket << 8) | cmd);
+    RF_Set_Data(&tx, payload);
+    
     RF_Sign_Packet(&tx);
     
     for(int i=0; i<PACKET_SIZE; i++) UART_Write(tx.frame[i]);
