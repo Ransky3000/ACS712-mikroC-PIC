@@ -31,11 +31,21 @@ void setup() {
   Serial.println("\n--- ESP32 HC12 Master Test ---");
   Serial.println("Paste these Hex Frames into the Input Box and hit Enter:");
   Serial.println("");
-  Serial.println("1. RELAY A ON:    AA FE 00 02 00 01 FD BB");
-  Serial.println("2. RELAY A OFF:   AA FE 00 03 00 01 FC BB");
-  Serial.println("3. RELAY B ON:    AA FE 00 02 00 02 FE BB");
-  Serial.println("4. RELAY B OFF:   AA FE 00 03 00 02 FF BB");
-  Serial.println("5. READ SENSORS:  AA FE 00 04 00 00 FA BB");
+  Serial.println("--- RELAY A ON ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 02 00 01 FD BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 02 00 01 FE BB");
+  Serial.println("--- RELAY A OFF ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 03 00 01 FC BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 03 00 01 FF BB");
+  Serial.println("--- RELAY B ON ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 02 00 02 FE BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 02 00 02 FD BB"); // Not working here | Edited: Resolved
+  Serial.println("--- RELAY B OFF ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 03 00 02 FF BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 03 00 02 FC BB"); // Not working here | Edited: Resolved
+  Serial.println("--- READ SENSORS ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 04 00 00 FA BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 04 00 00 F9 BB"); // Not working here | Edited: Resolved
   Serial.println("----------------------------------------------");
   Serial.println("Listening for PIC Response...");
 }
