@@ -41,7 +41,7 @@
 #define RELAY_B_PIN RA3
 
 // --- Constants ---
-#define OVERLOAD_THRESHOLD_MA 7000 // 3.00 Amps
+#define OVERLOAD_THRESHOLD_MA 7000 // 7.00 Amps
 
 // --- Globals ---
 ACS712_t sensorA;
@@ -91,8 +91,8 @@ void main() {
     ACS712_Calibrate(&sensorA);
     ACS712_Calibrate(&sensorB);
     
-    Soft_UART_println("Ready. Turning Relays ON in 2s...");
-    __delay_ms(2000);
+    Soft_UART_println("Ready. Turning Relays ON in 0.5s...");
+    __delay_ms(500);
     
     // Turn Relays ON
     RELAY_A_PIN = 0;
@@ -109,6 +109,8 @@ void main() {
     unsigned char isOverloadedB = 0;
     unsigned long cooldownStartB = 0;
 
+    unsigned long last_print = 0;
+    
     while(1) {
         // --- SOCKET A LOGIC ---
         if (isOverloadedA) {
@@ -160,15 +162,26 @@ void main() {
             }
         }
         
-        // Debug Output (Optional - maybe reduce frequency if it spams too much)
-        // Only print every 1s or if state changed? 
-        // For now, let's just print simple status dots or keep it clean
-        // To keep it non-blocking and responsive, we strictly rely on the alerts above.
-        // But continuous monitoring is good. Let's print only if NOT overloaded to show life.
-        
-        if (!isOverloadedA && !isOverloadedB) {
-             // Print current values periodically? 
-             // Let's just do a small blink or minimal output to avoid SoftUART blocking too much
+        // --- NON-BLOCKING DISPLAY (1Hz) ---
+        if (millis() - last_print >= 1000) {
+            last_print = millis();
+            
+            Soft_UART_print("A: ");
+            if (isOverloadedA) {
+                Soft_UART_print("OVERLOAD");
+            } else {
+                print_int_to_soft_uart(currentA);
+                Soft_UART_print(" mA");
+            }
+            
+            Soft_UART_print(" | B: ");
+            if (isOverloadedB) {
+                Soft_UART_print("OVERLOAD");
+            } else {
+                print_int_to_soft_uart(currentB);
+                Soft_UART_print(" mA");
+            }
+            Soft_UART_println("");
         }
     }
 }
