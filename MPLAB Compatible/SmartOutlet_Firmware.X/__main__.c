@@ -41,7 +41,12 @@
 #define RELAY_B_PIN RA3
 
 // --- ID Configuration ---
-#define DEVICE_ID   0xFE
+// CHANGE THIS FOR EACH DEVICE:
+// Device 1: 0xFE
+// Device 2: 0xFD
+// #define DEVICE_ID   0xFE 
+#define DEVICE_ID   0xFD
+
 #define SOCKET_A    1
 #define SOCKET_B    2
 
@@ -112,12 +117,12 @@ void main() {
             // --- SIMULATION MODE ---
             // Keys 1-4 (Relays), 5 (Sensors)
             // Comment this block out for HW DEPLOY
-            /*
-            if (byte >= '1' && byte <= '5') {
-                Process_Debug_Shortcut(byte);
-                continue; 
-            }
-            */
+            
+            // if (byte >= '1' && byte <= '5') {
+            //     Process_Debug_Shortcut(byte);
+            //     continue; 
+            // }
+            
             // -----------------------
             
             // Sync
