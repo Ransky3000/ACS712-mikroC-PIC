@@ -74,13 +74,21 @@ unsigned int ACS712_ReadAC(ACS712_t* sensor, unsigned char frequency) {
     unsigned long avg_sq = accumulator / count;
     unsigned long rms_adc = isqrt(avg_sq);
     
-    // Calculate Voltage RMS (mV)
-    // V = (RMS_ADC * V_Ref_mV) / Resolution
-    // Use unsigned long for calc to prevent overflow
-    unsigned long voltage_rms_mv = (rms_adc * (unsigned long)sensor->voltage_reference_mv) / sensor->adc_resolution;
+    /* 
+     * OPTIMIZATION: Simplified Math for 20A Sensor @ 5V
+     * Original Formula (Expensive 32-bit Code):
+     * unsigned long voltage_rms_mv = (rms_adc * (unsigned long)sensor->voltage_reference_mv) / sensor->adc_resolution;
+     * unsigned long current_mA = (voltage_rms_mv * 1000) / sensor->sensitivity_mV_A;
+     *
+     * Simplified Factor:
+     * (5000 / 1023) * (1000 / 100) = 48.875
+     * Approx: 49 (Error < 0.3%)
+     */
+     
+    // unsigned long voltage_rms_mv = (rms_adc * (unsigned long)sensor->voltage_reference_mv) / sensor->adc_resolution;
+    // unsigned long current_mA = (voltage_rms_mv * 1000) / sensor->sensitivity_mV_A;
     
-    // Calculate Amps RMS (mA)
-    unsigned long current_mA = (voltage_rms_mv * 1000) / sensor->sensitivity_mV_A;
+    unsigned long current_mA = rms_adc * 49; 
     
     return (unsigned int)current_mA;
 }

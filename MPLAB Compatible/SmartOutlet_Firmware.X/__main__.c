@@ -105,13 +105,13 @@ void main() {
     ACS712_SetSensitivity(&sensorA, 100); 
     ACS712_SetSensitivity(&sensorB, 100); 
     
-    Soft_UART_println("--- Merged Firmware: Chunk 2 (FINAL) ---");
-    Soft_UART_println("Calibrating Sensors...");
+    Soft_UART_println("FW:v3.1"); // Reduced from "--- Merged Firmware..."
+    Soft_UART_println("Calib..."); // Reduced from "Calibrating Sensors..."
     
     ACS712_Calibrate(&sensorA);
     ACS712_Calibrate(&sensorB);
     
-    Soft_UART_println("Ready. Keys: 1-5 Active");
+    Soft_UART_println("Rdy"); // Reduced from "Ready..."
     
     // 5. Rx State Machine
     RF_Packet_t rx_pkt;
@@ -154,7 +154,7 @@ void main() {
             if (millis() - cooldownStartA >= 5000) {
                  isOverloadedA = 0;
                  RELAY_A_PIN = 0; 
-                 Soft_UART_println("A: RETRY");
+                 Soft_UART_println("A:Rty");
             }
         } else {
             // Monitor
@@ -172,7 +172,7 @@ void main() {
             if (millis() - cooldownStartB >= 5000) {
                  isOverloadedB = 0;
                  RELAY_B_PIN = 0; 
-                 Soft_UART_println("B: RETRY");
+                 Soft_UART_println("B:Rty");
             }
         } else {
             // Monitor
@@ -313,25 +313,25 @@ void Process_Debug_Shortcut(char key) {
 
     switch(key) {
         case '1': 
-            Soft_UART_println("Cmd: R1 ON");
+            Soft_UART_println("R1+"); // Reduced from "Cmd: R1 ON"
             mock_pkt.fields.command = CMD_RELAY_ON;
             RF_Set_Data(&mock_pkt, SOCKET_A);
             Process_Command(&mock_pkt);
             break;
         case '2': 
-            Soft_UART_println("Cmd: R1 OFF");
+            Soft_UART_println("R1-"); // Reduced from "Cmd: R1 OFF"
             mock_pkt.fields.command = CMD_RELAY_OFF;
             RF_Set_Data(&mock_pkt, SOCKET_A);
             Process_Command(&mock_pkt);
             break;
         case '3': 
-            Soft_UART_println("Cmd: R2 ON");
+            Soft_UART_println("R2+"); // Reduced from "Cmd: R2 ON"
             mock_pkt.fields.command = CMD_RELAY_ON;
             RF_Set_Data(&mock_pkt, SOCKET_B);
             Process_Command(&mock_pkt);
             break;
         case '4': 
-             Soft_UART_println("Cmd: R2 OFF");
+             Soft_UART_println("R2-"); // Reduced from "Cmd: R2 OFF"
             mock_pkt.fields.command = CMD_RELAY_OFF;
             RF_Set_Data(&mock_pkt, SOCKET_B);
             Process_Command(&mock_pkt);
