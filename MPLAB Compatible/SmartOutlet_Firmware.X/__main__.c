@@ -45,9 +45,21 @@
 #define SOCKET_A    1
 #define SOCKET_B    2
 
+// --- Constants ---
+#define OVERLOAD_THRESHOLD_MA 7000 // 7.00 Amps
+
 // --- Globals ---
 ACS712_t sensorA;
 ACS712_t sensorB;
+
+// Overload State Tracking
+unsigned char isOverloadedA = 0;
+unsigned long cooldownStartA = 0;
+
+unsigned char isOverloadedB = 0;
+unsigned long cooldownStartB = 0;
+
+unsigned long last_print = 0;
 
 // --- Helper Prototypes ---
 void Process_Command(RF_Packet_t *pkt);
@@ -106,18 +118,15 @@ void main() {
     unsigned char rx_idx = 0;
     
     while(1) {
+        // --- 1. PRIORITY: UART COMMANDS ---
         if (UART_Data_Ready()) {
             char byte = UART_Read();
             
             // --- SIMULATION MODE ---
-            // Keys 1-4 (Relays), 5 (Sensors)
-            // Comment this block out for HW DEPLOY
-            /*
-            if (byte >= '1' && byte <= '5') {
+             if (byte >= '1' && byte <= '5') {
                 Process_Debug_Shortcut(byte);
                 continue; 
             }
-            */
             // -----------------------
             
             // Sync
@@ -134,7 +143,48 @@ void main() {
                 }
                 rx_idx = 0;
             }
+            continue; // Skip sensor reading this cycle to process next byte fast
         }
+        
+        // --- 2. OVERLOAD PROTECTION (Per Socket) ---
+        
+        // --- Socket A ---
+        if (isOverloadedA) {
+            // Cooldown Logic
+            if (millis() - cooldownStartA >= 5000) {
+                 isOverloadedA = 0;
+                 RELAY_A_PIN = 0; 
+                 Soft_UART_println("A: RETRY");
+            }
+        } else {
+            // Monitor
+            unsigned int currentA = ACS712_ReadAC(&sensorA, 60);
+            if (currentA > OVERLOAD_THRESHOLD_MA) {
+                RELAY_A_PIN = 1; 
+                isOverloadedA = 1;
+                cooldownStartA = millis();
+            }
+        }
+        
+        // --- Socket B ---
+        if (isOverloadedB) {
+            // Cooldown Logic
+            if (millis() - cooldownStartB >= 5000) {
+                 isOverloadedB = 0;
+                 RELAY_B_PIN = 0; 
+                 Soft_UART_println("B: RETRY");
+            }
+        } else {
+            // Monitor
+            unsigned int currentB = ACS712_ReadAC(&sensorB, 60);
+            if (currentB > OVERLOAD_THRESHOLD_MA) {
+                RELAY_B_PIN = 1; 
+                isOverloadedB = 1;
+                cooldownStartB = millis();
+            }
+        }
+        
+        // --- (Status Loop Removed) ---
     }
 }
 
@@ -192,15 +242,39 @@ void Send_ACK(unsigned char target, unsigned char cmd, unsigned char socket) {
 void Perform_Read_And_Report(unsigned char sender_id) {
     // 1. Read Sensors (Blocking ~34ms total)
     // 60 samples per sensor for AC RMS
-    unsigned int valA = ACS712_ReadAC(&sensorA, 60);
-    unsigned int valB = ACS712_ReadAC(&sensorB, 60);
+    // 1. Read Sensors or Check Overload
+    unsigned int valA = 0;
+    unsigned int valB = 0;
     
-    // 2. Print Text to SoftUART (For Debug Cable)
-    Soft_UART_print("S1: ");
-    print_int_to_uart(valA, 1);
-    Soft_UART_print(" mA | S2: ");
-    print_int_to_uart(valB, 1);
-    Soft_UART_println(" mA");
+    if (isOverloadedA) {
+        valA = 0xFFFF; // Status Code: OVERLOAD
+    } else {
+        valA = ACS712_ReadAC(&sensorA, 60);
+    }
+    
+    if (isOverloadedB) {
+        valB = 0xFFFF; // Status Code: OVERLOAD
+    } else {
+        valB = ACS712_ReadAC(&sensorB, 60);
+    }
+    
+    // 2. Print Status to SoftUART (User Format Request)
+    Soft_UART_print("s1: ");
+    if(isOverloadedA) {
+        Soft_UART_print("OVERLOADED"); 
+    } else {
+        print_int_to_uart(valA, 1);
+        Soft_UART_print(" mA");
+    }
+    
+    Soft_UART_print(" | s2: ");
+    if(isOverloadedB) {
+        Soft_UART_print("OVERLOADED"); 
+    } else {
+        print_int_to_uart(valB, 1);
+        Soft_UART_print(" mA");
+    }
+    Soft_UART_println("");
     
     // 3. Send Protocol Packets to HC12 (Clean Binary)
     
@@ -234,27 +308,30 @@ void Process_Debug_Shortcut(char key) {
     mock_pkt.fields.sender_id = 0x0A; // Mock Sender
     RF_Set_Data(&mock_pkt, 0);
 
-    Soft_UART_print("Debug Key: ");
-    Soft_UART_Write(key);
-    Soft_UART_println("");
+    // Echo Key
+    // Soft_UART_print("Key: "); Soft_UART_Write(key); Soft_UART_println("");
 
     switch(key) {
         case '1': 
+            Soft_UART_println("Cmd: R1 ON");
             mock_pkt.fields.command = CMD_RELAY_ON;
             RF_Set_Data(&mock_pkt, SOCKET_A);
             Process_Command(&mock_pkt);
             break;
         case '2': 
+            Soft_UART_println("Cmd: R1 OFF");
             mock_pkt.fields.command = CMD_RELAY_OFF;
             RF_Set_Data(&mock_pkt, SOCKET_A);
             Process_Command(&mock_pkt);
             break;
         case '3': 
+            Soft_UART_println("Cmd: R2 ON");
             mock_pkt.fields.command = CMD_RELAY_ON;
             RF_Set_Data(&mock_pkt, SOCKET_B);
             Process_Command(&mock_pkt);
             break;
         case '4': 
+             Soft_UART_println("Cmd: R2 OFF");
             mock_pkt.fields.command = CMD_RELAY_OFF;
             RF_Set_Data(&mock_pkt, SOCKET_B);
             Process_Command(&mock_pkt);
@@ -262,7 +339,6 @@ void Process_Debug_Shortcut(char key) {
         case '5':
             // Key 5: Read Sensors
             mock_pkt.fields.command = CMD_READ_CURRENT;
-            // No need to process socket ID for read
             Process_Command(&mock_pkt);
             break;
         default: return; 

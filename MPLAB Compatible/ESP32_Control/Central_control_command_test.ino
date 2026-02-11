@@ -127,11 +127,15 @@ void parsePacket(uint8_t* frame) {
   }
   else if (cmd == 0x05) {
     Serial.println("DATA REPORT");
-    Serial.print("VALUE: ");
-    Serial.print(val16);
-    Serial.print(" mA (");
-    Serial.print(val16 / 1000.0, 2);
-    Serial.println(" A)");
+    if (val16 == 0xFFFF) {
+        Serial.println("STATUS: >>> OVERLOAD TRIP! <<<");
+    } else {
+        Serial.print("VALUE: ");
+        Serial.print(val16);
+        Serial.print(" mA (");
+        Serial.print(val16 / 1000.0, 2);
+        Serial.println(" A)");
+    }
   }
   else {
     Serial.print("CMD ");
