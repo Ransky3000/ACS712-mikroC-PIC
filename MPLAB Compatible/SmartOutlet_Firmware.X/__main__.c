@@ -46,7 +46,8 @@
 #define SOCKET_B    2
 
 // --- Constants ---
-#define OVERLOAD_THRESHOLD_MA 7000 // 7.00 Amps
+// Default 7000mA, but now loaded from EEPROM
+unsigned int overload_threshold_ma = 7000;
 
 // --- Globals ---
 ACS712_t sensorA;
@@ -105,6 +106,14 @@ void main() {
     ACS712_SetSensitivity(&sensorA, 100); 
     ACS712_SetSensitivity(&sensorB, 100); 
     
+    // EEPROM Load
+    unsigned char hi = eeprom_read(0x00);
+    unsigned char lo = eeprom_read(0x01);
+    // If not empty (0xFF), load saved value
+    if (hi != 0xFF) {
+        overload_threshold_ma = (hi << 8) | lo;
+    } 
+    
     Soft_UART_println("FW:v3.1"); // Reduced from "--- Merged Firmware..."
     Soft_UART_println("Calib..."); // Reduced from "Calibrating Sensors..."
     
@@ -123,7 +132,7 @@ void main() {
             char byte = UART_Read();
             
             // --- SIMULATION MODE ---
-             if (byte >= '1' && byte <= '5') {
+             if (byte >= '1' && byte <= '6') {
                 Process_Debug_Shortcut(byte);
                 continue; 
             }
@@ -159,7 +168,7 @@ void main() {
         } else {
             // Monitor
             unsigned int currentA = ACS712_ReadAC(&sensorA, 60);
-            if (currentA > OVERLOAD_THRESHOLD_MA) {
+            if (currentA > overload_threshold_ma) {
                 RELAY_A_PIN = 1; 
                 isOverloadedA = 1;
                 cooldownStartA = millis();
@@ -177,7 +186,7 @@ void main() {
         } else {
             // Monitor
             unsigned int currentB = ACS712_ReadAC(&sensorB, 60);
-            if (currentB > OVERLOAD_THRESHOLD_MA) {
+            if (currentB > overload_threshold_ma) {
                 RELAY_B_PIN = 1; 
                 isOverloadedB = 1;
                 cooldownStartB = millis();
@@ -216,6 +225,18 @@ void Process_Command(RF_Packet_t *pkt) {
         case CMD_READ_CURRENT:
             Perform_Read_And_Report(pkt->fields.sender_id);
             break;
+            
+        case CMD_SET_THRESHOLD: {
+            unsigned int new_limit = (pkt->fields.data_h << 8) | pkt->fields.data_l;
+            overload_threshold_ma = new_limit;
+            
+            // Persist to EEPROM (0x00=High, 0x01=Low)
+            eeprom_write(0x00, pkt->fields.data_h);
+            eeprom_write(0x01, pkt->fields.data_l);
+            
+            Send_ACK(pkt->fields.sender_id, CMD_SET_THRESHOLD, 0);
+            break;
+        }
             
         default:
             break;
@@ -339,6 +360,14 @@ void Process_Debug_Shortcut(char key) {
         case '5':
             // Key 5: Read Sensors
             mock_pkt.fields.command = CMD_READ_CURRENT;
+            Process_Command(&mock_pkt);
+            break;
+            
+        case '6':
+            // Key 6: Cfg 10000mA
+            Soft_UART_println("Cfg:10000");
+            mock_pkt.fields.command = CMD_SET_THRESHOLD;
+            RF_Set_Data(&mock_pkt, 10000);
             Process_Command(&mock_pkt);
             break;
         default: return; 

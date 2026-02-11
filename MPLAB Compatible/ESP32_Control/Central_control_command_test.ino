@@ -36,6 +36,7 @@ void setup() {
   Serial.println("3. RELAY B ON:    AA FE 00 02 00 02 FE BB");
   Serial.println("4. RELAY B OFF:   AA FE 00 03 00 02 FF BB");
   Serial.println("5. READ SENSORS:  AA FE 00 04 00 00 FA BB");
+  Serial.println("6. CFG 4000mA:    AA FE 00 07 0F A0 01 AE BB");
   Serial.println("----------------------------------------------");
   Serial.println("Listening for PIC Response...");
 }
