@@ -61,6 +61,7 @@ unsigned char isOverloadedB = 0;
 unsigned long cooldownStartB = 0;
 
 unsigned long last_print = 0;
+unsigned long last_sensor_check = 0;
 
 // --- Helper Prototypes ---
 void Process_Command(RF_Packet_t *pkt);
@@ -128,14 +129,24 @@ void main() {
     
     while(1) {
         // --- 1. PRIORITY: UART COMMANDS ---
+        
+        // OERR Recovery: If UART buffer overflowed during sensor read,
+        // the receiver is permanently locked. Clear it by toggling CREN.
+        if (OERR) {
+            CREN = 0;
+            CREN = 1;
+        }
+        
         if (UART_Data_Ready()) {
             char byte = UART_Read();
             
             // --- SIMULATION MODE ---
-             if (byte >= '1' && byte <= '6') {
-                Process_Debug_Shortcut(byte);
-                continue; 
-            }
+            
+            // if (byte >= '1' && byte <= '6') {
+            //     Process_Debug_Shortcut(byte);
+            //     continue; 
+            // }
+            
             // -----------------------
             
             // Sync
@@ -155,45 +166,42 @@ void main() {
             continue; // Skip sensor reading this cycle to process next byte fast
         }
         
-        // --- 2. OVERLOAD PROTECTION (Per Socket) ---
-        
-        // --- Socket A ---
-        if (isOverloadedA) {
-            // Cooldown Logic
-            if (millis() - cooldownStartA >= 5000) {
-                 isOverloadedA = 0;
-                 RELAY_A_PIN = 0; 
-                 Soft_UART_println("A:Rty");
+        // --- 2. OVERLOAD PROTECTION (Gated: Every 200ms) ---
+        if (millis() - last_sensor_check >= 200) {
+            last_sensor_check = millis();
+            
+            // --- Socket A ---
+            if (isOverloadedA) {
+                if (millis() - cooldownStartA >= 5000) {
+                     isOverloadedA = 0;
+                     RELAY_A_PIN = 0; 
+                     Soft_UART_println("A:Rty");
+                }
+            } else {
+                unsigned int currentA = ACS712_ReadAC(&sensorA, 60);
+                if (currentA > overload_threshold_ma) {
+                    RELAY_A_PIN = 1; 
+                    isOverloadedA = 1;
+                    cooldownStartA = millis();
+                }
             }
-        } else {
-            // Monitor
-            unsigned int currentA = ACS712_ReadAC(&sensorA, 60);
-            if (currentA > overload_threshold_ma) {
-                RELAY_A_PIN = 1; 
-                isOverloadedA = 1;
-                cooldownStartA = millis();
+            
+            // --- Socket B ---
+            if (isOverloadedB) {
+                if (millis() - cooldownStartB >= 5000) {
+                     isOverloadedB = 0;
+                     RELAY_B_PIN = 0; 
+                     Soft_UART_println("B:Rty");
+                }
+            } else {
+                unsigned int currentB = ACS712_ReadAC(&sensorB, 60);
+                if (currentB > overload_threshold_ma) {
+                    RELAY_B_PIN = 1; 
+                    isOverloadedB = 1;
+                    cooldownStartB = millis();
+                }
             }
         }
-        
-        // --- Socket B ---
-        if (isOverloadedB) {
-            // Cooldown Logic
-            if (millis() - cooldownStartB >= 5000) {
-                 isOverloadedB = 0;
-                 RELAY_B_PIN = 0; 
-                 Soft_UART_println("B:Rty");
-            }
-        } else {
-            // Monitor
-            unsigned int currentB = ACS712_ReadAC(&sensorB, 60);
-            if (currentB > overload_threshold_ma) {
-                RELAY_B_PIN = 1; 
-                isOverloadedB = 1;
-                cooldownStartB = millis();
-            }
-        }
-        
-        // --- (Status Loop Removed) ---
     }
 }
 

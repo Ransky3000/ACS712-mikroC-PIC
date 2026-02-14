@@ -31,13 +31,27 @@ void setup() {
   Serial.println("\n--- ESP32 HC12 Master Test ---");
   Serial.println("Paste these Hex Frames into the Input Box and hit Enter:");
   Serial.println("");
-  Serial.println("1. RELAY A ON:    AA FE 00 02 00 01 FD BB");
-  Serial.println("2. RELAY A OFF:   AA FE 00 03 00 01 FC BB");
-  Serial.println("3. RELAY B ON:    AA FE 00 02 00 02 FE BB");
-  Serial.println("4. RELAY B OFF:   AA FE 00 03 00 02 FF BB");
-  Serial.println("5. READ SENSORS:  AA FE 00 04 00 00 FA BB");
-  Serial.println("6. CFG 4000mA:    AA FE 00 07 0F A0 01 AE BB");
+  Serial.println("--- RELAY A ON ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 02 00 01 FD BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 02 00 01 FE BB");
+  Serial.println("--- RELAY A OFF ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 03 00 01 FC BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 03 00 01 FF BB");
+  Serial.println("--- RELAY B ON ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 02 00 02 FE BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 02 00 02 FD BB"); 
+  Serial.println("--- RELAY B OFF ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 03 00 02 FF BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 03 00 02 FC BB"); 
+  Serial.println("--- READ SENSORS ---");
+  Serial.println("  1. Device 1 (FE): AA FE 00 04 00 00 FA BB");
+  Serial.println("  2. Device 2 (FD): AA FD 00 04 00 00 F9 BB"); 
+  Serial.println("6. CFG 4000mA:    AA FE 00 07 0F A0 56 BB");
   Serial.println("----------------------------------------------");
+  Serial.println("Type 'AT' to test HC-12 Module (Ensure SET Pin is Low)");
+
+
+  
   Serial.println("Listening for PIC Response...");
 }
 
@@ -53,7 +67,14 @@ void loop() {
     if (input.length() > 0) {
       Serial.print("[PC] Sending: ");
       Serial.println(input);
-      sendHexString(input);
+      
+      // Check for AT Command
+      if (input.startsWith("AT") || input.startsWith("at")) {
+          HC12.print(input); // Send as ASCII
+          // Note: HC-12 usually needs no newline for AT commands
+      } else {
+          sendHexString(input);
+      }
     }
   }
   
@@ -115,7 +136,8 @@ void parsePacket(uint8_t* frame) {
     
     // Check Socket ID (DataH)
     Serial.print("TARGET: ");
-    if (dataH == 0x01) Serial.println("Socket A");
+    if (dataL == 0x07) Serial.println("Global Config");
+    else if (dataH == 0x01) Serial.println("Socket A");
     else if (dataH == 0x02) Serial.println("Socket B");
     else if (dataH == 0x00) Serial.println("System (Ping)");
     else Serial.println("Unknown");
@@ -123,13 +145,14 @@ void parsePacket(uint8_t* frame) {
     Serial.print("ACTION: ");
     if (dataL == 0x02) Serial.println("Relay ON");
     else if (dataL == 0x03) Serial.println("Relay OFF");
+    else if (dataL == 0x07) Serial.println("Config Updated (Saved to EEPROM)");
     else if (dataL == 0x01) Serial.println("Pong");
     else Serial.println("Unknown");
   }
   else if (cmd == 0x05) {
     Serial.println("DATA REPORT");
     if (val16 == 0xFFFF) {
-        Serial.println("STATUS: >>> OVERLOAD TRIP! <<<");
+        Serial.println(">>> STATUS: OVERLOAD TRIP! <<<");
     } else {
         Serial.print("VALUE: ");
         Serial.print(val16);
