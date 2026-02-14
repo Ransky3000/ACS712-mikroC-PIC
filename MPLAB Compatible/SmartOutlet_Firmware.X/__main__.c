@@ -62,6 +62,7 @@ unsigned long cooldownStartB = 0;
 
 unsigned long last_print = 0;
 unsigned long last_sensor_check = 0;
+unsigned long rx_start_time = 0;
 
 // --- Helper Prototypes ---
 void Process_Command(RF_Packet_t *pkt);
@@ -135,6 +136,13 @@ void main() {
         if (OERR) {
             CREN = 0;
             CREN = 1;
+            rx_idx = 0; // Reset packet state machine
+        }
+        
+        // Packet Timeout: If partial packet received but not completed
+        // within 500ms, reset state machine to prevent permanent desync
+        if (rx_idx > 0 && (millis() - rx_start_time > 500)) {
+            rx_idx = 0;
         }
         
         if (UART_Data_Ready()) {
@@ -152,7 +160,9 @@ void main() {
             // Sync
             if (rx_idx == 0 && byte != SOF_BYTE) continue; 
             
-            rx_pkt.frame[rx_idx++] = byte;
+            rx_pkt.frame[rx_idx] = byte;
+            if (rx_idx == 0) rx_start_time = millis(); // Start timeout
+            rx_idx++;
             
             // Full Packet?
             if (rx_idx >= PACKET_SIZE) {
@@ -217,16 +227,14 @@ void Process_Command(RF_Packet_t *pkt) {
             break;
             
         case CMD_RELAY_ON:
-            if (socket == SOCKET_A)      RELAY_A_PIN = 0; // Active Low
-            else if (socket == SOCKET_B) RELAY_B_PIN = 0;
-            // Send ACK with Socket ID
+            if (socket == SOCKET_A)      { RELAY_A_PIN = 0; Soft_UART_println("R1+"); }
+            else if (socket == SOCKET_B) { RELAY_B_PIN = 0; Soft_UART_println("R2+"); }
             Send_ACK(pkt->fields.sender_id, CMD_RELAY_ON, socket);
             break;
             
         case CMD_RELAY_OFF:
-            if (socket == SOCKET_A)      RELAY_A_PIN = 1; 
-            else if (socket == SOCKET_B) RELAY_B_PIN = 1;
-            // Send ACK with Socket ID
+            if (socket == SOCKET_A)      { RELAY_A_PIN = 1; Soft_UART_println("R1-"); }
+            else if (socket == SOCKET_B) { RELAY_B_PIN = 1; Soft_UART_println("R2-"); }
             Send_ACK(pkt->fields.sender_id, CMD_RELAY_OFF, socket);
             break;
             
