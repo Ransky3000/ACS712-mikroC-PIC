@@ -275,22 +275,14 @@ void Perform_Read_And_Report(unsigned char sender_id) {
         valB = ACS712_ReadAC(&sensorB, 60);
     }
     
-    // 2. Print Status to SoftUART (User Format Request)
-    Soft_UART_print("s1: ");
-    if(isOverloadedA) {
-        Soft_UART_print("OVERLOADED"); 
-    } else {
-        print_int_to_uart(valA, 1);
-        Soft_UART_print(" mA");
-    }
+    // 2. Print to SoftUART
+    Soft_UART_print("A:");
+    if(isOverloadedA) { Soft_UART_print("OVL"); }
+    else { print_int_to_uart(valA, 1); }
     
-    Soft_UART_print(" | s2: ");
-    if(isOverloadedB) {
-        Soft_UART_print("OVERLOADED"); 
-    } else {
-        print_int_to_uart(valB, 1);
-        Soft_UART_print(" mA");
-    }
+    Soft_UART_print("|B:");
+    if(isOverloadedB) { Soft_UART_print("OVL"); }
+    else { print_int_to_uart(valB, 1); }
     Soft_UART_println("");
     
     // 3. Send Protocol Packets to HC12 (Clean Binary)
