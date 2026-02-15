@@ -37,8 +37,8 @@
 // --- Hardware Definitions ---
 #define _XTAL_FREQ 8000000
 
-#define RELAY_A_PIN RA2
-#define RELAY_B_PIN RA3
+#define RELAY_A_PIN RA3
+#define RELAY_B_PIN RA2
 
 // --- ID Configuration ---
 #define DEVICE_ID   0xFE
