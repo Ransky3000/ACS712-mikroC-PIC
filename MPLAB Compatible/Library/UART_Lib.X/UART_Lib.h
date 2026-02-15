@@ -20,4 +20,7 @@ char UART_Read();
 // Send a string
 void UART_Write_Text(char *text);
 
+// ISR Handler: Call from main interrupt
+void UART_ISR(void);
+
 #endif
