@@ -87,9 +87,9 @@ void main() {
     TRISA = 0b00000011; // RA0, RA1 Input (Sensors), Others Output
     TRISB = 0b00000100; // RB2(RX) Input, RB5(TX) Output
     
-    // Init Relays OFF (Active Low -> High)
-    RELAY_A_PIN = 1;
-    RELAY_B_PIN = 1;
+    // Init Relays OFF (NC Wiring: Energize -> NC opens -> disconnected)
+    RELAY_A_PIN = 0;
+    RELAY_B_PIN = 0;
     
     // 3. Init Libraries
     UART_Init();
@@ -139,7 +139,7 @@ void main() {
             // Restore from git commit e93e58b if needed
             
             // Sync
-            if (rx_idx == 0 && byte != SOF_BYTE) continue; 
+            if (rx_idx == 0 && byte != SOF_BYTE) continue;
             
             rx_pkt.frame[rx_idx++] = byte;
             
@@ -163,13 +163,13 @@ void main() {
             if (isOverloadedA) {
                 if (millis() - cooldownStartA >= 5000) {
                      isOverloadedA = 0;
-                     RELAY_A_PIN = 0; 
+                     RELAY_A_PIN = 1; // Retry ON (de-energize, NC closes)
                      Soft_UART_println("A:Rty");
                 }
             } else {
                 unsigned int currentA = ACS712_ReadAC(&sensorA, 60);
                 if (currentA > overload_threshold_ma) {
-                    RELAY_A_PIN = 1; 
+                    RELAY_A_PIN = 0; // Trip OFF (energize, NC opens)
                     isOverloadedA = 1;
                     cooldownStartA = millis();
                 }
@@ -179,13 +179,13 @@ void main() {
             if (isOverloadedB) {
                 if (millis() - cooldownStartB >= 5000) {
                      isOverloadedB = 0;
-                     RELAY_B_PIN = 0; 
+                     RELAY_B_PIN = 1; // Retry ON (de-energize, NC closes)
                      Soft_UART_println("B:Rty");
                 }
             } else {
                 unsigned int currentB = ACS712_ReadAC(&sensorB, 60);
                 if (currentB > overload_threshold_ma) {
-                    RELAY_B_PIN = 1; 
+                    RELAY_B_PIN = 0; // Trip OFF (energize, NC opens)
                     isOverloadedB = 1;
                     cooldownStartB = millis();
                 }
@@ -206,14 +206,14 @@ void Process_Command(RF_Packet_t *pkt) {
             break;
             
         case CMD_RELAY_ON:
-            if (socket == SOCKET_A)      { RELAY_A_PIN = 0; Soft_UART_println("R1+"); }
-            else if (socket == SOCKET_B) { RELAY_B_PIN = 0; Soft_UART_println("R2+"); }
+            if (socket == SOCKET_A && !isOverloadedA)      { RELAY_A_PIN = 1; Soft_UART_println("R1+"); }
+            else if (socket == SOCKET_B && !isOverloadedB) { RELAY_B_PIN = 1; Soft_UART_println("R2+"); }
             Send_ACK(pkt->fields.sender_id, CMD_RELAY_ON, socket);
             break;
             
         case CMD_RELAY_OFF:
-            if (socket == SOCKET_A)      { RELAY_A_PIN = 1; Soft_UART_println("R1-"); }
-            else if (socket == SOCKET_B) { RELAY_B_PIN = 1; Soft_UART_println("R2-"); }
+            if (socket == SOCKET_A)      { RELAY_A_PIN = 0; Soft_UART_println("R1-"); }
+            else if (socket == SOCKET_B) { RELAY_B_PIN = 0; Soft_UART_println("R2-"); }
             // Send ACK with Socket ID
             Send_ACK(pkt->fields.sender_id, CMD_RELAY_OFF, socket);
             break;
