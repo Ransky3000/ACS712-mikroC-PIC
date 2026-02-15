@@ -67,6 +67,7 @@ unsigned long last_sensor_check = 0;
 void Process_Command(RF_Packet_t *pkt);
 void Send_ACK(unsigned char target, unsigned char cmd, unsigned char socket);
 void Perform_Read_And_Report(unsigned char sender_id);
+void Process_Debug_Shortcut(char key);
 void print_int_to_uart(unsigned int val, unsigned char is_soft);
 
 // --- ISR ---
@@ -135,8 +136,13 @@ void main() {
         if (UART_Data_Ready()) {
             char byte = UART_Read();
             
-            // --- SIMULATION MODE (Removed for HW Deploy) ---
-            // Restore from git commit e93e58b if needed
+            // --- SIMULATION MODE ---
+            // Uncomment for Proteus testing:
+            if (byte >= '1' && byte <= '6') {
+                Process_Debug_Shortcut(byte);
+                continue;
+            }
+            // -----------------------
             
             // Sync
             if (rx_idx == 0 && byte != SOF_BYTE) continue;
@@ -324,5 +330,54 @@ void print_int_to_uart(unsigned int val, unsigned char is_soft) {
     }
     while(--i >= 0) {
         if(is_soft) Soft_UART_Write(buffer[i]); else UART_Write(buffer[i]);
+    }
+}
+
+void Process_Debug_Shortcut(char key) {
+    RF_Packet_t mock_pkt;
+    RF_Init_Packet(&mock_pkt);
+    
+    mock_pkt.fields.target_id = DEVICE_ID;
+    mock_pkt.fields.sender_id = 0x0A; // Mock Sender
+    RF_Set_Data(&mock_pkt, 0);
+
+    switch(key) {
+        case '1': 
+            Soft_UART_println("R1+");
+            mock_pkt.fields.command = CMD_RELAY_ON;
+            RF_Set_Data(&mock_pkt, SOCKET_A);
+            Process_Command(&mock_pkt);
+            break;
+        case '2': 
+            Soft_UART_println("R1-");
+            mock_pkt.fields.command = CMD_RELAY_OFF;
+            RF_Set_Data(&mock_pkt, SOCKET_A);
+            Process_Command(&mock_pkt);
+            break;
+        case '3': 
+            Soft_UART_println("R2+");
+            mock_pkt.fields.command = CMD_RELAY_ON;
+            RF_Set_Data(&mock_pkt, SOCKET_B);
+            Process_Command(&mock_pkt);
+            break;
+        case '4': 
+            Soft_UART_println("R2-");
+            mock_pkt.fields.command = CMD_RELAY_OFF;
+            RF_Set_Data(&mock_pkt, SOCKET_B);
+            Process_Command(&mock_pkt);
+            break;
+        case '5':
+            // Read Sensors
+            mock_pkt.fields.command = CMD_READ_CURRENT;
+            Process_Command(&mock_pkt);
+            break;
+        case '6':
+            // Cfg 10000mA
+            Soft_UART_println("Cfg:10000");
+            mock_pkt.fields.command = CMD_SET_THRESHOLD;
+            RF_Set_Data(&mock_pkt, 10000);
+            Process_Command(&mock_pkt);
+            break;
+        default: return; 
     }
 }
