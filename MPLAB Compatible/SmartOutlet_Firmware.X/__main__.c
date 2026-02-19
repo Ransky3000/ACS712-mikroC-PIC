@@ -41,7 +41,7 @@
 #define RELAY_B_PIN RA2
 
 // --- ID Configuration ---
-#define DEVICE_ID   0xFE
+#define DEVICE_ID   0xFC 
 #define SOCKET_A    1
 #define SOCKET_B    2
 
@@ -138,10 +138,10 @@ void main() {
             
             // --- SIMULATION MODE ---
             // Uncomment for Proteus testing:
-            if (byte >= '1' && byte <= '6') {
-                Process_Debug_Shortcut(byte);
-                continue;
-            }
+            // if (byte >= '1' && byte <= '6') {
+            //     Process_Debug_Shortcut(byte);
+            //     continue;
+            // }
             // -----------------------
             
             // Sync
