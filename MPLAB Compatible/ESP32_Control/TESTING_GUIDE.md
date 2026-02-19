@@ -68,54 +68,73 @@
 ### Prerequisites
 
 - Flash `Central_control_command_test.ino` to ESP32
+- Open Serial Monitor at **115200 baud**
 - HC-12 modules configured to same channel/baud
-- Comment out simulation mode for hardware deployment
+- PIC firmware with simulation mode **commented out**
 
-### Command Codes
+### ESP32 Serial Monitor Commands
 
-| Code     | Name                  | Data                     |
-| :------- | :-------------------- | :----------------------- |
-| `0x02` | `CMD_RELAY_ON`      | Socket ID (01=A, 02=B)   |
-| `0x03` | `CMD_RELAY_OFF`     | Socket ID (01=A, 02=B)   |
-| `0x04` | `CMD_READ_CURRENT`  | Unused (0x0000)          |
-| `0x05` | `CMD_REPORT_DATA`   | Current in mA (response) |
-| `0x06` | `CMD_ACK`           | Socket + Command echoed  |
-| `0x07` | `CMD_SET_THRESHOLD` | Threshold in mA          |
-| `0x08` | `CMD_SET_DEVICE_ID` | New Device ID (data_l)   |
-| `0x09` | `CMD_SET_ID_MASTER` | New Master ID (data_l)   |
+| Input        | Action                                  |
+| :----------- | :-------------------------------------- |
+| `1`        | Relay A ON                              |
+| `2`        | Relay A OFF                             |
+| `3`        | Relay B ON                              |
+| `4`        | Relay B OFF                             |
+| `5`        | Read Sensors                            |
+| `6`        | Set Threshold (prompts for mA value)    |
+| `7`        | Set Device ID (prompts for hex value)   |
+| `8`        | Set Master ID (prompts for hex value)   |
+| `d FE`     | Switch target device to 0xFE            |
+| `d status` | Show target, relay states, threshold    |
+| `help`     | Show help menu                          |
+| `AA ...`   | Send raw hex packet (CRC must be manual)|
 
-### PIC 1 (`DEVICE_ID: 0xFE`)
+### Device Selection
 
-| # | Action               | Hex Packet                  |
-| :- | :------------------- | :-------------------------- |
-| 1 | Relay A ON           | `AA FE 00 02 00 01 FD BB` |
-| 2 | Relay A OFF          | `AA FE 00 03 00 01 FC BB` |
-| 3 | Relay B ON           | `AA FE 00 02 00 02 FE BB` |
-| 4 | Relay B OFF          | `AA FE 00 03 00 02 FF BB` |
-| 5 | Read Sensors         | `AA FE 00 04 00 00 FA BB` |
-| 6 | Set Threshold 3233mA | `AA FE 00 07 0C A1 54 BB` |
+Switch target before sending commands:
+```
+> d FE
+Target: 0xFE
+> d FD
+Target: 0xFD
+```
 
-### PIC 2 (`DEVICE_ID: 0xFD`)
+### Device Status
 
-| # | Action               | Hex Packet                  |
-| :- | :------------------- | :-------------------------- |
-| 1 | Relay A ON           | `AA FD 00 02 00 01 FE BB` |
-| 2 | Relay A OFF          | `AA FD 00 03 00 01 FF BB` |
-| 3 | Relay B ON           | `AA FD 00 02 00 02 FD BB` |
-| 4 | Relay B OFF          | `AA FD 00 03 00 02 FC BB` |
-| 5 | Read Sensors         | `AA FD 00 04 00 00 F9 BB` |
-| 6 | Set Threshold 3233mA | `AA FD 00 07 0C A1 57 BB` |
+Check current tracked state at any time:
+```
+> d status
+--- DEVICE STATUS ---
+Target:    0xFE
+Socket A:  ON
+Socket B:  OFF
+Threshold: 5000 mA
+Master ID: 0x0A
+---------------------
+```
 
-### PIC 3 (`DEVICE_ID: 0xFC`)
+> **Note:** States show `---` until the first ACK confirms them.
 
-| # | Action               | Hex Packet                  |
-| :- | :------------------- | :-------------------------- |
-| 1 | Relay A ON           | `AA FC 00 02 00 01 FF BB` |
-| 2 | Relay A OFF          | `AA FC 00 03 00 01 FE BB` |
-| 3 | Relay B ON           | `AA FC 00 02 00 02 FC BB` |
-| 4 | Relay B OFF          | `AA FC 00 03 00 02 FD BB` |
-| 5 | Read Sensors         | `AA FC 00 04 00 00 F8 BB` |
-| 6 | Set Threshold 3233mA | `AA FC 00 07 0C A1 56 BB` |
+### Hardware Test Sequence
+
+1. Power on ESP32 → help menu displays
+2. `d FE` → set target to PIC 1
+3. `1` → Relay A ON → wait for ACK
+4. `3` → Relay B ON → wait for ACK
+5. `d status` → verify Socket A: ON, Socket B: ON
+6. `2` → Relay A OFF → wait for ACK
+7. `d status` → verify Socket A: OFF, Socket B: ON
+8. `5` → Read Sensors → verify current readings
+9. `6` → enter `5000` → threshold ACK
+10. `d status` → verify Threshold: 5000 mA
+
+### Config Mode Test (Hardware)
+
+1. Hold physical RB3 for 3s → PIC enters config mode
+2. `7` → enter `FE` → Set Device ID ACK received
+3. `d FE` → switch ESP32 target to match new ID
+4. `1` → Relay A ON → ACK from 0xFE confirms it worked
+5. Send to old ID → no response (correct)
 
 ### Packet Format
 
@@ -147,12 +166,33 @@ AA  00  FE  06  02  02  FA  BB
 
 **CRC** = XOR of bytes 1-5 (TARGET ^ SENDER ^ CMD ^ DATA_H ^ DATA_L)
 
-### Config Mode (Hardware)
+### Command Codes
 
-1. Hold RB3 for 3s → SoftUART: `"Cfg!"`
-2. Send `CMD_SET_DEVICE_ID` (0x08) to current device ID → ACK received → config mode off
-3. Verify: send command to new ID → responds
-4. Send to old ID → no response
+| Code     | Name                  | Data                     |
+| :------- | :-------------------- | :----------------------- |
+| `0x02` | `CMD_RELAY_ON`      | Socket ID (01=A, 02=B)   |
+| `0x03` | `CMD_RELAY_OFF`     | Socket ID (01=A, 02=B)   |
+| `0x04` | `CMD_READ_CURRENT`  | Unused (0x0000)          |
+| `0x05` | `CMD_REPORT_DATA`   | Current in mA (response) |
+| `0x06` | `CMD_ACK`           | Socket + Command echoed  |
+| `0x07` | `CMD_SET_THRESHOLD` | Threshold in mA          |
+| `0x08` | `CMD_SET_DEVICE_ID` | New Device ID (data_l)   |
+| `0x09` | `CMD_SET_ID_MASTER` | New Master ID (data_l)   |
+
+### Raw Hex Reference
+
+For manual testing or debugging, raw hex packets can still be pasted directly:
+
+**PIC 1 (0xFE):** `d FE` then use keys 1-8, or paste raw:
+
+| Action               | Hex Packet                  |
+| :------------------- | :-------------------------- |
+| Relay A ON           | `AA FE 00 02 00 01 FD BB` |
+| Relay A OFF          | `AA FE 00 03 00 01 FC BB` |
+| Relay B ON           | `AA FE 00 02 00 02 FE BB` |
+| Relay B OFF          | `AA FE 00 03 00 02 FF BB` |
+| Read Sensors         | `AA FE 00 04 00 00 FA BB` |
+| Set Threshold 3233mA | `AA FE 00 07 0C A1 54 BB` |
 
 ---
 
