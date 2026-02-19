@@ -26,6 +26,8 @@
 #define CMD_REPORT_DATA  0x05 // Response with Data (Data=mA)
 #define CMD_ACK          0x06 // Acknowledge action
 #define CMD_SET_THRESHOLD 0x07 // Set Overload Limit (Data=mA)
+#define CMD_SET_DEVICE_ID 0x08 // Set Device ID (Data_L = new ID)
+#define CMD_SET_ID_MASTER 0x09 // Set Master ID (Data_L = new ID)
 
 // --- Device IDs ---
 #define ID_MASTER   0x00

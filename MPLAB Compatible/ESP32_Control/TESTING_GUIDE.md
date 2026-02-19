@@ -1,11 +1,7 @@
-```
-
-```
-
 # Smart Outlet Firmware — Testing Guide
 
-**Device:** PIC16F88 | **Firmware:** v5.1.0+
-**Supported Devices:** `0xFE` (PIC 1) · `0xFD` (PIC 2) · `0xFC` (PIC 3)
+**Device:** PIC16F88 | **Firmware:** v5.2.0
+**Default IDs:** `DEVICE_ID = 0x01` · `ID_MASTER = 0x01` · **Threshold:** 3000mA
 
 ---
 
@@ -13,48 +9,57 @@
 
 ### Prerequisites
 
-- Uncomment the simulation mode block in `__main__.c` (lines 140-143):
-
-```c
-if (byte >= '1' && byte <= '6') {
-    Process_Debug_Shortcut(byte);
-    continue;
-}
-```
-
-- Recompile and load the `.hex` into Proteus
+- Simulation mode is **commented out** by default — uncomment lines 159-162 in `__main__.c` for Proteus testing
+- Add **push button** on RB3 (active LOW) and **LED** on RB4
 
 ### Keyboard Shortcuts
 
-| Key   | Action                | Simulated Packet            |
-| :---- | :-------------------- | :-------------------------- |
-| `1` | Relay A**ON**   | `AA FE 00 02 00 01 FD BB` |
-| `2` | Relay A**OFF**  | `AA FE 00 03 00 01 FC BB` |
-| `3` | Relay B**ON**   | `AA FE 00 02 00 02 FE BB` |
-| `4` | Relay B**OFF**  | `AA FE 00 03 00 02 FF BB` |
-| `5` | Read Sensors          | `AA FE 00 04 00 00 FA BB` |
-| `6` | Set Threshold 10000mA | `AA FE 00 07 27 10 C4 BB` |
+| Key   | Action                                        | SoftUART Output     |
+| :---- | :-------------------------------------------- | :------------------ |
+| `1` | Relay A **ON**                           | `R1+`             |
+| `2` | Relay A **OFF**                          | `R1-`             |
+| `3` | Relay B **ON**                           | `R2+`             |
+| `4` | Relay B **OFF**                          | `R2-`             |
+| `5` | Read Sensors                                  | `A:<val>\|B:<val>` |
+| `6` | Set Threshold 10000mA                         | `Cfg:10000`       |
+| `7` | Set Device ID → 0xFE *(requires config mode)* | `ID:FE` or `Cfg?` |
+| `8` | Set Master ID → 0x0A *(requires config mode)* | `MA:0A` or `Cfg?` |
 
-### SoftUART Debug Output (Virtual Terminal)
+### Config Mode & Factory Reset
 
-| Output                | Meaning                                       |
-| :-------------------- | :-------------------------------------------- |
-| `FW:v3.1`           | Firmware booted                               |
-| `Calib...`          | Sensor calibration in progress                |
-| `Rdy`               | System ready                                  |
-| `R1+` / `R1-`     | Relay A turned ON / OFF                       |
-| `R2+` / `R2-`     | Relay B turned ON / OFF                       |
-| `A:Rty` / `B:Rty` | Socket A/B auto-retry after overload cooldown |
-| `CRC!`              | Bad checksum on received packet               |
-| `Cfg:10000`         | Threshold set to 10000mA                      |
+| Action                      | How                                   | Expected                             |
+| :-------------------------- | :------------------------------------ | :----------------------------------- |
+| **Enter Config Mode** | Hold RB3 LOW for 3 seconds            | SoftUART: `"Cfg!"`                  |
+| **Set Device ID**     | While in config mode, press key `7` | RB4 → HIGH, config mode deactivates |
+| **Set Master ID**     | While in config mode, press key `8` | RB4 → HIGH, config mode deactivates |
+| **Factory Reset**     | Press RB3 3 times (short presses)     | All defaults restored, RB4 → LOW    |
 
-### Relay Pin Debug (NC Wiring)
+### RB4 Status LED
 
-| Pin State            | Meaning                                               |
-| :------------------- | :---------------------------------------------------- |
-| `0`                | Relay energized → NC opens → Socket**OFF**    |
-| `1`                | Relay de-energized → NC closed → Socket**ON** |
-| Boot default:`0/0` | Both sockets OFF                                      |
+| RB4 State      | Meaning                                             |
+| :------------- | :-------------------------------------------------- |
+| **LOW**  | All defaults (ID=0x01, Master=0x01, Threshold=3000) |
+| **HIGH** | All values have been configured                    |
+
+### Boot Messages
+
+| Output       | Meaning                        |
+| :----------- | :----------------------------- |
+| `v5.2`     | Firmware booted                |
+| `Cal`      | Sensor calibration in progress |
+| `Rdy`      | System ready                   |
+
+### Simulation Test Sequence
+
+1. Boot → RB4 = LOW (defaults)
+2. Press key `7` → `"Cfg?"` (rejected, not in config mode)
+3. Hold RB3 3s → `"Cfg!"`
+4. Press key `7` → `"ID:FE"` → config mode deactivates
+5. Hold RB3 3s → `"Cfg!"` again
+6. Press key `8` → `"MA:0A"`
+7. Press RB3 3× → RB4 = LOW (factory reset)
+8. Reset PIC → boots with all defaults → RB4 = LOW
+9. Keys 1-6 → unchanged behavior
 
 ---
 
@@ -64,107 +69,109 @@ if (byte >= '1' && byte <= '6') {
 
 - Flash `Central_control_command_test.ino` to ESP32
 - HC-12 modules configured to same channel/baud
-- PIC16F88 flashed with simulation mode **commented out**
-
-### Serial Commands (ESP32 Serial Monitor @ 115200)
-
-Send these hex packets from the ESP32 to control **PIC 1** (`DEVICE_ID: 0xFE`):
-
-| # | Action               | Hex Packet                  | Breakdown                    |
-| :- | :------------------- | :-------------------------- | :--------------------------- |
-| 1 | Relay A**ON**  | `AA FE 00 02 00 01 FD BB` | CMD=02, Data=0001 (Socket A) |
-| 2 | Relay A**OFF** | `AA FE 00 03 00 01 FC BB` | CMD=03, Data=0001 (Socket A) |
-| 3 | Relay B**ON**  | `AA FE 00 02 00 02 FE BB` | CMD=02, Data=0002 (Socket B) |
-| 4 | Relay B**OFF** | `AA FE 00 03 00 02 FF BB` | CMD=03, Data=0002 (Socket B) |
-| 5 | Read Sensors         | `AA FE 00 04 00 00 FA BB` | CMD=04, No data              |
-| 6 | Set Threshold 3233mA | `AA FE 00 07 0C A1 54 BB` | CMD=07, Data=0CA1 (3233)     |
-
-#### PIC 2 (`DEVICE_ID: 0xFD`)
-
-| # | Action               | Hex Packet                  | Breakdown                    |
-| :- | :------------------- | :-------------------------- | :--------------------------- |
-| 1 | Relay A**ON**  | `AA FD 00 02 00 01 FE BB` | CMD=02, Data=0001 (Socket A) |
-| 2 | Relay A**OFF** | `AA FD 00 03 00 01 FF BB` | CMD=03, Data=0001 (Socket A) |
-| 3 | Relay B**ON**  | `AA FD 00 02 00 02 FD BB` | CMD=02, Data=0002 (Socket B) |
-| 4 | Relay B**OFF** | `AA FD 00 03 00 02 FC BB` | CMD=03, Data=0002 (Socket B) |
-| 5 | Read Sensors         | `AA FD 00 04 00 00 F9 BB` | CMD=04, No data              |
-| 6 | Set Threshold 3233mA | `AA FD 00 07 0C A1 57 BB` | CMD=07, Data=0CA1 (3233)     |
-
-#### PIC 3 (`DEVICE_ID: 0xFC`)
-
-| # | Action               | Hex Packet                  | Breakdown                    |
-| :- | :------------------- | :-------------------------- | :--------------------------- |
-| 1 | Relay A**ON**  | `AA FC 00 02 00 01 FF BB` | CMD=02, Data=0001 (Socket A) |
-| 2 | Relay A**OFF** | `AA FC 00 03 00 01 FE BB` | CMD=03, Data=0001 (Socket A) |
-| 3 | Relay B**ON**  | `AA FC 00 02 00 02 FC BB` | CMD=02, Data=0002 (Socket B) |
-| 4 | Relay B**OFF** | `AA FC 00 03 00 02 FD BB` | CMD=03, Data=0002 (Socket B) |
-| 5 | Read Sensors         | `AA FC 00 04 00 00 F8 BB` | CMD=04, No data              |
-| 6 | Set Threshold 3233mA | `AA FC 00 07 0C A1 56 BB` | CMD=07, Data=0CA1 (3233)     |
-
-### Packet Format
-
-```
-[SOF] [TARGET] [SENDER] [CMD] [DATA_H] [DATA_L] [CRC] [EOF]
- AA     FE       00      xx     xx       xx      xx    BB
-```
-
-| Field      | Description                  |
-| :--------- | :--------------------------- |
-| `SOF`    | `0xAA` — Start of Frame   |
-| `TARGET` | `0xFE` — PIC 1 Device ID  |
-| `SENDER` | `0x00` — Master (ESP32)   |
-| `CMD`    | Command code (see below)     |
-| `DATA_H` | Data high byte               |
-| `DATA_L` | Data low byte                |
-| `CRC`    | XOR of bytes [1] through [5] |
-| `EOF`    | `0xBB` — End of Frame     |
+- Comment out simulation mode for hardware deployment
 
 ### Command Codes
 
-| Code     | Name                  | Data Meaning               |
-| :------- | :-------------------- | :------------------------- |
-| `0x02` | `CMD_RELAY_ON`      | Socket ID (01=A, 02=B)     |
-| `0x03` | `CMD_RELAY_OFF`     | Socket ID (01=A, 02=B)     |
-| `0x04` | `CMD_READ_CURRENT`  | Unused (0x0000)            |
-| `0x05` | `CMD_REPORT_DATA`   | Current in mA (response)   |
-| `0x06` | `CMD_ACK`           | Socket ID + Command echoed |
-| `0x07` | `CMD_SET_THRESHOLD` | Threshold in mA            |
+| Code     | Name                  | Data                     |
+| :------- | :-------------------- | :----------------------- |
+| `0x02` | `CMD_RELAY_ON`      | Socket ID (01=A, 02=B)   |
+| `0x03` | `CMD_RELAY_OFF`     | Socket ID (01=A, 02=B)   |
+| `0x04` | `CMD_READ_CURRENT`  | Unused (0x0000)          |
+| `0x05` | `CMD_REPORT_DATA`   | Current in mA (response) |
+| `0x06` | `CMD_ACK`           | Socket + Command echoed  |
+| `0x07` | `CMD_SET_THRESHOLD` | Threshold in mA          |
+| `0x08` | `CMD_SET_DEVICE_ID` | New Device ID (data_l)   |
+| `0x09` | `CMD_SET_ID_MASTER` | New Master ID (data_l)   |
 
-### Expected ACK Response
+### PIC 1 (`DEVICE_ID: 0xFE`)
 
+| # | Action               | Hex Packet                  |
+| :- | :------------------- | :-------------------------- |
+| 1 | Relay A ON           | `AA FE 00 02 00 01 FD BB` |
+| 2 | Relay A OFF          | `AA FE 00 03 00 01 FC BB` |
+| 3 | Relay B ON           | `AA FE 00 02 00 02 FE BB` |
+| 4 | Relay B OFF          | `AA FE 00 03 00 02 FF BB` |
+| 5 | Read Sensors         | `AA FE 00 04 00 00 FA BB` |
+| 6 | Set Threshold 3233mA | `AA FE 00 07 0C A1 54 BB` |
+
+### PIC 2 (`DEVICE_ID: 0xFD`)
+
+| # | Action               | Hex Packet                  |
+| :- | :------------------- | :-------------------------- |
+| 1 | Relay A ON           | `AA FD 00 02 00 01 FE BB` |
+| 2 | Relay A OFF          | `AA FD 00 03 00 01 FF BB` |
+| 3 | Relay B ON           | `AA FD 00 02 00 02 FD BB` |
+| 4 | Relay B OFF          | `AA FD 00 03 00 02 FC BB` |
+| 5 | Read Sensors         | `AA FD 00 04 00 00 F9 BB` |
+| 6 | Set Threshold 3233mA | `AA FD 00 07 0C A1 57 BB` |
+
+### PIC 3 (`DEVICE_ID: 0xFC`)
+
+| # | Action               | Hex Packet                  |
+| :- | :------------------- | :-------------------------- |
+| 1 | Relay A ON           | `AA FC 00 02 00 01 FF BB` |
+| 2 | Relay A OFF          | `AA FC 00 03 00 01 FE BB` |
+| 3 | Relay B ON           | `AA FC 00 02 00 02 FC BB` |
+| 4 | Relay B OFF          | `AA FC 00 03 00 02 FD BB` |
+| 5 | Read Sensors         | `AA FC 00 04 00 00 F8 BB` |
+| 6 | Set Threshold 3233mA | `AA FC 00 07 0C A1 56 BB` |
+
+### Packet Format
+
+**Command Packet** (ESP32 → PIC) — Example: Relay B ON for PIC 1
 ```
-AA [SENDER] FE 06 [SOCKET] [CMD_ECHOED] [CRC] BB
+AA  FE  00  02  00  02  FE  BB
+│   │   │   │   │   │   │   └── EOF (End of Frame)
+│   │   │   │   │   │   └────── CRC = FE ^ 00 ^ 02 ^ 00 ^ 02
+│   │   │   │   │   └────────── Data_L = 0x02 (Socket B)
+│   │   │   │   └────────────── Data_H = 0x00 (unused)
+│   │   │   └────────────────── Command = 0x02 (CMD_RELAY_ON)
+│   │   └────────────────────── Sender = 0x00 (ESP32 / Master)
+│   └────────────────────────── Target = 0xFE (PIC 1)
+└────────────────────────────── SOF (Start of Frame)
 ```
 
-Example: Relay A ON → ACK: `AA 00 FE 06 01 02 FB BB`
-
-### CRC Calculation
-
-CRC = XOR of bytes 1 through 5 (TARGET ^ SENDER ^ CMD ^ DATA_H ^ DATA_L)
-
-Example for Set Threshold 3233mA:
-
+**ACK Response** (PIC → ESP32) — Example: PIC 1 confirms Relay B ON
 ```
-TARGET=FE, SENDER=00, CMD=07, DATA_H=0C, DATA_L=A1
-CRC = FE ^ 00 ^ 07 ^ 0C ^ A1 = 54
+AA  00  FE  06  02  02  FA  BB
+│   │   │   │   │   │   │   └── EOF (End of Frame)
+│   │   │   │   │   │   └────── CRC = 00 ^ FE ^ 06 ^ 02 ^ 02
+│   │   │   │   │   └────────── Data_L = 0x02 (CMD_RELAY_ON echoed)
+│   │   │   │   └────────────── Data_H = 0x02 (Socket B)
+│   │   │   └────────────────── Command = 0x06 (CMD_ACK)
+│   │   └────────────────────── Sender = 0xFE (PIC 1)
+│   └────────────────────────── Target = 0x00 (ESP32 / Master)
+└────────────────────────────── SOF (Start of Frame)
 ```
+
+**CRC** = XOR of bytes 1-5 (TARGET ^ SENDER ^ CMD ^ DATA_H ^ DATA_L)
+
+### Config Mode (Hardware)
+
+1. Hold RB3 for 3s → SoftUART: `"Cfg!"`
+2. Send `CMD_SET_DEVICE_ID` (0x08) to current device ID → ACK received → config mode off
+3. Verify: send command to new ID → responds
+4. Send to old ID → no response
 
 ---
 
 ## 3. Overload Protection Test
 
-### Test Procedure
-
-1. Set a low threshold: send `CMD_SET_THRESHOLD` with desired mA
+1. Set a low threshold via `CMD_SET_THRESHOLD`
 2. Connect a load exceeding the threshold
-3. **Expected:** Relay trips OFF within 200ms, SoftUART prints overload status
-4. **After 5 seconds:** Auto-retry — relay turns back ON
-5. If load still exceeds threshold → trips again immediately
-6. During overload: `CMD_RELAY_ON` is **blocked** (overload guard)
+3. **Expected:** Relay trips OFF within 200ms
+4. **After 5 seconds:** Auto-retry (relay ON)
+5. If still overloaded → trips again immediately
+6. During overload: `CMD_RELAY_ON` is blocked
 
-### Overload Guard Verification
+---
 
-1. Trigger overload on Socket A
-2. Send `CMD_RELAY_ON` for Socket A
-3. **Expected:** Relay does NOT turn on, ACK still sent
-4. Wait for 5s cooldown → retry succeeds → relay turns ON
+## 4. EEPROM Map
+
+| Addr     | Value               | Default  |
+| :------- | :------------------ | :------- |
+| `0x00` | Threshold high byte | `0x0B` |
+| `0x01` | Threshold low byte  | `0xB8` |
+| `0x02` | DEVICE_ID           | `0x01` |
+| `0x03` | ID_MASTER           | `0x01` |

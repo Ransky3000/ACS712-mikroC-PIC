@@ -40,14 +40,27 @@
 #define RELAY_A_PIN RA3
 #define RELAY_B_PIN RA2
 
-// --- ID Configuration ---
-#define DEVICE_ID   0xFC 
+#define CFG_BTN    RB3   // Config/Reset button (Input, active LOW)
+#define CFG_LED    RB4   // Status LED (LOW=defaults, HIGH=configured)
+
+// --- Defaults ---
+#define DEFAULT_DEVICE_ID  0x01
+#define DEFAULT_ID_MASTER  0x01
+#define DEFAULT_THRESHOLD  3000
 #define SOCKET_A    1
 #define SOCKET_B    2
 
-// --- Constants ---
-// Default 7000mA, but now loaded from EEPROM
-unsigned int overload_threshold_ma = 7000;
+// --- Runtime Config (loaded from EEPROM) ---
+unsigned char device_id = DEFAULT_DEVICE_ID;
+unsigned char id_master = DEFAULT_ID_MASTER;
+unsigned int overload_threshold_ma = DEFAULT_THRESHOLD;
+
+// --- Config Mode / Reset ---
+unsigned char config_mode = 0;
+unsigned char reset_count = 0;
+unsigned char btn_was_low = 0;
+unsigned long btn_hold_start = 0;
+unsigned long last_btn_edge = 0;
 
 // --- Globals ---
 ACS712_t sensorA;
@@ -68,6 +81,7 @@ void Process_Command(RF_Packet_t *pkt);
 void Send_ACK(unsigned char target, unsigned char cmd, unsigned char socket);
 void Perform_Read_And_Report(unsigned char sender_id);
 void Process_Debug_Shortcut(char key);
+unsigned char is_configured(void);
 void print_int_to_uart(unsigned int val, unsigned char is_soft);
 
 // --- ISR ---
@@ -86,7 +100,7 @@ void main() {
     ANSEL = 0b00000011; // AN0, AN1 Analog (Sensors)
     
     TRISA = 0b00000011; // RA0, RA1 Input (Sensors), Others Output
-    TRISB = 0b00000100; // RB2(RX) Input, RB5(TX) Output
+    TRISB = 0b00001100; // RB2(RX) Input, RB3(CFG_BTN) Input, RB4(CFG_LED) Output
     
     // Init Relays OFF (NC Wiring: Energize -> NC opens -> disconnected)
     RELAY_A_PIN = 0;
@@ -108,16 +122,21 @@ void main() {
     ACS712_SetSensitivity(&sensorA, 100); 
     ACS712_SetSensitivity(&sensorB, 100); 
     
-    // EEPROM Load
+    // EEPROM Load (0x00-01=Threshold, 0x02=DeviceID, 0x03=MasterID)
     unsigned char hi = eeprom_read(0x00);
     unsigned char lo = eeprom_read(0x01);
-    // If not empty (0xFF), load saved value
-    if (hi != 0xFF) {
-        overload_threshold_ma = (hi << 8) | lo;
-    } 
+    if (hi != 0xFF) overload_threshold_ma = (hi << 8) | lo;
     
-    Soft_UART_println("FW:v3.1"); // Reduced from "--- Merged Firmware..."
-    Soft_UART_println("Calib..."); // Reduced from "Calibrating Sensors..."
+    unsigned char eid = eeprom_read(0x02);
+    if (eid != 0xFF) device_id = eid;
+    
+    unsigned char ema = eeprom_read(0x03);
+    if (ema != 0xFF) id_master = ema;
+    
+    CFG_LED = is_configured() ? 1 : 0;
+    
+    Soft_UART_println("v5.2");
+    Soft_UART_println("Cal");
     
     ACS712_Calibrate(&sensorA);
     ACS712_Calibrate(&sensorB);
@@ -137,8 +156,7 @@ void main() {
             char byte = UART_Read();
             
             // --- SIMULATION MODE ---
-            // Uncomment for Proteus testing:
-            // if (byte >= '1' && byte <= '6') {
+            // if (byte >= '1' && byte <= '8') {
             //     Process_Debug_Shortcut(byte);
             //     continue;
             // }
@@ -161,7 +179,38 @@ void main() {
             continue; // Skip sensor reading this cycle to process next byte fast
         }
         
-        // --- 2. OVERLOAD PROTECTION (Gated: Every 200ms) ---
+        // --- 2. BUTTON CHECK (Config Mode + Factory Reset) ---
+        if (CFG_BTN == 0) {
+            if (!btn_was_low) {
+                btn_hold_start = millis();
+                btn_was_low = 1;
+            }
+            if (millis() - btn_hold_start >= 3000 && !config_mode) {
+                config_mode = 1;
+                Soft_UART_println("Cfg!");
+            }
+        } else {
+            if (btn_was_low && (millis() - last_btn_edge >= 50)) {
+                if (!config_mode) reset_count++;
+                last_btn_edge = millis();
+            }
+            btn_was_low = 0;
+        }
+        
+        // Factory Reset: 3 presses
+        if (reset_count >= 3) {
+            eeprom_write(0x00, DEFAULT_THRESHOLD >> 8);
+            eeprom_write(0x01, DEFAULT_THRESHOLD & 0xFF);
+            eeprom_write(0x02, DEFAULT_DEVICE_ID);
+            eeprom_write(0x03, DEFAULT_ID_MASTER);
+            device_id = DEFAULT_DEVICE_ID;
+            id_master = DEFAULT_ID_MASTER;
+            overload_threshold_ma = DEFAULT_THRESHOLD;
+            CFG_LED = 0;
+            reset_count = 0;
+        }
+        
+        // --- 3. OVERLOAD PROTECTION (Gated: Every 200ms) ---
         if (millis() - last_sensor_check >= 200) {
             last_sensor_check = millis();
             
@@ -201,8 +250,8 @@ void main() {
 }
 
 void Process_Command(RF_Packet_t *pkt) {
-    // Only process for ME or Broadcast
-    if (pkt->fields.target_id != DEVICE_ID) return;
+    // Only process for ME
+    if (pkt->fields.target_id != device_id) return;
     
     unsigned char socket = (unsigned char)(pkt->fields.data_l & 0xFF);
     
@@ -231,14 +280,32 @@ void Process_Command(RF_Packet_t *pkt) {
         case CMD_SET_THRESHOLD: {
             unsigned int new_limit = (pkt->fields.data_h << 8) | pkt->fields.data_l;
             overload_threshold_ma = new_limit;
-            
-            // Persist to EEPROM (0x00=High, 0x01=Low)
             eeprom_write(0x00, pkt->fields.data_h);
             eeprom_write(0x01, pkt->fields.data_l);
-            
+            CFG_LED = is_configured() ? 1 : 0;
             Send_ACK(pkt->fields.sender_id, CMD_SET_THRESHOLD, 0);
             break;
         }
+        
+        case CMD_SET_DEVICE_ID:
+            if (config_mode) {
+                device_id = pkt->fields.data_l;
+                eeprom_write(0x02, device_id);
+                config_mode = 0;
+                CFG_LED = is_configured() ? 1 : 0;
+                Send_ACK(pkt->fields.sender_id, CMD_SET_DEVICE_ID, 0);
+            }
+            break;
+        
+        case CMD_SET_ID_MASTER:
+            if (config_mode) {
+                id_master = pkt->fields.data_l;
+                eeprom_write(0x03, id_master);
+                config_mode = 0;
+                CFG_LED = is_configured() ? 1 : 0;
+                Send_ACK(pkt->fields.sender_id, CMD_SET_ID_MASTER, 0);
+            }
+            break;
             
         default:
             break;
@@ -250,7 +317,7 @@ void Send_ACK(unsigned char target, unsigned char cmd, unsigned char socket) {
     RF_Init_Packet(&tx);
     
     tx.fields.target_id = target;       
-    tx.fields.sender_id = DEVICE_ID;    
+    tx.fields.sender_id = device_id;    
     tx.fields.command   = CMD_ACK;   
     
     // Pack Socket (DataH) and Command (DataL)
@@ -337,7 +404,7 @@ void Process_Debug_Shortcut(char key) {
     RF_Packet_t mock_pkt;
     RF_Init_Packet(&mock_pkt);
     
-    mock_pkt.fields.target_id = DEVICE_ID;
+    mock_pkt.fields.target_id = device_id;
     mock_pkt.fields.sender_id = 0x0A; // Mock Sender
     RF_Set_Data(&mock_pkt, 0);
 
@@ -378,6 +445,26 @@ void Process_Debug_Shortcut(char key) {
             RF_Set_Data(&mock_pkt, 10000);
             Process_Command(&mock_pkt);
             break;
+        case '7':
+        case '8':
+            if (!config_mode) { Soft_UART_println("Cfg?"); break; }
+            if (key == '7') {
+                Soft_UART_println("ID:FE");
+                mock_pkt.fields.command = CMD_SET_DEVICE_ID;
+                RF_Set_Data(&mock_pkt, 0xFE);
+            } else {
+                Soft_UART_println("MA:0A");
+                mock_pkt.fields.command = CMD_SET_ID_MASTER;
+                RF_Set_Data(&mock_pkt, 0x0A);
+            }
+            Process_Command(&mock_pkt);
+            break;
         default: return; 
     }
+}
+
+unsigned char is_configured(void) {
+    return (device_id != DEFAULT_DEVICE_ID &&
+            id_master != DEFAULT_ID_MASTER &&
+            overload_threshold_ma != DEFAULT_THRESHOLD);
 }
