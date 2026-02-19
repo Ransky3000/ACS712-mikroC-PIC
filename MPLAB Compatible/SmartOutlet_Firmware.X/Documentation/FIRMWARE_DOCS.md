@@ -321,10 +321,21 @@ void __interrupt() ISR(void) {
 
 ## Memory Constraints
 
-| Resource    | Used        | Available | Utilization |
-|:------------|:------------|:----------|:------------|
-| Flash       | ~4073 words | 4096      | **99%**     |
-| RAM         | ~300 bytes  | 368       | ~82%        |
+**Production Build** (simulation mode commented out):
+
+| Resource    | Used         | Free      | Utilization |
+|:------------|:-------------|:----------|:------------|
+| Program     | 3,898 words  | 198 words | **95%**     |
+| Data        | 234 bytes    | 134 bytes | **64%**     |
+
+**With Simulation Mode** (debug keys 1-8 enabled):
+
+| Resource    | Used         | Free      | Utilization |
+|:------------|:-------------|:----------|:------------|
+| Program     | ~4,073 words | ~23 words | **99%**     |
+| Data        | ~234 bytes   | ~134 bytes| **64%**     |
+
+> **Note:** `Process_Debug_Shortcut()` adds ~175 words. The XC8 compiler eliminates it as dead code when commented out.
 
 > **Warning:** The firmware is at the Flash limit. Any new feature must remove an equivalent amount of code. Strategies used:
 > - Shortened debug strings (`"Cfg!"` instead of `"Config Mode!"`)
