@@ -250,8 +250,9 @@ void main() {
 }
 
 void Process_Command(RF_Packet_t *pkt) {
-    // Only process for ME
+    // Only process if addressed to me AND from my master
     if (pkt->fields.target_id != device_id) return;
+    if (pkt->fields.sender_id != id_master) return;
     
     unsigned char socket = (unsigned char)(pkt->fields.data_l & 0xFF);
     
@@ -405,7 +406,7 @@ void Process_Debug_Shortcut(char key) {
     RF_Init_Packet(&mock_pkt);
     
     mock_pkt.fields.target_id = device_id;
-    mock_pkt.fields.sender_id = 0x0A; // Mock Sender
+    mock_pkt.fields.sender_id = id_master; // Must match for validation
     RF_Set_Data(&mock_pkt, 0);
 
     switch(key) {

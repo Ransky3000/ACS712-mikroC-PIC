@@ -29,7 +29,7 @@ HardwareSerial HC12(2);
 
 // --- State Tracking ---
 uint8_t targetDevice = 0x01;  // Currently selected PIC
-uint8_t senderID     = 0x00;  // ESP32 master ID
+uint8_t senderID     = 0x01;  // Must match PIC's id_master (default 0x01)
 
 // Two-step input
 bool    waitingForData = false;
@@ -355,6 +355,10 @@ void parsePacket(uint8_t* frame) {
         Serial.println("Master ID Updated");
         if (pendingMasterID >= 0) {
           lastMasterID = pendingMasterID;
+          senderID = (uint8_t)pendingMasterID;  // Auto-sync sender to new master
+          Serial.print("  >> senderID auto-updated to 0x");
+          if (senderID < 0x10) Serial.print("0");
+          Serial.println(senderID, HEX);
           pendingMasterID = -1;
         }
         break;

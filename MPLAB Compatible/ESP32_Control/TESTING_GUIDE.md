@@ -71,6 +71,9 @@
 - Open Serial Monitor at **115200 baud**
 - HC-12 modules configured to same channel/baud
 - PIC firmware with simulation mode **commented out**
+- ESP32 `senderID` must match PIC's `id_master` (both default to `0x01`)
+
+> **If PIC rejects all commands:** the `senderID` doesn't match `id_master`. Either update the ESP32's `senderID` or factory reset the PIC (press RB3 ×3).
 
 ### ESP32 Serial Monitor Commands
 
@@ -85,7 +88,8 @@
 | `7`        | Set Device ID (prompts for hex value)   |
 | `8`        | Set Master ID (prompts for hex value)   |
 | `d FE`     | Switch target device to 0xFE            |
-| `d status` | Show target, relay states, threshold    |
+| `m 0A`     | Switch sender ID to 0x0A (test auth)    |
+| `d status` | Show target, sender, relay states       |
 | `help`     | Show help menu                          |
 | `AA ...`   | Send raw hex packet (CRC must be manual)|
 
@@ -106,6 +110,7 @@ Check current tracked state at any time:
 > d status
 --- DEVICE STATUS ---
 Target:    0xFE
+Sender ID: 0x01
 Socket A:  ON
 Socket B:  OFF
 Threshold: 5000 mA
@@ -135,6 +140,15 @@ Master ID: 0x0A
 3. `d FE` → switch ESP32 target to match new ID
 4. `1` → Relay A ON → ACK from 0xFE confirms it worked
 5. Send to old ID → no response (correct)
+
+### Master ID Validation Test
+
+1. `m 01` → ensure sender matches default master
+2. `1` → Relay A ON → ACK received ✅ (authorized)
+3. `m 05` → switch to wrong sender
+4. `1` → Relay A ON → **no response** ❌ (rejected by PIC)
+5. `m 01` → switch back to correct sender
+6. `1` → ACK received again ✅
 
 ### Packet Format
 

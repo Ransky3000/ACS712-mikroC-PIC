@@ -71,6 +71,9 @@
 - Open Serial Monitor at **115200 baud**
 - HC-12 modules configured to same channel/baud
 - PIC firmware with simulation mode **commented out**
+- ESP32 `senderID` must match PIC's `id_master` (both default to `0x01`)
+
+> **If PIC rejects all commands:** the `senderID` doesn't match `id_master`. Either update the ESP32's `senderID` or factory reset the PIC (press RB3 ×3).
 
 ### ESP32 Serial Monitor Commands
 

@@ -97,6 +97,8 @@ Receives 8-byte packets from HC-12 via hardware UART:
 - Waits for `0xAA` sync byte
 - Fills `rx_pkt.frame[]` byte by byte
 - On 8 bytes: verify CRC → `Process_Command()`
+- `Process_Command` validates **both** `target_id == device_id` AND `sender_id == id_master`
+- Packets from unauthorized senders are silently dropped
 - Invalid CRC prints `"CRC!"` on SoftUART
 
 ### 2. Button Handler (Config Mode + Factory Reset)
@@ -110,6 +112,8 @@ Receives 8-byte packets from HC-12 via hardware UART:
 - Press RB3 3 times quickly (50ms debounce)
 - Only counts presses when NOT in config mode
 - Resets all EEPROM values to defaults, sets `CFG_LED = 0`
+
+> **Recovery:** If master ID is misconfigured (no ESP32 can authenticate), factory reset via RB3 ×3 is the **only** way to recover.
 
 ### 3. Overload Protection (Every 200ms)
 
@@ -298,7 +302,7 @@ typedef union {
 |:----------------------------|:-------------------------------------------------|
 | `main()`                    | Init hardware, EEPROM load, main loop            |
 | `__interrupt() ISR()`       | Dispatches UART_ISR, Timer_ISR, Soft_UART_ISR    |
-| `Process_Command(pkt)`      | Routes incoming packet to appropriate handler     |
+| `Process_Command(pkt)`      | Validates target + sender, routes to handler      |
 | `Send_ACK(target, cmd, socket)` | Builds and sends 8-byte ACK packet           |
 | `Perform_Read_And_Report(sender)` | Reads both ACS712 sensors, sends 2 data packets |
 | `Process_Debug_Shortcut(key)` | Simulation mode: builds mock packets from keys 1-8 |

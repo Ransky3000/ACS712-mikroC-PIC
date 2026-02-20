@@ -29,7 +29,7 @@ HardwareSerial HC12(2);
 
 // --- State Tracking ---
 uint8_t targetDevice = 0x01;  // Currently selected PIC
-uint8_t senderID     = 0x00;  // ESP32 master ID
+uint8_t senderID     = 0x01;  // Must match PIC's id_master (default 0x01)
 
 // Two-step input
 bool    waitingForData = false;
@@ -213,6 +213,22 @@ void handleInput(String input) {
     return;
   }
   
+  // --- Master ID selector: "m XX" ---
+  if (input.startsWith("m ") || input.startsWith("M ")) {
+    String arg = input.substring(2);
+    arg.trim();
+    uint8_t newMaster = (uint8_t)strtol(arg.c_str(), NULL, 16);
+    if (newMaster == 0 && arg != "0" && arg != "00") {
+      Serial.println("Error: Invalid master ID");
+      return;
+    }
+    senderID = newMaster;
+    Serial.print("Sender ID: 0x");
+    if (senderID < 0x10) Serial.print("0");
+    Serial.println(senderID, HEX);
+    return;
+  }
+  
   // --- AT commands ---
   if (input.startsWith("AT") || input.startsWith("at")) {
     Serial.print("[AT] ");
@@ -355,6 +371,10 @@ void parsePacket(uint8_t* frame) {
         Serial.println("Master ID Updated");
         if (pendingMasterID >= 0) {
           lastMasterID = pendingMasterID;
+          senderID = (uint8_t)pendingMasterID;  // Auto-sync sender to new master
+          Serial.print("  >> senderID auto-updated to 0x");
+          if (senderID < 0x10) Serial.print("0");
+          Serial.println(senderID, HEX);
           pendingMasterID = -1;
         }
         break;
@@ -390,10 +410,13 @@ void parsePacket(uint8_t* frame) {
 // DEVICE STATUS
 // ============================================================
 void printStatus() {
-  Serial.println("\n--- DEVICE STATUS ---");
+  Serial.println("--- DEVICE STATUS ---");
   Serial.print("Target:    0x");
   if (targetDevice < 0x10) Serial.print("0");
   Serial.println(targetDevice, HEX);
+  Serial.print("Sender ID: 0x");
+  if (senderID < 0x10) Serial.print("0");
+  Serial.println(senderID, HEX);
   
   Serial.print("Socket A:  ");
   if (relayA == -1) Serial.println("---");
@@ -436,6 +459,7 @@ void printHelp() {
   Serial.println("----------------------------------------");
   Serial.println("  DEVICE:");
   Serial.println("  d FE       -> switch target to 0xFE");
+  Serial.println("  m 0A       -> switch sender to 0x0A");
   Serial.println("  d status   -> show current state");
   Serial.println("----------------------------------------");
   Serial.println("  RAW HEX:");
