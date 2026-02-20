@@ -1,6 +1,6 @@
 # Smart Outlet Firmware — Testing Guide
 
-**Device:** PIC16F88 | **Firmware:** v5.2.0
+**Device:** PIC16F88 | **Firmware:** v5.3.1
 **Default IDs:** `DEVICE_ID = 0x01` · `ID_MASTER = 0x01` · **Threshold:** 3000mA
 
 ---
@@ -45,7 +45,7 @@
 
 | Output       | Meaning                        |
 | :----------- | :----------------------------- |
-| `v5.2`     | Firmware booted                |
+| `v5.3.1`   | Firmware booted                |
 | `Cal`      | Sensor calibration in progress |
 | `Rdy`      | System ready                   |
 

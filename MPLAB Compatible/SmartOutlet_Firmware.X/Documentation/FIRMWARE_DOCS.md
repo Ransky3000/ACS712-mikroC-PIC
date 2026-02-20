@@ -1,7 +1,7 @@
 # SmartOutlet Firmware — Developer Documentation
 
 **MCU:** PIC16F88 · **Compiler:** XC8 · **IDE:** MPLAB X  
-**Firmware:** v5.2 · **Flash:** ~99% (4073 / 4096 words)
+**Firmware:** v5.3.1 · **Flash:** ~99% (4073 / 4096 words)
 
 ---
 
@@ -76,7 +76,7 @@ The relays use **NC wiring**, which reverses the logic:
 5. Init: ACS712 sensors (AN0, AN1)
 6. EEPROM load: threshold, device_id, id_master
 7. Update CFG_LED based on is_configured()
-8. SoftUART: "v5.2" → "Cal" → calibrate sensors → "Rdy"
+8. SoftUART: "v5.3.1" → "Cal" → calibrate sensors → "Rdy"
 9. Enter main loop
 ```
 
@@ -368,7 +368,7 @@ This intercepts UART bytes as keyboard shortcuts instead of protocol packets.
 
 | String      | Meaning                                 |
 |:------------|:----------------------------------------|
-| `v5.2`      | Firmware booted                         |
+| `v5.3.1`    | Firmware booted                         |
 | `Cal`       | Sensor calibration in progress          |
 | `Rdy`       | System ready                            |
 | `R1+` / `R1-` | Relay A ON / OFF                     |

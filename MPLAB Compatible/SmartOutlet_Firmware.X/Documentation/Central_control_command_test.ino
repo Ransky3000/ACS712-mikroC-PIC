@@ -1,7 +1,7 @@
 /*
  * Central_control_command_test.ino
  * 
- * ESP32 Master Controller for PIC16F88 Smart Outlet (v5.2)
+ * ESP32 Master Controller for PIC16F88 Smart Outlet (v5.3.1)
  * 
  * Features:
  *   - Menu-driven: type 1-8 to send commands instantly
@@ -213,6 +213,22 @@ void handleInput(String input) {
     return;
   }
   
+  // --- Master ID selector: "m XX" ---
+  if (input.startsWith("m ") || input.startsWith("M ")) {
+    String arg = input.substring(2);
+    arg.trim();
+    uint8_t newMaster = (uint8_t)strtol(arg.c_str(), NULL, 16);
+    if (newMaster == 0 && arg != "0" && arg != "00") {
+      Serial.println("Error: Invalid master ID");
+      return;
+    }
+    senderID = newMaster;
+    Serial.print("Sender ID: 0x");
+    if (senderID < 0x10) Serial.print("0");
+    Serial.println(senderID, HEX);
+    return;
+  }
+  
   // --- AT commands ---
   if (input.startsWith("AT") || input.startsWith("at")) {
     Serial.print("[AT] ");
@@ -394,10 +410,13 @@ void parsePacket(uint8_t* frame) {
 // DEVICE STATUS
 // ============================================================
 void printStatus() {
-  Serial.println("\n--- DEVICE STATUS ---");
+  Serial.println("--- DEVICE STATUS ---");
   Serial.print("Target:    0x");
   if (targetDevice < 0x10) Serial.print("0");
   Serial.println(targetDevice, HEX);
+  Serial.print("Sender ID: 0x");
+  if (senderID < 0x10) Serial.print("0");
+  Serial.println(senderID, HEX);
   
   Serial.print("Socket A:  ");
   if (relayA == -1) Serial.println("---");
@@ -426,7 +445,7 @@ void printStatus() {
 // ============================================================
 void printHelp() {
   Serial.println("\n========================================");
-  Serial.println("  ESP32 HC12 Master v5.2");
+  Serial.println("  ESP32 HC12 Master v5.3.1");
   Serial.println("========================================");
   Serial.print("  Target: 0x");
   if (targetDevice < 0x10) Serial.print("0");
@@ -440,6 +459,7 @@ void printHelp() {
   Serial.println("----------------------------------------");
   Serial.println("  DEVICE:");
   Serial.println("  d FE       -> switch target to 0xFE");
+  Serial.println("  m 0A       -> switch sender to 0x0A");
   Serial.println("  d status   -> show current state");
   Serial.println("----------------------------------------");
   Serial.println("  RAW HEX:");

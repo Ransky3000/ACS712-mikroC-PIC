@@ -135,7 +135,7 @@ void main() {
     
     CFG_LED = is_configured() ? 1 : 0;
     
-    Soft_UART_println("v5.2");
+    Soft_UART_println("v5.3.1");
     Soft_UART_println("Cal");
     
     ACS712_Calibrate(&sensorA);
