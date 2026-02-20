@@ -1,7 +1,7 @@
 /*
  * Central_control_command_test.ino
  * 
- * ESP32 Master Controller for PIC16F88 Smart Outlet (v5.2)
+ * ESP32 Master Controller for PIC16F88 Smart Outlet (v5.3.1)
  * 
  * Features:
  *   - Menu-driven: type 1-8 to send commands instantly
@@ -445,7 +445,7 @@ void printStatus() {
 // ============================================================
 void printHelp() {
   Serial.println("\n========================================");
-  Serial.println("  ESP32 HC12 Master v5.2");
+  Serial.println("  ESP32 HC12 Master v5.3.1");
   Serial.println("========================================");
   Serial.print("  Target: 0x");
   if (targetDevice < 0x10) Serial.print("0");
