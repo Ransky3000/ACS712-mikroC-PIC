@@ -11,9 +11,9 @@ OutletManager::OutletManager()
       _senderID(CCU_SENDER_ID),
       _deviceCount(0),
       _activeIndex(0),
-      _rxIndex(0) {
-    // Initialize first device with default ID 0x01
-    _addDevice(0x01);
+      _rxIndex(0),
+      _lastAckSender(0) {
+    // No default device — dashboard starts empty
 }
 
 // ─── Initialize HC-12 ──────────────────────────────────────
@@ -153,7 +153,53 @@ OutletDevice& OutletManager::getActiveDevice() {
 }
 
 uint8_t OutletManager::getActiveDeviceId() const {
+    if (_deviceCount == 0) return 0x00;
     return _devices[_activeIndex].getDeviceId();
+}
+
+uint8_t OutletManager::getDeviceCount() const {
+    return _deviceCount;
+}
+
+OutletDevice& OutletManager::getDevice(uint8_t index) {
+    return _devices[index];
+}
+
+bool OutletManager::removeDevice(uint8_t index) {
+    if (index >= _deviceCount) return false;
+
+    // Shift remaining devices down
+    for (uint8_t i = index; i < _deviceCount - 1; i++) {
+        _devices[i] = _devices[i + 1];
+    }
+    _deviceCount--;
+
+    // Reset the vacated slot
+    _devices[_deviceCount] = OutletDevice();
+
+    // Fix active index
+    if (_deviceCount == 0) {
+        _activeIndex = 0;
+    } else if (_activeIndex >= _deviceCount) {
+        _activeIndex = _deviceCount - 1;
+    }
+
+    return true;
+}
+
+uint8_t OutletManager::getSenderID() const {
+    return _senderID;
+}
+
+void OutletManager::setSenderID(uint8_t id) {
+    _senderID = id;
+    Serial.print("[OutletManager] Sender ID updated to 0x");
+    if (id < 0x10) Serial.print("0");
+    Serial.println(id, HEX);
+}
+
+uint8_t OutletManager::getLastAckSender() const {
+    return _lastAckSender;
 }
 
 // ─── AT Command Passthrough ─────────────────────────────────
@@ -237,6 +283,7 @@ void OutletManager::_parsePacket(const uint8_t* frame) {
 
     if (cmd == CMD_ACK) {
         Serial.println("ACK");
+        _lastAckSender = sender;  // Track for Device ID change detection
 
         // Update state on the sender device (Feature #5, #6, #7, #10-12)
         if (senderIdx >= 0) {
@@ -266,6 +313,15 @@ void OutletManager::_parsePacket(const uint8_t* frame) {
             Serial.print(" mA (");
             Serial.print(val16 / 1000.0, 2);
             Serial.println(" A)");
+
+            // Store current on active device, using sender as socket ID
+            // PIC sets sender_id = 0x01 (Socket A) or 0x02 (Socket B)
+            if (_deviceCount > 0) {
+                if (sender == SOCKET_A)
+                    _devices[_activeIndex].setCurrentA(val16);
+                else if (sender == SOCKET_B)
+                    _devices[_activeIndex].setCurrentB(val16);
+            }
         }
     }
     else {

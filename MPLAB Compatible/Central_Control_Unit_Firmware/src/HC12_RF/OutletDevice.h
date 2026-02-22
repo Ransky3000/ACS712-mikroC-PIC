@@ -25,10 +25,18 @@ public:
 
     // ─── Getters ──────────────────────────────
     uint8_t getDeviceId() const;
-    int8_t  getRelayA() const;      // -1=unknown, 0=OFF, 1=ON
-    int8_t  getRelayB() const;      // -1=unknown, 0=OFF, 1=ON
-    int     getThreshold() const;   // -1=unknown, else mA
-    int     getMasterID() const;    // -1=unknown, else hex ID
+    const char* getName() const;     // User-assigned label
+    int8_t  getRelayA() const;       // -1=unknown, 0=OFF, 1=ON
+    int8_t  getRelayB() const;       // -1=unknown, 0=OFF, 1=ON
+    int     getThreshold() const;    // -1=unknown, else mA
+    int     getMasterID() const;     // -1=unknown, else hex ID
+    int     getCurrentA() const;     // -1=unknown, else mA
+    int     getCurrentB() const;     // -1=unknown, else mA
+
+    // ─── Setters ─────────────────────────────
+    void setName(const char* name);
+    void setCurrentA(int mA);
+    void setCurrentB(int mA);
 
     // ─── Pending Values (staged before ACK) ──
     void setPendingThreshold(int mA);
@@ -54,10 +62,15 @@ public:
 private:
     uint8_t _deviceId;
     bool    _active;
+    char    _name[20];         // Max 19 chars + null terminator
 
     // Relay states: -1 = unknown, 0 = OFF, 1 = ON
     int8_t  _relayA;
     int8_t  _relayB;
+
+    // Current readings in mA: -1 = unknown
+    int     _currentA;
+    int     _currentB;
 
     // Configuration values: -1 = unknown
     int     _threshold;

@@ -29,10 +29,14 @@ public:
     // Check if user has submitted credentials (triggers restart)
     bool isSubmitted() const;
 
+    // Check if user clicked "Local Dashboard" (skip WiFi setup)
+    bool isDashboardRequested() const;
+
 private:
     // ─── Route Handlers ───────────────────────
     void _handleRoot();
     void _handleSubmit();
+    void _handleDashboardRequest();
     void _handleNotFound();
 
     // ─── HTML Page Builders ───────────────────
@@ -44,6 +48,7 @@ private:
     DNSServer       _dnsServer;
     ConfigStorage&  _configStorage;
     bool            _submitted;
+    bool            _dashboardRequested;
 };
 
 #endif // CAPTIVE_PORTAL_H

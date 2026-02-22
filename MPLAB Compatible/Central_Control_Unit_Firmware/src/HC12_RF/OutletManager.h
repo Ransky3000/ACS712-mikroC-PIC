@@ -56,6 +56,20 @@ public:
     // Get the active device's ID
     uint8_t getActiveDeviceId() const;
 
+    // Get device count and indexed access (for dashboard list)
+    uint8_t getDeviceCount() const;
+    OutletDevice& getDevice(uint8_t index);
+
+    // Remove a device by index
+    bool removeDevice(uint8_t index);
+
+    // Get/set sender ID (for master ID sync)
+    uint8_t getSenderID() const;
+    void setSenderID(uint8_t id);
+
+    // Last ACK sender (for Device ID change detection)
+    uint8_t getLastAckSender() const;
+
     // ─── HC-12 Utilities ────────────────────
     // Send an AT command to the HC-12 module
     void sendATCommand(const String& cmd);
@@ -78,6 +92,9 @@ private:
     // RX buffer for packet assembly
     uint8_t       _rxBuffer[RF_PACKET_SIZE];
     uint8_t       _rxIndex;
+
+    // ACK tracking
+    uint8_t       _lastAckSender;   // Sender of most recent ACK
 
     // ─── Internal Methods ───────────────────
     // Find device index by ID, returns -1 if not found

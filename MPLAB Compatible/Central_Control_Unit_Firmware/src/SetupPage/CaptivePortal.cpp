@@ -13,16 +13,18 @@
 CaptivePortal::CaptivePortal(ConfigStorage& configStorage)
     : _server(WEB_SERVER_PORT),
       _configStorage(configStorage),
-      _submitted(false) {}
+      _submitted(false),
+      _dashboardRequested(false) {}
 
 void CaptivePortal::begin() {
     // Start DNS server — redirect ALL domains to our IP (captive portal)
     _dnsServer.start(DNS_PORT, "*", AP_IP);
 
     // Register HTTP routes
-    _server.on("/",      HTTP_GET,  [this]() { _handleRoot(); });
-    _server.on("/save",  HTTP_POST, [this]() { _handleSubmit(); });
-    _server.onNotFound(              [this]() { _handleNotFound(); });
+    _server.on("/",          HTTP_GET,  [this]() { _handleRoot(); });
+    _server.on("/save",      HTTP_POST, [this]() { _handleSubmit(); });
+    _server.on("/dashboard", HTTP_GET,  [this]() { _handleDashboardRequest(); });
+    _server.onNotFound(                  [this]() { _handleNotFound(); });
 
     _server.begin();
     Serial.println("[CaptivePortal] Web server started on port " + String(WEB_SERVER_PORT));
@@ -41,6 +43,21 @@ void CaptivePortal::handleClient() {
 
 bool CaptivePortal::isSubmitted() const {
     return _submitted;
+}
+
+bool CaptivePortal::isDashboardRequested() const {
+    return _dashboardRequested;
+}
+
+// ─── Route: Dashboard Request ───────────────────────────────
+void CaptivePortal::_handleDashboardRequest() {
+    _server.send(200, "text/html",
+        "<html><body style='background:#0f0c29;color:#4ecca3;font-family:sans-serif;"
+        "text-align:center;padding:60px;'>"
+        "<h2>&#9889; Starting Local Dashboard...</h2>"
+        "<p style='color:#8888aa;'>Please wait...</p></body></html>");
+    _dashboardRequested = true;
+    Serial.println("[CaptivePortal] Local Dashboard requested.");
 }
 
 // ─── Route: Root Page ───────────────────────────────────────
@@ -197,6 +214,45 @@ String CaptivePortal::_buildSetupPage() {
             transform: translateY(0);
         }
 
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #555570;
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .divider span {
+            padding: 0 12px;
+        }
+
+        .btn-outline {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid rgba(124, 92, 191, 0.5);
+            border-radius: 10px;
+            color: #b0b0cc;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-outline:hover {
+            background: rgba(124, 92, 191, 0.15);
+            border-color: #7c5cbf;
+            color: #e0e0ff;
+        }
+
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -229,6 +285,9 @@ String CaptivePortal::_buildSetupPage() {
 
             <button type="submit" class="btn">Save &amp; Connect</button>
         </form>
+
+        <div class="divider"><span>or</span></div>
+        <a href="/dashboard" class="btn btn-outline">&#9881; Local Dashboard</a>
 
         <div class="footer">CCU Firmware &bull; ESP32</div>
     </div>

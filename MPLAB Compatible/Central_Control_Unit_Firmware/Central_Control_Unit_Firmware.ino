@@ -49,6 +49,7 @@
 #include "src/HC12_RF/RFProtocol.h"
 #include "src/HC12_RF/OutletManager.h"
 #include "src/LocalDashboard/SerialCLI.h"
+#include "src/LocalDashboard/Dashboard.h"
 
 // ─── Global Objects ─────────────────────────────────────────
 ConfigStorage  configStorage;
@@ -58,11 +59,13 @@ Cloud          cloud;
 StatusLED      statusLED;
 OutletManager  outletManager;
 SerialCLI      serialCLI(outletManager);
+Dashboard      dashboard(outletManager, configStorage);
 
 // ─── State Machine ──────────────────────────────────────────
 enum class DeviceMode {
-    SETUP,      // AP mode — captive portal active
-    RUNNING     // STA mode — connected, cloud + HC-12 active
+    SETUP,            // AP mode — captive portal active
+    LOCAL_DASHBOARD,  // AP mode — dashboard + HC-12 (no cloud)
+    RUNNING           // STA mode — connected, cloud + HC-12 + dashboard
 };
 
 DeviceMode currentMode = DeviceMode::SETUP;
@@ -108,6 +111,28 @@ void enterSetupMode() {
     Serial.println("Then open:       http://" + wifiManager.getLocalIP().toString());
 }
 
+// ─── Start Local Dashboard Mode (AP + HC-12, no cloud) ──────
+void enterLocalDashboardMode() {
+    currentMode = DeviceMode::LOCAL_DASHBOARD;
+
+    Serial.println("\n╔════════════════════════════════════╗");
+    Serial.println("║   ENTERING LOCAL DASHBOARD (AP)    ║");
+    Serial.println("╚════════════════════════════════════╝");
+
+    // Stop captive portal (DNS redirect), keep AP running
+    captivePortal.stop();
+
+    // Start dashboard web server + HC-12
+    dashboard.begin();
+    outletManager.begin();
+    serialCLI.begin();
+    statusLED.setPattern(LEDPattern::SOLID);
+
+    Serial.println("\n✓ Dashboard: http://" + wifiManager.getLocalIP().toString() + "/dashboard");
+    Serial.println("✓ HC-12 RF + Serial CLI ready.");
+    Serial.println("  Type 'help' for command list.\n");
+}
+
 // ─── Start Normal Running Mode ──────────────────────────────
 void enterRunningMode() {
     currentMode = DeviceMode::RUNNING;
@@ -127,11 +152,13 @@ void enterRunningMode() {
         Serial.println("✗ Server not reachable (will retry).");
     }
 
-    // Initialize HC-12 outlet communication
+    // Initialize HC-12 outlet communication + dashboard
     outletManager.begin();
     serialCLI.begin();
+    dashboard.begin();
 
-    Serial.println("\n✓ HC-12 RF + Serial CLI ready.");
+    Serial.println("\n✓ HC-12 RF + Serial CLI + Dashboard ready.");
+    Serial.println("  Dashboard: http://" + wifiManager.getLocalIP().toString() + "/dashboard");
     Serial.println("  Type 'help' for command list.\n");
 }
 
@@ -189,6 +216,19 @@ void loop() {
         // ─── Setup Mode: Handle captive portal ──────────
         case DeviceMode::SETUP:
             captivePortal.handleClient();
+
+            // Check if user clicked "Local Dashboard"
+            if (captivePortal.isDashboardRequested()) {
+                enterLocalDashboardMode();
+                return;
+            }
+            break;
+
+        // ─── Local Dashboard: AP + HC-12 (no cloud) ─────
+        case DeviceMode::LOCAL_DASHBOARD:
+            dashboard.handleClient();
+            outletManager.update();
+            serialCLI.update();
             break;
 
         // ─── Running Mode: Cloud + HC-12 communication ──
@@ -198,6 +238,9 @@ void loop() {
 
             // Serial CLI: handle debug commands from serial monitor
             serialCLI.update();
+
+            // Dashboard: handle web requests
+            dashboard.handleClient();
 
             // Check WiFi is still connected
             if (!wifiManager.isConnected()) {

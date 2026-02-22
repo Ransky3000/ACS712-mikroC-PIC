@@ -11,10 +11,14 @@ OutletDevice::OutletDevice()
       _active(false),
       _relayA(-1),
       _relayB(-1),
+      _currentA(-1),
+      _currentB(-1),
       _threshold(-1),
       _masterID(-1),
       _pendingThreshold(-1),
-      _pendingMasterID(-1) {}
+      _pendingMasterID(-1) {
+    _name[0] = '\0';
+}
 
 void OutletDevice::init(uint8_t deviceId) {
     _deviceId = deviceId;
@@ -24,11 +28,23 @@ void OutletDevice::init(uint8_t deviceId) {
 
 // ─── Getters ────────────────────────────────────────────────
 uint8_t OutletDevice::getDeviceId() const  { return _deviceId; }
-int8_t  OutletDevice::getRelayA() const    { return _relayA; }
-int8_t  OutletDevice::getRelayB() const    { return _relayB; }
-int     OutletDevice::getThreshold() const { return _threshold; }
-int     OutletDevice::getMasterID() const  { return _masterID; }
-bool    OutletDevice::isActive() const     { return _active; }
+const char* OutletDevice::getName() const   { return _name; }
+int8_t  OutletDevice::getRelayA() const     { return _relayA; }
+int8_t  OutletDevice::getRelayB() const     { return _relayB; }
+int     OutletDevice::getThreshold() const  { return _threshold; }
+int     OutletDevice::getMasterID() const   { return _masterID; }
+int     OutletDevice::getCurrentA() const   { return _currentA; }
+int     OutletDevice::getCurrentB() const   { return _currentB; }
+bool    OutletDevice::isActive() const      { return _active; }
+
+// ─── Setters ─────────────────────────────────────────────
+void OutletDevice::setName(const char* name) {
+    strncpy(_name, name, sizeof(_name) - 1);
+    _name[sizeof(_name) - 1] = '\0';
+}
+
+void OutletDevice::setCurrentA(int mA) { _currentA = mA; }
+void OutletDevice::setCurrentB(int mA) { _currentB = mA; }
 
 // ─── Pending Values ─────────────────────────────────────────
 void OutletDevice::setPendingThreshold(int mA) {
@@ -99,6 +115,8 @@ void OutletDevice::processACK(uint8_t dataH, uint8_t dataL) {
 void OutletDevice::resetState() {
     _relayA = -1;
     _relayB = -1;
+    _currentA = -1;
+    _currentB = -1;
     _threshold = -1;
     _masterID = -1;
     _pendingThreshold = -1;
