@@ -15,7 +15,7 @@
 #define RF_PROTOCOL_H
 
 #include <Arduino.h>
-#include "Config.h"
+#include "../../Config.h"
 
 // ─── Command Codes ──────────────────────────────────────────
 #define CMD_PING            0x01

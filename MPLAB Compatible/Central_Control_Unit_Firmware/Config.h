@@ -41,7 +41,7 @@
 #define RF_SOF           0xAA             // Start of Frame byte
 #define RF_EOF           0xBB             // End of Frame byte
 #define RF_PACKET_SIZE   8                // Fixed 8-byte packet size
-#define CCU_SENDER_ID    0x00             // ESP32 master sender ID
+#define CCU_SENDER_ID    0x01             // Must match PIC's DEFAULT_ID_MASTER
 #define MAX_OUTLETS      8                // Maximum number of smart outlets
 
 // ─── Serial ─────────────────────────────────────────────────

@@ -41,14 +41,14 @@
  */
 
 #include "Config.h"
-#include "ConfigStorage.h"
-#include "WiFiManager.h"
-#include "CaptivePortal.h"
-#include "Cloud.h"
-#include "StatusLED.h"
-#include "RFProtocol.h"
-#include "OutletManager.h"
-#include "SerialCLI.h"
+#include "src/SetupPage/ConfigStorage.h"
+#include "src/SetupPage/CaptivePortal.h"
+#include "src/WiFiServer/WiFiManager.h"
+#include "src/WiFiServer/Cloud.h"
+#include "src/LocalDashboard/StatusLED.h"
+#include "src/HC12_RF/RFProtocol.h"
+#include "src/HC12_RF/OutletManager.h"
+#include "src/LocalDashboard/SerialCLI.h"
 
 // ─── Global Objects ─────────────────────────────────────────
 ConfigStorage  configStorage;

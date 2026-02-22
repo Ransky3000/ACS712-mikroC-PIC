@@ -13,7 +13,7 @@
 #define SERIAL_CLI_H
 
 #include <Arduino.h>
-#include "OutletManager.h"
+#include "../HC12_RF/OutletManager.h"
 
 class SerialCLI {
 public:

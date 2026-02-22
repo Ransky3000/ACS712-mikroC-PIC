@@ -9,7 +9,7 @@
 #define STATUS_LED_H
 
 #include <Arduino.h>
-#include "Config.h"
+#include "../../Config.h"
 
 enum class LEDPattern {
     OFF,

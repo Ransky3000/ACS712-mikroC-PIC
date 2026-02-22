@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-#include "Config.h"
+#include "../../Config.h"
 
 enum class WiFiState {
     IDLE,

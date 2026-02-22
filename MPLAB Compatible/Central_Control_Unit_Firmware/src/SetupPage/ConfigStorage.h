@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 #include <Preferences.h>
-#include "Config.h"
+#include "../../Config.h"
 
 class ConfigStorage {
 public:

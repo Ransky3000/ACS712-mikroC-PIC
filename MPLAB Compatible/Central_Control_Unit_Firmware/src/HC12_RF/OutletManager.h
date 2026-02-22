@@ -19,7 +19,7 @@
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
-#include "Config.h"
+#include "../../Config.h"
 #include "RFProtocol.h"
 #include "OutletDevice.h"
 

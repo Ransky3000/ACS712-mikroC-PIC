@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
-#include "Config.h"
+#include "../../Config.h"
 
 class Cloud {
 public:
