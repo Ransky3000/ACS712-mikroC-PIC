@@ -1,5 +1,7 @@
 # User Testing Guide — Smart Outlet Local Dashboard
 
+**Firmware:** v3.0.0
+
 ## Overview
 
 The Local Dashboard is a web UI served by the ESP32 for controlling PIC16F88 Smart Outlets via a browser. It is accessible in AP mode at `192.168.4.1` or via the device's LAN IP when connected to WiFi.

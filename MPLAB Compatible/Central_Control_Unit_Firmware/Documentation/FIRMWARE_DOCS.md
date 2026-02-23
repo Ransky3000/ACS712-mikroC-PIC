@@ -1,7 +1,7 @@
 # Central Control Unit (CCU) Firmware — Developer Documentation
 
 **MCU:** ESP32 · **Framework:** Arduino · **IDE:** Arduino IDE / PlatformIO  
-**Firmware:** v2.0.0 · **Communication:** HC-12 433MHz RF + WiFi
+**Firmware:** v3.0.0 · **Communication:** HC-12 433MHz RF + WiFi
 
 ---
 
