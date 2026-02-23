@@ -555,9 +555,7 @@ When in RUNNING mode, the CCU periodically sends data to the configured server:
 Central_Control_Unit_Firmware/
 ├── Central_Control_Unit_Firmware.ino    — Main sketch: boot, state machine, loop
 ├── Config.h                             — Global constants (pins, protocol, timing)
-├── Documentation/
-│   ├── FIRMWARE_DOCS.md                 — This file
-│   └── User_Testing_Guide.md            — Testing guide for end users
+│
 ├── data/                                — SPIFFS data (if any)
 └── src/
     ├── HC12_RF/

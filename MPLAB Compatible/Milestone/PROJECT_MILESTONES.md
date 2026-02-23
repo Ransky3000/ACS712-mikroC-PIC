@@ -14,8 +14,8 @@
 
 | Component                | Version | Status         | Documentation                                                                 |
 |:-------------------------|:--------|:---------------|:------------------------------------------------------------------------------|
-| SmartOutlet Firmware     | v5.3.1  | ✅ Stable      | [FIRMWARE_DOCS.md](Smart%20Outlet%20Device%20dev/FIRMWARE_DOCS.md)            |
-| CCU Firmware (ESP32)     | v3.0.0  | ✅ Stable      | [FIRMWARE_DOCS.md](Central%20Control%20Unit%20dev/FIRMWARE_DOCS.md)           |
+| SmartOutlet Firmware     | v5.3.1  | ✅ Stable      | [FIRMWARE_DOCS.md](Smart%20Outlet%20Device%20dev/Documentation/FIRMWARE_DOCS.md) |
+| CCU Firmware (ESP32)     | v3.0.0  | ✅ Stable      | [FIRMWARE_DOCS.md](Central%20Control%20Unit%20dev/Documentation/FIRMWARE_DOCS.md) |
 | Smart-Outlet-WebApp      | —       | 🔧 In Progress | —                                                                             |
 | Outlet Breaker (SCT013)  | —       | 📋 Planned     | —                                                                             |
 
@@ -62,10 +62,10 @@
 | Document                      | Location                                                                                          |
 |:------------------------------|:--------------------------------------------------------------------------------------------------|
 | System Architecture           | [Smart outlet system Architecture.png](Smart%20outlet%20system%20Architecture.png)                |
-| PIC Firmware Docs             | [FIRMWARE_DOCS.md](Smart%20Outlet%20Device%20dev/FIRMWARE_DOCS.md)                                |
-| PIC Circuit Diagram           | [Smart outlet_Actual_Circuit_v5.2.0.PDF](Smart%20Outlet%20Device%20dev/Smart%20outlet_Actual_Circuit_v5.2.0.PDF) |
-| CCU Firmware Docs             | [FIRMWARE_DOCS.md](Central%20Control%20Unit%20dev/FIRMWARE_DOCS.md)                               |
-| User Testing Guide            | [User_Testing_Guide.md](../Central_Control_Unit_Firmware/Documentation/User_Testing_Guide.md)     |
+| PIC Firmware Docs             | [FIRMWARE_DOCS.md](Smart%20Outlet%20Device%20dev/Documentation/FIRMWARE_DOCS.md)                   |
+| PIC Circuit Diagram           | [Smart outlet_Actual_Circuit_v5.2.0.PDF](Smart%20Outlet%20Device%20dev/Images/Smart%20outlet_Actual_Circuit_v5.2.0.PDF) |
+| CCU Firmware Docs             | [FIRMWARE_DOCS.md](Central%20Control%20Unit%20dev/Documentation/FIRMWARE_DOCS.md)                  |
+| User Testing Guide            | [User_Testing_Guide.md](Central%20Control%20Unit%20dev/Documentation/User_Testing_Guide.md)        |
 
 ---
 
