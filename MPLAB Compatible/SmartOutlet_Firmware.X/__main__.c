@@ -1,13 +1,14 @@
 /*
  * File:   __main__.c
- * Description: Merged Firmware - FINAL (Relays + Sensors + Improved ACK)
+ * Description: Merged Firmware - FINAL v5.4.0 (Relays + Sensors + Improved ACK)
  * 
  * Features:
  * 1. Relay Control (Active Low) via HC12 & Debug Keys 1-4
  * 2. Sensor Reading (ACS712) via HC12 & Debug Key 5
- * 3. Clean Protocol (No text on HardUART)
+ * 3. Clean Protocol (No text on HardUART, SoftUART removed for memory)
  * 4. 50ms Inter-packet delay for ESP32 stability
  * 5. ACK Packet includes Socket ID (DataH)
+ * 6. 300ms Inrush Delay & Multi-Press Button (Config/Override)
  */
 
 // CONFIG1
@@ -28,7 +29,6 @@
 
 #include <xc.h>
 #include "UART_Lib.h"
-#include "Soft_UART.h"
 #include "Timer_lib.h"
 #include "ADC_Lib.h"
 #include "ACS712.h"
@@ -46,7 +46,7 @@
 // --- Defaults ---
 #define DEFAULT_DEVICE_ID  0x01
 #define DEFAULT_ID_MASTER  0x01
-#define DEFAULT_THRESHOLD  3000
+#define DEFAULT_THRESHOLD  5000
 #define SOCKET_A    1
 #define SOCKET_B    2
 
@@ -57,9 +57,9 @@ unsigned int overload_threshold_ma = DEFAULT_THRESHOLD;
 
 // --- Config Mode / Reset ---
 unsigned char config_mode = 0;
-unsigned char reset_count = 0;
+unsigned char button_press_count = 0;
 unsigned char btn_was_low = 0;
-unsigned long btn_hold_start = 0;
+unsigned long last_btn_press_time = 0;
 unsigned long last_btn_edge = 0;
 
 // --- Globals ---
@@ -69,9 +69,11 @@ ACS712_t sensorB;
 // Overload State Tracking
 unsigned char isOverloadedA = 0;
 unsigned long cooldownStartA = 0;
+unsigned char overloadStrikesA = 0;
 
 unsigned char isOverloadedB = 0;
 unsigned long cooldownStartB = 0;
+unsigned char overloadStrikesB = 0;
 
 unsigned long last_print = 0;
 unsigned long last_sensor_check = 0;
@@ -82,13 +84,12 @@ void Send_ACK(unsigned char target, unsigned char cmd, unsigned char socket);
 void Perform_Read_And_Report(unsigned char sender_id);
 void Process_Debug_Shortcut(char key);
 unsigned char is_configured(void);
-void print_int_to_uart(unsigned int val, unsigned char is_soft);
+void Flicker_LED_5_Times(void);
 
 // --- ISR ---
 void __interrupt() ISR(void) {
     UART_ISR();    // Capture UART bytes first (highest priority)
     Timer_ISR();   // millis() counter
-    Soft_UART_ISR(); // Software serial TX
 }
 
 void main() {
@@ -108,7 +109,6 @@ void main() {
     
     // 3. Init Libraries
     UART_Init();
-    Soft_UART_Init(&PORTB, 6, 7, 9600, 0); 
     Time_Init(8);   // Init Timer for timestamps/delays
     ADC_Init();     // Init ADC Module
 
@@ -135,13 +135,8 @@ void main() {
     
     CFG_LED = is_configured() ? 1 : 0;
     
-    Soft_UART_println("v5.3.1");
-    Soft_UART_println("Cal");
-    
     ACS712_Calibrate(&sensorA);
     ACS712_Calibrate(&sensorB);
-    
-    Soft_UART_println("Rdy"); // Reduced from "Ready..."
     
     // 5. Rx State Machine
     RF_Packet_t rx_pkt;
@@ -171,47 +166,58 @@ void main() {
             if (rx_idx >= PACKET_SIZE) {
                 if (RF_Verify_Packet(&rx_pkt)) {
                     Process_Command(&rx_pkt);
-                } else {
-                    Soft_UART_println("CRC!");
                 }
                 rx_idx = 0;
             }
             continue; // Skip sensor reading this cycle to process next byte fast
         }
         
-        // --- 2. BUTTON CHECK (Config Mode + Factory Reset) ---
+        // --- 2. BUTTON CHECK (Multi-Press Logic) ---
         if (CFG_BTN == 0) {
             if (!btn_was_low) {
-                btn_hold_start = millis();
                 btn_was_low = 1;
-            }
-            if (millis() - btn_hold_start >= 3000 && !config_mode) {
-                config_mode = 1;
-                Soft_UART_println("Cfg!");
             }
         } else {
             if (btn_was_low && (millis() - last_btn_edge >= 50)) {
-                if (!config_mode) reset_count++;
+                if (!config_mode) button_press_count++;
+                last_btn_press_time = millis();
                 last_btn_edge = millis();
             }
             btn_was_low = 0;
         }
         
-        // Factory Reset: 3 presses
-        if (reset_count >= 3) {
-            eeprom_write(0x00, DEFAULT_THRESHOLD >> 8);
-            eeprom_write(0x01, DEFAULT_THRESHOLD & 0xFF);
-            eeprom_write(0x02, DEFAULT_DEVICE_ID);
-            eeprom_write(0x03, DEFAULT_ID_MASTER);
-            device_id = DEFAULT_DEVICE_ID;
-            id_master = DEFAULT_ID_MASTER;
-            overload_threshold_ma = DEFAULT_THRESHOLD;
-            CFG_LED = 0;
-            reset_count = 0;
+        // --- 2-Second Timeout Executor ---
+        if (button_press_count > 0 && (millis() - last_btn_press_time >= 2000)) {
+            
+            if (button_press_count == 3) {
+                // Factory Reset (3 Presses)
+                eeprom_write(0x00, DEFAULT_THRESHOLD >> 8);
+                eeprom_write(0x01, DEFAULT_THRESHOLD & 0xFF);
+                eeprom_write(0x02, DEFAULT_DEVICE_ID);
+                eeprom_write(0x03, DEFAULT_ID_MASTER);
+                device_id = DEFAULT_DEVICE_ID;
+                id_master = DEFAULT_ID_MASTER;
+                overload_threshold_ma = DEFAULT_THRESHOLD;
+                CFG_LED = 0;
+                Flicker_LED_5_Times();
+            }
+            else if (button_press_count == 5) {
+                // Config Mode (5 Presses)
+                config_mode = 1;
+                Flicker_LED_5_Times();
+            }
+            else if (button_press_count == 7) {
+                // Manual Override (7 Presses)
+                RELAY_A_PIN = 1;
+                RELAY_B_PIN = 1;
+                Flicker_LED_5_Times();
+            }
+            
+            button_press_count = 0; // Reset for next sequence
         }
         
-        // --- 3. OVERLOAD PROTECTION (Gated: Every 200ms) ---
-        if (millis() - last_sensor_check >= 200) {
+        // --- 3. OVERLOAD PROTECTION (Gated: Every 100ms) ---
+        if (millis() - last_sensor_check >= 100) {
             last_sensor_check = millis();
             
             // --- Socket A ---
@@ -219,14 +225,19 @@ void main() {
                 if (millis() - cooldownStartA >= 5000) {
                      isOverloadedA = 0;
                      RELAY_A_PIN = 1; // Retry ON (de-energize, NC closes)
-                     Soft_UART_println("A:Rty");
                 }
             } else {
                 unsigned int currentA = ACS712_ReadAC(&sensorA, 60);
                 if (currentA > overload_threshold_ma) {
-                    RELAY_A_PIN = 0; // Trip OFF (energize, NC opens)
-                    isOverloadedA = 1;
-                    cooldownStartA = millis();
+                    overloadStrikesA++;
+                    if (overloadStrikesA >= 3) {
+                        RELAY_A_PIN = 0; // Trip OFF (energize, NC opens)
+                        isOverloadedA = 1;
+                        cooldownStartA = millis();
+                        overloadStrikesA = 0;
+                    }
+                } else {
+                    overloadStrikesA = 0;
                 }
             }
             
@@ -235,14 +246,19 @@ void main() {
                 if (millis() - cooldownStartB >= 5000) {
                      isOverloadedB = 0;
                      RELAY_B_PIN = 1; // Retry ON (de-energize, NC closes)
-                     Soft_UART_println("B:Rty");
                 }
             } else {
                 unsigned int currentB = ACS712_ReadAC(&sensorB, 60);
                 if (currentB > overload_threshold_ma) {
-                    RELAY_B_PIN = 0; // Trip OFF (energize, NC opens)
-                    isOverloadedB = 1;
-                    cooldownStartB = millis();
+                    overloadStrikesB++;
+                    if (overloadStrikesB >= 3) {
+                        RELAY_B_PIN = 0; // Trip OFF (energize, NC opens)
+                        isOverloadedB = 1;
+                        cooldownStartB = millis();
+                        overloadStrikesB = 0;
+                    }
+                } else {
+                    overloadStrikesB = 0;
                 }
             }
         }
@@ -262,14 +278,14 @@ void Process_Command(RF_Packet_t *pkt) {
             break;
             
         case CMD_RELAY_ON:
-            if (socket == SOCKET_A && !isOverloadedA)      { RELAY_A_PIN = 1; Soft_UART_println("R1+"); }
-            else if (socket == SOCKET_B && !isOverloadedB) { RELAY_B_PIN = 1; Soft_UART_println("R2+"); }
+            if (socket == SOCKET_A && !isOverloadedA)      { RELAY_A_PIN = 1; }
+            else if (socket == SOCKET_B && !isOverloadedB) { RELAY_B_PIN = 1; }
             Send_ACK(pkt->fields.sender_id, CMD_RELAY_ON, socket);
             break;
             
         case CMD_RELAY_OFF:
-            if (socket == SOCKET_A)      { RELAY_A_PIN = 0; Soft_UART_println("R1-"); }
-            else if (socket == SOCKET_B) { RELAY_B_PIN = 0; Soft_UART_println("R2-"); }
+            if (socket == SOCKET_A)      { RELAY_A_PIN = 0; }
+            else if (socket == SOCKET_B) { RELAY_B_PIN = 0; }
             // Send ACK with Socket ID
             Send_ACK(pkt->fields.sender_id, CMD_RELAY_OFF, socket);
             break;
@@ -350,14 +366,7 @@ void Perform_Read_And_Report(unsigned char sender_id) {
     }
     
     // 2. Print to SoftUART
-    Soft_UART_print("A:");
-    if(isOverloadedA) { Soft_UART_print("OVL"); }
-    else { print_int_to_uart(valA, 1); }
-    
-    Soft_UART_print("|B:");
-    if(isOverloadedB) { Soft_UART_print("OVL"); }
-    else { print_int_to_uart(valB, 1); }
-    Soft_UART_println("");
+    // (Removed to save memory)
     
     // 3. Send Protocol Packets to HC12 (Clean Binary)
     
@@ -383,24 +392,6 @@ void Perform_Read_And_Report(unsigned char sender_id) {
     for(int i=0; i<PACKET_SIZE; i++) UART_Write(tx.frame[i]);
 }
 
-
-// Helper: 1=Soft, 0=Hard
-void print_int_to_uart(unsigned int val, unsigned char is_soft) {
-    if(val == 0) {
-        if(is_soft) Soft_UART_Write('0'); else UART_Write('0');
-        return;
-    }
-    char buffer[6];
-    int i = 0;
-    while(val > 0) {
-        buffer[i++] = (val % 10) + '0';
-        val /= 10;
-    }
-    while(--i >= 0) {
-        if(is_soft) Soft_UART_Write(buffer[i]); else UART_Write(buffer[i]);
-    }
-}
-
 void Process_Debug_Shortcut(char key) {
     RF_Packet_t mock_pkt;
     RF_Init_Packet(&mock_pkt);
@@ -411,25 +402,21 @@ void Process_Debug_Shortcut(char key) {
 
     switch(key) {
         case '1': 
-            Soft_UART_println("R1+");
             mock_pkt.fields.command = CMD_RELAY_ON;
             RF_Set_Data(&mock_pkt, SOCKET_A);
             Process_Command(&mock_pkt);
             break;
         case '2': 
-            Soft_UART_println("R1-");
             mock_pkt.fields.command = CMD_RELAY_OFF;
             RF_Set_Data(&mock_pkt, SOCKET_A);
             Process_Command(&mock_pkt);
             break;
         case '3': 
-            Soft_UART_println("R2+");
             mock_pkt.fields.command = CMD_RELAY_ON;
             RF_Set_Data(&mock_pkt, SOCKET_B);
             Process_Command(&mock_pkt);
             break;
         case '4': 
-            Soft_UART_println("R2-");
             mock_pkt.fields.command = CMD_RELAY_OFF;
             RF_Set_Data(&mock_pkt, SOCKET_B);
             Process_Command(&mock_pkt);
@@ -441,20 +428,17 @@ void Process_Debug_Shortcut(char key) {
             break;
         case '6':
             // Cfg 10000mA
-            Soft_UART_println("Cfg:10000");
             mock_pkt.fields.command = CMD_SET_THRESHOLD;
             RF_Set_Data(&mock_pkt, 10000);
             Process_Command(&mock_pkt);
             break;
         case '7':
         case '8':
-            if (!config_mode) { Soft_UART_println("Cfg?"); break; }
+            if (!config_mode) { break; }
             if (key == '7') {
-                Soft_UART_println("ID:FE");
                 mock_pkt.fields.command = CMD_SET_DEVICE_ID;
                 RF_Set_Data(&mock_pkt, 0xFE);
             } else {
-                Soft_UART_println("MA:0A");
                 mock_pkt.fields.command = CMD_SET_ID_MASTER;
                 RF_Set_Data(&mock_pkt, 0x0A);
             }
@@ -468,4 +452,15 @@ unsigned char is_configured(void) {
     return (device_id != DEFAULT_DEVICE_ID &&
             id_master != DEFAULT_ID_MASTER &&
             overload_threshold_ma != DEFAULT_THRESHOLD);
+}
+
+void Flicker_LED_5_Times(void) {
+    unsigned char original_state = CFG_LED;
+    for (int i = 0; i < 5; i++) {
+        CFG_LED = 1;
+        __delay_ms(50);
+        CFG_LED = 0;
+        __delay_ms(50);
+    }
+    CFG_LED = original_state; // Restore to what it was
 }

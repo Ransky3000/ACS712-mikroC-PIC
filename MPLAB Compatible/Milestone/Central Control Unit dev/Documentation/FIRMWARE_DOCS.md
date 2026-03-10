@@ -1,7 +1,8 @@
 # Central Control Unit (CCU) Firmware — Developer Documentation
 
 **MCU:** ESP32 · **Framework:** Arduino · **IDE:** Arduino IDE / PlatformIO  
-**Firmware:** v4.0.0 · **Communication:** HC-12 433MHz RF + WiFi
+**Firmware:** v8.0.0 · **Communication:** HC-12 433MHz RF + WiFi  
+**Partition Scheme:** Huge APP (3MB No OTA / 1MB SPIFFS) — ~38% flash usage
 
 ---
 
@@ -56,6 +57,17 @@
 | 16   | HC-12 RX         | Input     | UART2 RX ← HC-12 TX           |
 | 17   | HC-12 TX         | Output    | UART2 TX → HC-12 RX           |
 | 34   | SCT013 ADC       | Input     | Breaker CT sensor (ADC-only)   |
+
+---
+
+## Circuit Simulation
+
+The CCU circuit simulation is available as a Proteus schematic document:
+
+📄 **[CCU_Simulation_2.0.0.PDF](CCU_Simulation_2.0.0.PDF)** — v2.0.0 Proteus simulation schematic for the ESP32 + HC-12 + SCT013 circuit.
+
+> [!NOTE]
+> Open the PDF to view the full schematic including ESP32 pin connections, HC-12 RF module wiring, SCT013 burden resistor circuit, and power supply layout.
 
 ---
 
@@ -125,14 +137,44 @@ The loop runs the active mode's subsystems:
 ### LOCAL_DASHBOARD Mode
 - `dashboard.handleClient()` — serves web dashboard
 - `outletManager.update()` — reads/parses HC-12 packets
-- `breakerMonitor.update()` — non-blocking SCT013 current sampling
+- `breakerMonitor.readFresh()` — periodic blocking 166ms ADC burst (every 1.5s, immune to WiFi noise)
 - `serialCLI.update()` — reads serial CLI input
 
 ### RUNNING Mode
 - All LOCAL_DASHBOARD tasks, plus:
 - WiFi reconnection — if disconnected, retries connection or falls back to SETUP
-- Cloud data push — sends JSON payload to server every 10 seconds
+- Cloud data push — sends JSON payload to server every 2 seconds
 - Cloud failure tracking — logs first failure, then reminders every ~60s
+- Breaker reads use blocking `readFresh()` every 1.5s (same as LOCAL_DASHBOARD)
+- **Focus Device** — polls `/api/focus/` each cycle, only reads sensors for the focused device. If no device is focused, sensor reads are skipped entirely (breaker always sends).
+
+---
+
+## Serial Output Format
+
+The firmware uses a clean, event-driven serial output format. No periodic output — prints only when data arrives.
+
+### RX Packet + Device Status
+
+```
+[TX] Read Sensors: 0x3
+[RX PACKET] RAW: AA 01 01 05 00 31 34 BB | FROM: 0x01 | TYPE: DATA REPORT (49mA)
+[PIC 3] Breaker: 2364mA | 0x03: A=49mA B=98mA | RA: ON RB: ON
+
+[TX] Relay A ON: 0x3
+[RX PACKET] RAW: AA 03 03 06 01 02 05 BB | FROM: 0x03 | TYPE: ACK (Socket A)
+[PIC 3] Breaker: 2364mA | 0x03: A=49mA B=98mA | RA: ON RB: ON
+```
+
+### Format Reference
+
+| Line | Format | When |
+|:-----|:-------|:-----|
+| `[TX]`        | `[TX] <Command>: 0x<ID>` | On every outgoing command |
+| `[RX PACKET]` | `RAW: <hex> \| FROM: 0x<ID> \| TYPE: <type> (<detail>)` | On every valid incoming packet |
+| `[PIC name]`  | `Breaker: <mA> \| 0x<ID>: A=<mA> B=<mA> \| RA: ON/OFF RB: ON/OFF` | After DATA REPORT or ACK |
+
+> **Silent when idle.** No output is printed unless the ESP32 receives data from a PIC.
 
 ---
 
@@ -280,6 +322,20 @@ Served on port 80, accessible via:
 | POST   | `/api/breaker/threshold`| Set breaker threshold  | value (mA)               |
 | POST   | `/api/breaker/cut`    | Cut device (A+B) or all  | index (int or `all`)     |
 
+### External API Routes (Django Direct Communication)
+
+These routes allow the Django server to send commands directly to the ESP32 via HTTP, bypassing the polling queue for faster response:
+
+| Method | Route                 | Action                   | Parameters                       | Response                            |
+|:-------|:----------------------|:-------------------------|:---------------------------------|:------------------------------------|
+| POST   | `/api/ext/relay`      | Toggle relay directly    | `device_id`, `socket`, `state`   | `{success, ack, device_id, socket, state}` |
+| POST   | `/api/ext/threshold`  | Set threshold directly   | `device_id`, `value`             | `{success, ack, device_id, value}`  |
+| GET    | `/api/ext/ping`       | Health check             | —                                | `{success, uptime, devices, freeHeap}` |
+
+> **Flow:** Django → HTTP POST → ESP32 `/api/ext/relay` → HC-12 → PIC → ACK → ESP32 → JSON response → Django
+
+> **Fallback:** If the ESP32 is unreachable, Django falls back to creating a `PendingCommand` for the next poll cycle.
+
 ---
 
 ## Captive Portal (Setup Mode)
@@ -287,9 +343,19 @@ Served on port 80, accessible via:
 When no WiFi credentials exist, the ESP32 starts an open AP (`CCU-Setup`):
 
 1. DNS server redirects **all** domains to `192.168.4.1`
-2. Web form collects: SSID, Password, Server URL
-3. On submit → saves to NVS → restarts in STA mode
-4. "Local Dashboard" button → skips WiFi, enters LOCAL_DASHBOARD mode
+2. Web form collects: SSID, Password, Server URL (optional — auto-prepends `http://` if omitted)
+3. **📡 Scan WiFi** button — scans nearby networks, shows list sorted by signal strength
+4. Tap a network → SSID auto-fills. Open networks (🔓) disable the password field.
+5. On submit → saves to NVS → restarts in STA mode
+6. "Local Dashboard" button → skips WiFi, enters LOCAL_DASHBOARD mode
+
+### Scan WiFi Endpoint
+
+| Method | Route   | Action | Response |
+|:-------|:--------|:-------|:---------|
+| GET    | `/scan` | Async WiFi scan | `{"status":"scanning"}` while in progress, or `[{"ssid":"...", "rssi":-45, "open":false}, ...]` when complete |
+
+> **Note:** The scan uses `WiFi.scanNetworks(true)` (non-blocking). The JavaScript polls `/scan` every 500ms until results are ready. The AP stays fully responsive during the scan.
 
 ---
 
@@ -393,8 +459,19 @@ When in RUNNING mode, the CCU periodically sends data to the configured server:
 | Define                  | Value    | Notes                    |
 |:------------------------|:---------|:-------------------------|
 | `SERIAL_BAUD`           | `115200` | USB serial monitor       |
-| `CLOUD_SEND_INTERVAL_MS`| `10000` | 10s between cloud pushes |
+| `CLOUD_SEND_INTERVAL_MS`| `2000`  | 2s between cloud pushes  |
 | `HTTP_TIMEOUT_MS`       | `5000`  | HTTP request timeout     |
+| `BACKGROUND_POLL_INTERVAL_MS` | `30000` | 30s background sensor poll |
+
+### Partition Scheme
+
+| Setting | Value |
+|:--------|:------|
+| Partition | Huge APP (3MB No OTA / 1MB SPIFFS) |
+| Flash Usage | ~38% (down from 91% with default partition) |
+| OTA Updates | Not available (trade-off for more app space) |
+
+> **Note:** The partition scheme was changed from the default (with OTA) to "Huge APP" to reduce flash usage from 91% to ~38%. This sacrifices over-the-air updates for significantly more application space.
 
 ---
 
@@ -458,6 +535,8 @@ When in RUNNING mode, the CCU periodically sends data to the configured server:
 | `uint8_t getSenderID() const` | Get the CCU's sender ID (master ID). |
 | `void setSenderID(uint8_t id)` | Set the CCU's sender ID. |
 | `uint8_t getLastAckSender() const` | Get sender of the most recent ACK (for ID change detection). |
+| `void setBreakerMonitor(BreakerMonitor*)` | Set pointer to BreakerMonitor for live breaker readings in serial output. |
+| `int getLiveBreakerMA() const` | Get live breaker reading via BreakerMonitor pointer (same source as dashboard). |
 | `void sendATCommand(const String&)` | Passthrough AT commands to HC-12 module. |
 | `void sendRawHex(const String&)` | Send raw hex bytes directly via HC-12. |
 | `HardwareSerial& getHC12()` | Get HC-12 serial reference for advanced use. |
@@ -481,7 +560,8 @@ When in RUNNING mode, the CCU periodically sends data to the configured server:
 |:-------|:------------|
 | `BreakerMonitor()` | Constructor — creates SCT013 sensor on `BREAKER_ADC_PIN`. |
 | `void begin()` | Initialize SCT013 with CT ratio and burden resistor from Config.h. |
-| `bool update()` | Non-blocking sample. Returns `true` when a new RMS reading is ready. **Call in loop().** |
+| `bool update()` | Non-blocking sample. Returns `true` when a new RMS reading is ready. |
+| `void readFresh()` | Blocking 166ms continuous ADC burst. Immune to WiFi noise. Call periodically (~1.5s). |
 | `double getAmps() const` | Get last RMS current in Amps. |
 | `int getMilliAmps() const` | Get last RMS current in milliAmps. |
 | `bool hasReading() const` | True if at least one reading has completed. |

@@ -19,8 +19,20 @@ public:
     // Initialize with server URL
     void begin(const String& serverUrl);
 
-    // Send JSON data to server via POST
-    int sendData(const String& jsonPayload);
+    // Send JSON data to server via POST (Outlet Sensors)
+    int sendSensorData(const String& jsonPayload);
+
+    // Send JSON data to server via POST (Main Breaker)
+    int sendBreakerData(const String& jsonPayload);
+
+    // Fetch pending commands for a specific device (GET request)
+    String fetchCommands(const String& deviceId);
+
+    // Fetch registered device list from server (GET request)
+    String fetchDevices();
+
+    // Fetch the currently focused device from server (GET request)
+    String fetchFocusDevice();
 
     // Check if server is reachable (GET request)
     bool isReachable();

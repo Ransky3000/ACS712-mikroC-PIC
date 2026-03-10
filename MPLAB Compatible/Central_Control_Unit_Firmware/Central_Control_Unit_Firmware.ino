@@ -75,6 +75,12 @@ DeviceMode currentMode = DeviceMode::SETUP;
 // ─── Timing ─────────────────────────────────────────────────
 unsigned long lastCloudSend = 0;
 unsigned int  cloudFailCount = 0;    // Tracks consecutive failures to suppress spam
+unsigned long lastBreakerRead = 0;   // Timer for periodic blocking breaker reads
+const unsigned long BREAKER_READ_INTERVAL = 1500;  // 1.5s — same as dashboard poll
+
+// Background polling for non-focused outlets (round-robin)
+unsigned long lastBackgroundPoll = 0;
+uint8_t       backgroundDeviceIndex = 0;
 
 // ─── Factory Reset Check ────────────────────────────────────
 void checkFactoryReset() {
@@ -128,6 +134,8 @@ void enterLocalDashboardMode() {
     dashboard.begin();
     outletManager.begin();
     breakerMonitor.begin();
+    breakerMonitor.tare();  // Zero-calibrate ADC offset
+    outletManager.setBreakerMonitor(&breakerMonitor);  // Serial reads breaker live
     serialCLI.begin();
     statusLED.setPattern(LEDPattern::SOLID);
 
@@ -151,6 +159,40 @@ void enterRunningMode() {
     // Check if server is reachable
     if (cloud.isReachable()) {
         Serial.println("✓ Server is reachable: " + cloud.getServerUrl());
+        
+        // Sync device list from Django database
+        Serial.println("  Syncing device list from server...");
+        String devJson = cloud.fetchDevices();
+        devJson.replace(" ", ""); // Strip spaces for parsing
+        
+        if (devJson.indexOf("\"success\":true") >= 0) {
+            // Parse device IDs from: {"success":true,"devices":["FE","FD"]}
+            int arrStart = devJson.indexOf("[");
+            int arrEnd = devJson.indexOf("]");
+            
+            if (arrStart >= 0 && arrEnd > arrStart) {
+                String arr = devJson.substring(arrStart + 1, arrEnd);
+                int count = 0;
+                
+                while (arr.length() > 0) {
+                    int qStart = arr.indexOf("\"");
+                    if (qStart < 0) break;
+                    int qEnd = arr.indexOf("\"", qStart + 1);
+                    if (qEnd < 0) break;
+                    
+                    String devId = arr.substring(qStart + 1, qEnd);
+                    uint8_t id = (uint8_t)strtol(devId.c_str(), NULL, 16);
+                    outletManager.selectDevice(id);
+                    count++;
+                    
+                    arr = arr.substring(qEnd + 1);
+                }
+                
+                Serial.println("  ✓ Synced " + String(count) + " device(s) from server.");
+            }
+        } else {
+            Serial.println("  ✗ Could not fetch device list.");
+        }
     } else {
         Serial.println("✗ Server not reachable (will retry).");
     }
@@ -160,6 +202,8 @@ void enterRunningMode() {
     serialCLI.begin();
     dashboard.begin();
     breakerMonitor.begin();
+    breakerMonitor.tare();  // Zero-calibrate ADC after WiFi connected
+    outletManager.setBreakerMonitor(&breakerMonitor);  // Serial reads breaker live
 
     Serial.println("\n✓ HC-12 RF + Serial CLI + Dashboard ready.");
     Serial.println("  Dashboard: http://" + wifiManager.getLocalIP().toString() + "/dashboard");
@@ -232,7 +276,12 @@ void loop() {
         case DeviceMode::LOCAL_DASHBOARD:
             dashboard.handleClient();
             outletManager.update();
-            breakerMonitor.update();
+            // Periodic blocking breaker read — tight 166ms ADC burst, immune to WiFi noise
+            // Same approach as dashboard polling (clean continuous sampling)
+            if (millis() - lastBreakerRead >= BREAKER_READ_INTERVAL) {
+                breakerMonitor.readFresh();
+                lastBreakerRead = millis();
+            }
             serialCLI.update();
             break;
 
@@ -241,8 +290,11 @@ void loop() {
             // HC-12 RF: read incoming packets from smart outlets
             outletManager.update();
 
-            // Breaker Monitor: read SCT013 sensor
-            breakerMonitor.update();
+            // Breaker Monitor: periodic blocking read (same as LOCAL_DASHBOARD)
+            if (millis() - lastBreakerRead >= BREAKER_READ_INTERVAL) {
+                breakerMonitor.readFresh();
+                lastBreakerRead = millis();
+            }
 
             // Serial CLI: handle debug commands from serial monitor
             serialCLI.update();
@@ -270,28 +322,306 @@ void loop() {
                 }
             }
 
-            // Periodic data sending (placeholder)
+            // Periodic cloud data sync & command fetch
             if (millis() - lastCloudSend >= CLOUD_SEND_INTERVAL_MS) {
                 lastCloudSend = millis();
+                bool anyFail = false;
 
-                // Example JSON payload — customize for your sensors
-                String payload = "{\"device\":\"CCU\",\"uptime\":" + String(millis() / 1000) + "}";
-                int responseCode = cloud.sendData(payload);
+                // 0. Re-sync device list from Django (picks up newly added outlets)
+                String devJson = cloud.fetchDevices();
+                devJson.replace(" ", "");
+                if (devJson.indexOf("\"success\":true") >= 0) {
+                    int arrStart = devJson.indexOf("[");
+                    int arrEnd = devJson.indexOf("]");
+                    if (arrStart >= 0 && arrEnd > arrStart) {
+                        String arr = devJson.substring(arrStart + 1, arrEnd);
+                        while (arr.length() > 0) {
+                            int qStart = arr.indexOf("\"");
+                            if (qStart < 0) break;
+                            int qEnd = arr.indexOf("\"", qStart + 1);
+                            if (qEnd < 0) break;
+                            String devId = arr.substring(qStart + 1, qEnd);
+                            uint8_t id = (uint8_t)strtol(devId.c_str(), NULL, 16);
+                            outletManager.selectDevice(id); // No-op if already exists
+                            arr = arr.substring(qEnd + 1);
+                        }
+                    }
+                }
 
-                if (responseCode == 200) {
+                // 1. ALWAYS send Breaker Data (same speed as sensors)
+                if (breakerMonitor.hasReading()) {
+                    String hexId = String(outletManager.getSenderID(), HEX);
+                    hexId.toUpperCase();
+                    String breakerPayload = "{\"ccu_id\":\"";
+                    if (outletManager.getSenderID() < 0x10) breakerPayload += "0";
+                    breakerPayload += hexId + "\",";
+                    
+                    // Read live value directly — same source as dashboard
+                    breakerPayload += "\"current_ma\":" + String(breakerMonitor.getMilliAmps()) + "}";
+                    
+                    int res = cloud.sendBreakerData(breakerPayload);
+                    if (res != 200 && res != 201) anyFail = true;
+                }
+
+                // 2. Fetch focused device from Django
+                String focusJson = cloud.fetchFocusDevice();
+                focusJson.replace(" ", "");
+                String focusedId = "";
+                
+                // Parse: {"success":true,"device_id":"03"} or {"success":true,"device_id":null}
+                if (focusJson.indexOf("\"device_id\":\"") >= 0) {
+                    int idStart = focusJson.indexOf("\"device_id\":\"") + 13;
+                    int idEnd = focusJson.indexOf("\"", idStart);
+                    if (idEnd > idStart) {
+                        focusedId = focusJson.substring(idStart, idEnd);
+                    }
+                }
+
+                // 3. Only read sensors for the focused device
+                if (focusedId.length() > 0) {
+                    uint8_t focusId = (uint8_t)strtol(focusedId.c_str(), NULL, 16);
+                    
+                    // Find the device
+                    int devIdx = -1;
+                    for (uint8_t i = 0; i < outletManager.getDeviceCount(); i++) {
+                        if (outletManager.getDevice(i).getDeviceId() == focusId) {
+                            devIdx = i;
+                            break;
+                        }
+                    }
+
+                    if (devIdx >= 0) {
+                        OutletDevice& dev = outletManager.getDevice(devIdx);
+                        outletManager.selectDevice(dev.getDeviceId());
+                        
+                        // Flush stale RX data
+                        while(outletManager.getHC12().available()) {
+                            outletManager.getHC12().read();
+                        }
+                        
+                        outletManager.readSensors();
+                        
+                        // Wait for PIC replies (Socket A & B)
+                        unsigned long waitStart = millis();
+                        while (millis() - waitStart < 350) {
+                            outletManager.update();
+                        }
+
+                        // Send sensor data to cloud
+                        String hexId = String(dev.getDeviceId(), HEX);
+                        hexId.toUpperCase();
+                        String payload = "{\"device_id\":\"";
+                        if (dev.getDeviceId() < 0x10) payload += "0";
+                        payload += hexId + "\",";
+                        
+                        payload += "\"current_a\":" + String(dev.getCurrentA()) + ",";
+                        payload += "\"current_b\":" + String(dev.getCurrentB()) + ",";
+                        payload += "\"relay_a\":" + String(dev.getRelayA() == 1 ? "true" : "false") + ",";
+                        payload += "\"relay_b\":" + String(dev.getRelayB() == 1 ? "true" : "false") + ",";
+                        bool isOverload = (dev.getCurrentA() == 65535 || dev.getCurrentB() == 65535);
+                        payload += "\"is_overload\":" + String(isOverload ? "true" : "false") + "}";
+                        
+                        int res = cloud.sendSensorData(payload);
+                        if (res != 200 && res != 201) anyFail = true;
+
+                        // Fetch commands only for the focused device
+                        String devIdStr = String(dev.getDeviceId(), HEX);
+                        devIdStr.toUpperCase();
+                        if (dev.getDeviceId() < 0x10) devIdStr = "0" + devIdStr;
+                        
+                        String jsonCommands = cloud.fetchCommands(devIdStr);
+                        
+                        if (jsonCommands.indexOf("\"success\": true") >= 0 || jsonCommands.indexOf("\"success\":true") >= 0) {
+                            int startIdx = 0;
+                            while (true) {
+                                startIdx = jsonCommands.indexOf("{\"command\":", startIdx);
+                                if (startIdx < 0) break;
+                                int endIdx = jsonCommands.indexOf("}", startIdx);
+                                if (endIdx < 0) break;
+                                
+                                String cmdObj = jsonCommands.substring(startIdx, endIdx);
+                                
+                                String cmd = "";
+                                int cmdStart = cmdObj.indexOf("\"command\": \"");
+                                if (cmdStart >= 0) {
+                                    cmdStart += 12;
+                                    int cmdEnd = cmdObj.indexOf("\"", cmdStart);
+                                    if (cmdEnd >= 0) cmd = cmdObj.substring(cmdStart, cmdEnd);
+                                }
+                                
+                                String socketStr = "";
+                                int sockStart = cmdObj.indexOf("\"socket\": \"");
+                                if (sockStart >= 0) {
+                                    sockStart += 11;
+                                    int sockEnd = cmdObj.indexOf("\"", sockStart);
+                                    if (sockEnd >= 0) socketStr = cmdObj.substring(sockStart, sockEnd);
+                                }
+                                
+                                int value = 0;
+                                int valStart = cmdObj.indexOf("\"value\":");
+                                if (valStart >= 0) {
+                                    valStart += 8;
+                                    int valEnd = cmdObj.indexOf(",", valStart);
+                                    if (valEnd < 0) valEnd = cmdObj.length(); 
+                                    String valStr = cmdObj.substring(valStart, valEnd);
+                                    valStr.trim();
+                                    if (valStr != "null") value = valStr.toInt();
+                                }
+                                
+                                outletManager.selectDevice(dev.getDeviceId());
+                                if (cmd == "relay_on") {
+                                    outletManager.relayOn(socketStr == "a" ? SOCKET_A : SOCKET_B);
+                                    delay(100);
+                                } else if (cmd == "relay_off") {
+                                    outletManager.relayOff(socketStr == "a" ? SOCKET_A : SOCKET_B);
+                                    delay(100);
+                                } else if (cmd == "set_threshold" && value > 0) {
+                                    outletManager.setThreshold(value);
+                                    delay(100);
+                                }
+                                
+                                startIdx = endIdx + 1;
+                            }
+                        } else if (jsonCommands.length() > 0) {
+                            anyFail = true;
+                        }
+                    }
+                }
+
+                // ── Background Round-Robin: poll non-focused devices every 30s ──
+                if (millis() - lastBackgroundPoll >= BACKGROUND_POLL_INTERVAL_MS
+                    && outletManager.getDeviceCount() > 0) {
+                    lastBackgroundPoll = millis();
+
+                    // Find the next device that is NOT the focused one
+                    uint8_t totalDevices = outletManager.getDeviceCount();
+                    uint8_t focusId = 0;
+                    if (focusedId.length() > 0) {
+                        focusId = (uint8_t)strtol(focusedId.c_str(), NULL, 16);
+                    }
+
+                    // Try each device once to find a non-focused one
+                    for (uint8_t attempt = 0; attempt < totalDevices; attempt++) {
+                        if (backgroundDeviceIndex >= totalDevices) {
+                            backgroundDeviceIndex = 0;
+                        }
+
+                        OutletDevice& bgDev = outletManager.getDevice(backgroundDeviceIndex);
+                        backgroundDeviceIndex++;  // Advance for next cycle
+
+                        // Skip the focused device (it's already polled every 2s)
+                        if (bgDev.getDeviceId() == focusId && focusId != 0) {
+                            continue;
+                        }
+
+                        // Found a non-focused device — poll it
+                        outletManager.selectDevice(bgDev.getDeviceId());
+
+                        // Flush stale RX data
+                        while(outletManager.getHC12().available()) {
+                            outletManager.getHC12().read();
+                        }
+
+                        outletManager.readSensors();
+
+                        // Wait for PIC replies (Socket A & B)
+                        unsigned long bgWait = millis();
+                        while (millis() - bgWait < 350) {
+                            outletManager.update();
+                        }
+
+                        // Build and send sensor data payload
+                        String bgHexId = String(bgDev.getDeviceId(), HEX);
+                        bgHexId.toUpperCase();
+                        String bgPayload = "{\"device_id\":\"";
+                        if (bgDev.getDeviceId() < 0x10) bgPayload += "0";
+                        bgPayload += bgHexId + "\",";
+                        bgPayload += "\"current_a\":" + String(bgDev.getCurrentA()) + ",";
+                        bgPayload += "\"current_b\":" + String(bgDev.getCurrentB()) + ",";
+                        bgPayload += "\"relay_a\":" + String(bgDev.getRelayA() == 1 ? "true" : "false") + ",";
+                        bgPayload += "\"relay_b\":" + String(bgDev.getRelayB() == 1 ? "true" : "false") + ",";
+                        bool bgOverload = (bgDev.getCurrentA() == 65535 || bgDev.getCurrentB() == 65535);
+                        bgPayload += "\"is_overload\":" + String(bgOverload ? "true" : "false") + "}";
+
+                        int bgRes = cloud.sendSensorData(bgPayload);
+                        if (bgRes != 200 && bgRes != 201) anyFail = true;
+
+                        // Also fetch & execute pending commands for this device
+                        String bgDevIdStr = String(bgDev.getDeviceId(), HEX);
+                        bgDevIdStr.toUpperCase();
+                        if (bgDev.getDeviceId() < 0x10) bgDevIdStr = "0" + bgDevIdStr;
+
+                        String bgCmdJson = cloud.fetchCommands(bgDevIdStr);
+                        if (bgCmdJson.indexOf("\"success\": true") >= 0 || bgCmdJson.indexOf("\"success\":true") >= 0) {
+                            int bgStartIdx = 0;
+                            while (true) {
+                                bgStartIdx = bgCmdJson.indexOf("{\"command\":", bgStartIdx);
+                                if (bgStartIdx < 0) break;
+                                int bgEndIdx = bgCmdJson.indexOf("}", bgStartIdx);
+                                if (bgEndIdx < 0) break;
+
+                                String bgCmdObj = bgCmdJson.substring(bgStartIdx, bgEndIdx);
+
+                                String bgCmd = "";
+                                int bgCmdStart = bgCmdObj.indexOf("\"command\": \"");
+                                if (bgCmdStart >= 0) {
+                                    bgCmdStart += 12;
+                                    int bgCmdEnd = bgCmdObj.indexOf("\"", bgCmdStart);
+                                    if (bgCmdEnd >= 0) bgCmd = bgCmdObj.substring(bgCmdStart, bgCmdEnd);
+                                }
+
+                                String bgSocket = "";
+                                int bgSockStart = bgCmdObj.indexOf("\"socket\": \"");
+                                if (bgSockStart >= 0) {
+                                    bgSockStart += 11;
+                                    int bgSockEnd = bgCmdObj.indexOf("\"", bgSockStart);
+                                    if (bgSockEnd >= 0) bgSocket = bgCmdObj.substring(bgSockStart, bgSockEnd);
+                                }
+
+                                int bgValue = 0;
+                                int bgValStart = bgCmdObj.indexOf("\"value\":");
+                                if (bgValStart >= 0) {
+                                    bgValStart += 8;
+                                    int bgValEnd = bgCmdObj.indexOf(",", bgValStart);
+                                    if (bgValEnd < 0) bgValEnd = bgCmdObj.length();
+                                    String bgValStr = bgCmdObj.substring(bgValStart, bgValEnd);
+                                    bgValStr.trim();
+                                    if (bgValStr != "null") bgValue = bgValStr.toInt();
+                                }
+
+                                outletManager.selectDevice(bgDev.getDeviceId());
+                                if (bgCmd == "relay_on") {
+                                    outletManager.relayOn(bgSocket == "a" ? SOCKET_A : SOCKET_B);
+                                    delay(100);
+                                } else if (bgCmd == "relay_off") {
+                                    outletManager.relayOff(bgSocket == "a" ? SOCKET_A : SOCKET_B);
+                                    delay(100);
+                                } else if (bgCmd == "set_threshold" && bgValue > 0) {
+                                    outletManager.setThreshold(bgValue);
+                                    delay(100);
+                                }
+
+                                bgStartIdx = bgEndIdx + 1;
+                            }
+                        }
+
+                        break;  // Only poll ONE background device per cycle
+                    }
+                }
+
+                // Connection monitoring
+                if (!anyFail) {
                     if (cloudFailCount > 0) {
-                        Serial.println("✓ Cloud connection restored.");
+                        Serial.println("[CLOUD] Connection restored.");
                     }
                     cloudFailCount = 0;
                     statusLED.setPattern(LEDPattern::SOLID);
                 } else {
                     cloudFailCount++;
                     if (cloudFailCount == 1) {
-                        // Only log the first failure
-                        Serial.println("✗ Cloud unreachable. Retrying silently...");
+                        Serial.println("[CLOUD] Communication issue. Retrying...");
                     } else if (cloudFailCount % 6 == 0) {
-                        // Reminder every ~60 seconds
-                        Serial.println("✗ Cloud still unreachable (" + String(cloudFailCount) + " attempts).");
+                        Serial.println("[CLOUD] Still failing (" + String(cloudFailCount) + " attempts).");
                     }
                     statusLED.setPattern(LEDPattern::SOLID);
                 }

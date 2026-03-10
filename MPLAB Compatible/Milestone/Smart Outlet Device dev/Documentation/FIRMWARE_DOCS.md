@@ -1,7 +1,7 @@
 # SmartOutlet Firmware — Developer Documentation
 
 **MCU:** PIC16F88 · **Compiler:** XC8 · **IDE:** MPLAB X  
-**Firmware:** v5.3.1 · **Flash:** ~99% (4073 / 4096 words)
+**Firmware:** v5.4.0 · **Flash:** ~99% (4073 / 4096 words)
 
 ---
 
@@ -25,10 +25,10 @@
 │               │ RA2 / RA3  │  │ ACS712 x2     │  │
 │               └────────────┘  │ AN0 / AN1     │  │
 │                               └───────────────┘  │
-│  ┌──────────┐   ┌───────────┐                    │
-│  │ SoftUART │◄──│ Debug Out │  RB6(TX) / RB7(RX) │
-│  │ (Debug)  │   │ "R1+" etc │                    │
-│  └──────────┘   └───────────┘                    │
+│  ┌──────────┐                                    │
+│  │ Hard UART│                                    │
+│  │ (Debug)  │◄──►     RB5(TX) / RB2(RX)          │
+│  └──────────┘                                    │
 │                                                  │
 │  RB3 = Config Button     RB4 = Status LED        │
 └──────────────────────────────────────────────────┘
@@ -48,8 +48,8 @@
 | RB3  | Config Button  | Input     | Active LOW, internal pullup |
 | RB4  | Status LED     | Output    | LOW = defaults, HIGH = configured |
 | RB5  | UART TX        | Output    | HC-12 data out           |
-| RB6  | Soft UART TX   | Output    | Debug serial out         |
-| RB7  | Soft UART RX   | Input     | Debug serial in (simulation) |
+| RB6  | Reserved       | —         | Previously SoftUART TX   |
+| RB7  | Reserved       | —         | Previously SoftUART RX   |
 
 ---
 
@@ -76,7 +76,7 @@ The relays use **NC wiring**, which reverses the logic:
 5. Init: ACS712 sensors (AN0, AN1)
 6. EEPROM load: threshold, device_id, id_master
 7. Update CFG_LED based on is_configured()
-8. SoftUART: "v5.3.1" → "Cal" → calibrate sensors → "Rdy"
+8. Calibrate sensors
 9. Enter main loop
 ```
 
@@ -101,24 +101,30 @@ Receives 8-byte packets from HC-12 via hardware UART:
 - Packets from unauthorized senders are silently dropped
 - Invalid CRC prints `"CRC!"` on SoftUART
 
-### 2. Button Handler (Config Mode + Factory Reset)
+### 2. Button Handler (Multi-Press Logic)
 
-**Config Mode:**
-- Hold RB3 LOW for 3 seconds → `config_mode = 1`, prints `"Cfg!"`
-- Required for `CMD_SET_DEVICE_ID` and `CMD_SET_ID_MASTER`
+Pressing RB3 tracks a count, finalizing after a **2-second timeout**:
+
+**Factory Reset (3 Presses):**
+- Resets all EEPROM values to defaults, sets `CFG_LED = 0`
+- Acknowledges with a rapid 5-LED flicker
+
+**Config Mode (5 Presses):**
+- Activates Config Mode (required for `CMD_SET_DEVICE_ID` and `CMD_SET_ID_MASTER`)
+- Acknowledges with a rapid 5-LED flicker
 - Auto-deactivates after a successful SET command
 
-**Factory Reset:**
-- Press RB3 3 times quickly (50ms debounce)
-- Only counts presses when NOT in config mode
-- Resets all EEPROM values to defaults, sets `CFG_LED = 0`
+**Manual Override (7 Presses):**
+- Forces Relay A and Relay B to ON (used if WiFi goes down)
+- Acknowledges with a rapid 5-LED flicker
 
 > **Recovery:** If master ID is misconfigured (no ESP32 can authenticate), factory reset via RB3 ×3 is the **only** way to recover.
 
-### 3. Overload Protection (Every 200ms)
+### 3. Overload Protection (Every 100ms)
 
 - Reads ACS712 current for each socket
-- If current > `overload_threshold_ma` → trip relay OFF
+- If current > `overload_threshold_ma` for **3 consecutive checks (300ms)** → trip relay OFF
+  - *(This debounce logic ignores safe inductive motor inrush currents)*
 - After 5-second cooldown → auto-retry (relay ON)
 - During overload, `CMD_RELAY_ON` is still ACK'd but relay stays OFF
 
@@ -144,8 +150,8 @@ Receives 8-byte packets from HC-12 via hardware UART:
 
 | Address | Content             | Default  | Notes                    |
 |:--------|:--------------------|:---------|:-------------------------|
-| `0x00`  | Threshold high byte | `0x0B`   | 3000 = `0x0BB8`          |
-| `0x01`  | Threshold low byte  | `0xB8`   |                          |
+| `0x00`  | Threshold high byte | `0x13`   | 5000 = `0x1388`          |
+| `0x01`  | Threshold low byte  | `0x88`   |                          |
 | `0x02`  | Device ID           | `0x01`   | `0xFF` = uninitialized   |
 | `0x03`  | Master ID           | `0x01`   | `0xFF` = uninitialized   |
 
@@ -160,7 +166,7 @@ Receives 8-byte packets from HC-12 via hardware UART:
 ```c
 return (device_id != 0x01 &&
         id_master != 0x01 &&
-        overload_threshold_ma != 3000);
+        overload_threshold_ma != 5000);
 ```
 
 | RB4   | Meaning                                             |
@@ -199,17 +205,8 @@ ACK.data_l    = original command code (echoed back)
 
 ---
 
-### Soft_UART.h — Software UART (Debug Output)
-
-| Function | Description |
-|:---------|:------------|
-| `void Soft_UART_Init(volatile unsigned char *port, unsigned char rx_pin, unsigned char tx_pin, unsigned long baud_rate, unsigned char inverted)` | Initialize software UART. Uses Timer2 for bit-bang timing. `port` = `&PORTB`, `inverted` = 0 for normal logic. |
-| `void Soft_UART_Write(char data)` | Queue one character for transmission. Non-blocking — the ISR handles actual bit-banging. |
-| `void Soft_UART_print(char *text)` | Queue a null-terminated string for transmission. |
-| `void Soft_UART_println(char *text)` | Queue a string followed by `\r\n`. |
-| `void Soft_UART_ISR(void)` | **Call from main ISR.** Handles Timer2-driven bit-bang transmission. |
-
-**Pins used in firmware:** RB6 (TX), RB7 (RX), 9600 baud, non-inverted.
+### Soft_UART.h  (Removed in v5.4.0)
+*To save program memory for the OTA and RBAC releases, the SoftUART library was completely removed. Hardware debugging strings are no longer actively printed over serial.*
 
 ---
 
@@ -290,7 +287,6 @@ typedef union {
 | `HC12-RF_Protocol.h/c`  | Packet structure, CRC, init/sign/verify  |
 | `ACS712.h/c`            | Current sensor driver (init, calibrate, read AC) |
 | `UART_Lib.h`            | Hardware UART (HC-12 communication)       |
-| `Soft_UART.h`           | Software UART (debug output on RB6/RB7)  |
 | `Timer_lib.h`           | Timer0 ISR for `millis()` timestamps      |
 | `ADC_Lib.h`             | ADC initialization and read functions     |
 
@@ -317,7 +313,6 @@ typedef union {
 void __interrupt() ISR(void) {
     UART_ISR();      // 1st — capture HC-12 bytes (highest priority)
     Timer_ISR();     // 2nd — millis() counter
-    Soft_UART_ISR(); // 3rd — software serial TX bit-bang
 }
 ```
 
@@ -364,19 +359,6 @@ This intercepts UART bytes as keyboard shortcuts instead of protocol packets.
 
 ---
 
-## Common Debug Strings (SoftUART)
+## Common Debug Strings (Removed)
 
-| String      | Meaning                                 |
-|:------------|:----------------------------------------|
-| `v5.3.1`    | Firmware booted                         |
-| `Cal`       | Sensor calibration in progress          |
-| `Rdy`       | System ready                            |
-| `R1+` / `R1-` | Relay A ON / OFF                     |
-| `R2+` / `R2-` | Relay B ON / OFF                     |
-| `Cfg!`      | Config mode activated                   |
-| `Cfg?`      | Config mode required but not active     |
-| `CRC!`      | Packet failed CRC verification          |
-| `A:OVL`     | Socket A is in overload state           |
-| `B:OVL`     | Socket B is in overload state           |
-| `A:Rty`     | Socket A overload cooldown retry        |
-| `B:Rty`     | Socket B overload cooldown retry        |
+*Note: In v5.4.0, SoftUART prints were removed to save flash memory. However, the simulation mode keyboard shortcuts still operate identically on the backend protocol layer.*

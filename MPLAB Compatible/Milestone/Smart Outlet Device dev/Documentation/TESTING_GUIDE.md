@@ -1,7 +1,7 @@
 # Smart Outlet Firmware — Testing Guide
 
-**Device:** PIC16F88 | **Firmware:** v5.3.1
-**Default IDs:** `DEVICE_ID = 0x01` · `ID_MASTER = 0x01` · **Threshold:** 3000mA
+**Device:** PIC16F88 | **Firmware:** v5.4.0
+**Default IDs:** `DEVICE_ID = 0x01` · `ID_MASTER = 0x01` · **Threshold:** 5000mA
 
 ---
 
@@ -25,20 +25,21 @@
 | `7` | Set Device ID → 0xFE *(requires config mode)* | `ID:FE` or `Cfg?` |
 | `8` | Set Master ID → 0x0A *(requires config mode)* | `MA:0A` or `Cfg?` |
 
-### Config Mode & Factory Reset
+### Config Mode, Factory Reset & Manual Override (New in v5.4.0)
 
 | Action                      | How                                   | Expected                             |
 | :-------------------------- | :------------------------------------ | :----------------------------------- |
-| **Enter Config Mode** | Hold RB3 LOW for 3 seconds            | SoftUART: `"Cfg!"`                  |
+| **Enter Config Mode** | Press RB3 5 times                     | LED flickers 5 times                 |
 | **Set Device ID**     | While in config mode, press key `7` | RB4 → HIGH, config mode deactivates |
 | **Set Master ID**     | While in config mode, press key `8` | RB4 → HIGH, config mode deactivates |
-| **Factory Reset**     | Press RB3 3 times (short presses)     | All defaults restored, RB4 → LOW    |
+| **Manual Override**   | Press RB3 7 times                     | Relays turn ON, LED flickers 5 times |
+| **Factory Reset**     | Press RB3 3 times                     | All defaults restored, LED flickers 5 times, RB4 → LOW |
 
 ### RB4 Status LED
 
 | RB4 State      | Meaning                                             |
 | :------------- | :-------------------------------------------------- |
-| **LOW**  | All defaults (ID=0x01, Master=0x01, Threshold=3000) |
+| **LOW**  | All defaults (ID=0x01, Master=0x01, Threshold=5000) |
 | **HIGH** | All values have been configured                    |
 
 ### Boot Messages
@@ -55,8 +56,8 @@
 2. Press key `7` → `"Cfg?"` (rejected, not in config mode)
 3. Hold RB3 3s → `"Cfg!"`
 4. Press key `7` → `"ID:FE"` → config mode deactivates
-5. Hold RB3 3s → `"Cfg!"` again
-6. Press key `8` → `"MA:0A"`
+5. Press RB3 5x → LED flickers (Config mode via new protocol)
+6. Press key `8` → `"MA:0A"` (via Protocol, SoftUART is removed)
 7. Press RB3 3× → RB4 = LOW (factory reset)
 8. Reset PIC → boots with all defaults → RB4 = LOW
 9. Keys 1-6 → unchanged behavior
@@ -135,11 +136,18 @@ Master ID: 0x0A
 
 ### Config Mode Test (Hardware)
 
-1. Hold physical RB3 for 3s → PIC enters config mode
+1. Press physical RB3 5 times → LED flickers 5 times (Config Mode)
 2. `7` → enter `FE` → Set Device ID ACK received
 3. `d FE` → switch ESP32 target to match new ID
 4. `1` → Relay A ON → ACK from 0xFE confirms it worked
 5. Send to old ID → no response (correct)
+
+### Manual Override Test (Hardware)
+
+1. Ensure relays are OFF
+2. Press physical RB3 7 times → LED flickers 5 times
+3. Both relays mechanically turn ON locally
+4. ESP32 retains control to turn them back off via WiFi if desired.
 
 ### Master ID Validation Test
 
@@ -214,7 +222,7 @@ For manual testing or debugging, raw hex packets can still be pasted directly:
 
 1. Set a low threshold via `CMD_SET_THRESHOLD`
 2. Connect a load exceeding the threshold
-3. **Expected:** Relay trips OFF within 200ms
+3. **Expected:** Relay trips OFF after 3 consecutive readings (300ms)
 4. **After 5 seconds:** Auto-retry (relay ON)
 5. If still overloaded → trips again immediately
 6. During overload: `CMD_RELAY_ON` is blocked

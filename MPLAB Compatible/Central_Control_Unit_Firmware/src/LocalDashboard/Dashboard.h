@@ -50,6 +50,8 @@ private:
     void _handleDashboard();         // GET  /dashboard
     void _handleSettings();          // GET  /settings
     void _handleSaveSettings();      // POST /settings/save
+    void _handleScanWifi();          // GET  /scan
+    String _scanNetworksJSON();      // Build JSON from scan results
 
     // ─── Device CRUD API ─────────────────────────
     void _handleApiDeviceList();     // GET  /api/devices
@@ -69,6 +71,11 @@ private:
     void _handleApiBreakerStatus();     // GET  /api/breaker
     void _handleApiBreakerThreshold();  // POST /api/breaker/threshold?value=15000
     void _handleApiBreakerCutDevice();  // POST /api/breaker/cut?index=0 (or index=all)
+
+    // ─── External API (called by Django server) ──
+    void _handleExtRelay();             // POST /api/ext/relay
+    void _handleExtThreshold();         // POST /api/ext/threshold
+    void _handleExtPing();              // GET  /api/ext/ping
 
     // ─── HTML Builders ───────────────────────────
     String _buildDashboardPage();
